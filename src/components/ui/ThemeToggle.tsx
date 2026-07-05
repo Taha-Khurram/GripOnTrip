@@ -1,14 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { useThemeStore, type ThemePreference } from '@/store/theme.store';
-import { PressableScale } from './motion';
 
 const OPTIONS: { value: ThemePreference; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
   { value: 'system', label: 'System', icon: 'phone-portrait-outline' },
   { value: 'light', label: 'Light', icon: 'sunny-outline' },
   { value: 'dark', label: 'Dark', icon: 'moon-outline' },
 ];
+
+// Explicit colors so the active state is always legible regardless of how
+// NativeWind resolves dynamically-toggled classes on an interop component.
+const BRAND = '#219ebc';
+const ACTIVE = '#ffffff';
+const INACTIVE = '#6b7280'; // neutral-500 — readable on both light & dark tracks
 
 /**
  * Segmented Appearance control (System / Light / Dark). Writes to the theme
@@ -19,31 +24,34 @@ export function ThemeToggle() {
   const setPreference = useThemeStore((s) => s.setPreference);
 
   return (
-    <View className="flex-row gap-1 rounded-2xl border border-neutral-100 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-900">
+    <View className="flex-row rounded-2xl bg-neutral-100 p-1 dark:bg-neutral-800">
       {OPTIONS.map((opt) => {
         const active = preference === opt.value;
         return (
-          <PressableScale
+          <Pressable
             key={opt.value}
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
             onPress={() => setPreference(opt.value)}
-            activeScale={0.95}
-            className={[
-              'flex-1 flex-row items-center justify-center gap-1.5 rounded-xl py-2.5',
-              active ? 'bg-brand-500' : 'bg-transparent',
-            ].join(' ')}
+            style={
+              active
+                ? {
+                    backgroundColor: BRAND,
+                    shadowColor: BRAND,
+                    shadowOpacity: 0.25,
+                    shadowRadius: 6,
+                    shadowOffset: { width: 0, height: 2 },
+                    elevation: 2,
+                  }
+                : undefined
+            }
+            className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl py-2.5"
           >
-            <Ionicons name={opt.icon} size={16} color={active ? '#fff' : '#9ca3af'} />
-            <Text
-              className={[
-                'text-sm font-semibold',
-                active ? 'text-white' : 'text-neutral-500 dark:text-neutral-400',
-              ].join(' ')}
-            >
+            <Ionicons name={opt.icon} size={16} color={active ? ACTIVE : INACTIVE} />
+            <Text style={{ color: active ? ACTIVE : INACTIVE }} className="text-sm font-semibold">
               {opt.label}
             </Text>
-          </PressableScale>
+          </Pressable>
         );
       })}
     </View>
