@@ -124,7 +124,21 @@ eas submit --profile production
 
 ## Backend
 
-The app talks to the Grip On Trip REST API at `EXPO_PUBLIC_API_URL` (default
-`https://api.gripontrip.com`, versioned under `/v1`). Endpoints are centralized in
-`src/api/endpoints.ts`. Types under `src/features/*/types.ts` are the current
-working contract — align them with the real API responses as they firm up.
+The app uses **two backends**, sharing the same infrastructure as the website:
+
+- **REST API (read-only)** — catalog/content data (hotels, tours, rentals, umrah
+  packages, guides, shop products, reviews) is fetched from `EXPO_PUBLIC_API_URL`
+  (default `https://www.gripontrip.com/api`). Paths are centralized in
+  `src/api/endpoints.ts` and consumed through the Axios client in
+  `src/api/client.ts`. This layer is read-only.
+- **Supabase (auth + writes)** — authentication and all user writes (bookings,
+  reviews) go to Supabase, the same project the web app uses. Configured via
+  `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY`. The anon key is
+  public/client-safe and guarded by row-level security; writes are authorized by
+  the signed-in user's session.
+
+> Note: there is no dedicated Umrah endpoint — umrah packages are surfaced as
+> `[UMRAH]`-prefixed entries in the tours agencies feed.
+
+Types under `src/features/*/types.ts` are the current working contract — align
+them with the real API/table responses as they firm up.
