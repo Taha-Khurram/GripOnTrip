@@ -30,7 +30,7 @@ export function AssistantSearchStrip({
 function Loading({ city }: { city: string }) {
   return (
     <View className="flex-row items-center gap-2 py-4">
-      <ActivityIndicator size="small" color="#facc15" />
+      <ActivityIndicator size="small" color="#ffb703" />
       <Text className="text-[11px] font-light text-slate-300">Finding matches in {city}…</Text>
     </View>
   );
@@ -146,7 +146,7 @@ function GuideStripCard({ guide, onPress }: { guide: Guide; onPress: () => void 
         />
       ) : (
         <View className="h-14 w-14 items-center justify-center rounded-full bg-white/10">
-          <Ionicons name="person" size={26} color="#facc15" />
+          <Ionicons name="person" size={26} color="#ffb703" />
         </View>
       )}
       <Text className="text-center text-[13px] font-semibold text-white" numberOfLines={1}>
@@ -159,7 +159,7 @@ function GuideStripCard({ guide, onPress }: { guide: Guide; onPress: () => void 
       ) : null}
       {guide.rating > 0 ? (
         <View className="flex-row items-center gap-1">
-          <Ionicons name="star" size={11} color="#facc15" />
+          <Ionicons name="star" size={11} color="#ffb703" />
           <Text className="text-[11px] text-slate-300">{formatRating(guide.rating)}</Text>
         </View>
       ) : null}

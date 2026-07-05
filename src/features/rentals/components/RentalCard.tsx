@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Badge, Card } from '@/components/ui';
+import { Animated, Badge, Card, enterUp, PressableScale } from '@/components/ui';
 import { formatMoney, formatRating } from '@/utils/format';
 import type { Rental } from '../types';
 
@@ -16,11 +16,12 @@ function Spec({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: st
   );
 }
 
-export function RentalCard({ rental }: { rental: Rental }) {
+export function RentalCard({ rental, index = 0 }: { rental: Rental; index?: number }) {
   return (
-    <Link href={`/rentals/${rental.id}`} asChild>
-      <Pressable accessibilityRole="button">
-        <Card className="overflow-hidden p-0">
+    <Animated.View entering={enterUp(index)}>
+      <Link href={`/rentals/${rental.id}`} asChild>
+        <PressableScale accessibilityRole="button">
+          <Card className="overflow-hidden p-0">
           <Image
             source={{ uri: rental.images[0]?.url }}
             style={{ width: '100%', height: 160 }}
@@ -61,8 +62,9 @@ export function RentalCard({ rental }: { rental: Rental }) {
               ) : null}
             </View>
           </View>
-        </Card>
-      </Pressable>
-    </Link>
+          </Card>
+        </PressableScale>
+      </Link>
+    </Animated.View>
   );
 }

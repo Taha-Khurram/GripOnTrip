@@ -1,22 +1,23 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Badge, Card } from '@/components/ui';
+import { Animated, Badge, Card, enterUp, PressableScale } from '@/components/ui';
 import { formatMoney, formatRating } from '@/utils/format';
 import { icons8 } from '@/utils/icons8';
 import type { Guide } from '../types';
 
 /** Compact guide preview used in the listing. Links to the guide detail. */
-export function GuideCard({ guide }: { guide: Guide }) {
+export function GuideCard({ guide, index = 0 }: { guide: Guide; index?: number }) {
   const image = guide.imageUrl;
   const languages = guide.languages.slice(0, 3);
 
   return (
-    <Link href={{ pathname: '/guides/[id]', params: { id: guide.id } }} asChild>
-      <Pressable accessibilityRole="button">
-        <Card className="gap-3">
+    <Animated.View entering={enterUp(index)}>
+      <Link href={{ pathname: '/guides/[id]', params: { id: guide.id } }} asChild>
+        <PressableScale accessibilityRole="button">
+          <Card className="gap-3">
           {/* Guide header */}
           <View className="flex-row items-center gap-3">
             {image ? (
@@ -56,7 +57,7 @@ export function GuideCard({ guide }: { guide: Guide }) {
                 ) : null}
                 {guide.reviewCount > 0 || guide.rating > 0 ? (
                   <View className="flex-row items-center gap-1">
-                    <Ionicons name="star" size={12} color="#f59e0b" />
+                    <Ionicons name="star" size={12} color="#ffb703" />
                     <Text className="text-xs text-neutral-500">
                       {formatRating(guide.rating)} ({guide.reviewCount})
                     </Text>
@@ -103,11 +104,12 @@ export function GuideCard({ guide }: { guide: Guide }) {
             )}
             <View className="flex-row items-center gap-1">
               <Text className="text-sm font-medium text-brand-600">View profile</Text>
-              <Ionicons name="chevron-forward" size={14} color="#208aef" />
+              <Ionicons name="chevron-forward" size={14} color="#219ebc" />
             </View>
           </View>
-        </Card>
-      </Pressable>
-    </Link>
+          </Card>
+        </PressableScale>
+      </Link>
+    </Animated.View>
   );
 }

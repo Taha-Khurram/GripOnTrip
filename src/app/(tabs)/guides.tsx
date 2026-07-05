@@ -72,9 +72,9 @@ export default function GuidesScreen() {
   }, [allGuides, query, city, sort]);
 
   const renderItem = useCallback(
-    ({ item }: { item: Guide }) => (
+    ({ item, index }: { item: Guide; index: number }) => (
       <View className="px-5 pb-4">
-        <GuideCard guide={item} />
+        <GuideCard guide={item} index={index} />
       </View>
     ),
     [],
@@ -108,7 +108,7 @@ export default function GuidesScreen() {
       renderItem={renderItem}
       contentContainerClassName="pb-8 pt-3"
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#208aef" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />
       }
       keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
@@ -201,7 +201,7 @@ export default function GuidesScreen() {
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="people-outline" size={28} color="#208aef" />
+            <Ionicons name="people-outline" size={28} color="#219ebc" />
           </View>
           <Text className="text-lg font-bold text-neutral-900 dark:text-white">
             No guides found

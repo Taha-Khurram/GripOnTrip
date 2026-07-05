@@ -36,7 +36,7 @@ function PackageCard({ pkg, onBook }: { pkg: TourPackage; onBook: (pkg: TourPack
 
       {pkg.attractionPlaces ? (
         <View className="flex-row items-start gap-2">
-          <Ionicons name="location-outline" size={16} color="#208aef" />
+          <Ionicons name="location-outline" size={16} color="#219ebc" />
           <Text className="flex-1 text-sm text-neutral-600 dark:text-neutral-400">{pkg.attractionPlaces}</Text>
         </View>
       ) : null}
@@ -137,7 +137,7 @@ export default function TourDetailScreen() {
         <Image source={{ uri: image }} style={{ width: '100%', height: 220 }} contentFit="cover" />
       ) : (
         <View className="h-52 w-full items-center justify-center bg-brand-50">
-          <Ionicons name="map-outline" size={56} color="#208aef" />
+          <Ionicons name="map-outline" size={56} color="#219ebc" />
         </View>
       )}
 

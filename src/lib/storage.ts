@@ -29,4 +29,5 @@ export const StorageKeys = {
   authToken: 'got.auth.token',
   refreshToken: 'got.auth.refresh',
   onboardingComplete: 'got.onboarding.complete',
+  themePreference: 'got.theme.preference',
 } as const;

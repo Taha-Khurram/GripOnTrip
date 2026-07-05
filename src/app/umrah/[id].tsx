@@ -146,7 +146,7 @@ export default function UmrahDetailScreen() {
             <Text className="text-base text-neutral-600 dark:text-neutral-400">{pkg.packageName}</Text>
             <View className="mt-1 flex-row flex-wrap items-center gap-x-2">
               <View className="flex-row items-center gap-1">
-                <Ionicons name="star" size={14} color="#f59e0b" />
+                <Ionicons name="star" size={14} color="#ffb703" />
                 <Text className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                   {formatRating(pkg.rating)}
                 </Text>

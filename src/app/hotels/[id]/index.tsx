@@ -74,7 +74,7 @@ export default function HotelDetailScreen() {
             <View className="flex-row flex-wrap items-center gap-x-2">
               {hotel.rating != null ? (
                 <View className="flex-row items-center gap-1">
-                  <Ionicons name="star" size={14} color="#f59e0b" />
+                  <Ionicons name="star" size={14} color="#ffb703" />
                   <Text className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                     {formatRating(hotel.rating)}
                   </Text>
@@ -148,7 +148,7 @@ export default function HotelDetailScreen() {
               <View className="flex-row flex-wrap gap-2">
                 {hotel.nearbyAttractions.map((a) => (
                   <View key={a} className="flex-row items-center gap-1 rounded-full bg-neutral-100 px-3 py-1.5 dark:bg-neutral-800">
-                    <Ionicons name="pin-outline" size={13} color="#208aef" />
+                    <Ionicons name="pin-outline" size={13} color="#219ebc" />
                     <Text className="text-xs text-neutral-700 dark:text-neutral-300">{a}</Text>
                   </View>
                 ))}
@@ -197,7 +197,7 @@ export default function HotelDetailScreen() {
               className="flex-row items-center justify-center gap-2 py-2"
               onPress={() => Linking.openURL(`tel:${hotel.phone}`)}
             >
-              <Ionicons name="call-outline" size={16} color="#208aef" />
+              <Ionicons name="call-outline" size={16} color="#219ebc" />
               <Text className="text-sm font-semibold text-brand-600">Call the property</Text>
             </Pressable>
           ) : null}

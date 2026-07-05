@@ -20,11 +20,11 @@ export function Stepper({
       <Text className="text-base text-neutral-800 dark:text-neutral-200">{label}</Text>
       <View className="flex-row items-center gap-4">
         <Pressable hitSlop={8} disabled={value <= min} onPress={() => onChange(value - 1)} className={value <= min ? 'opacity-30' : ''}>
-          <Ionicons name="remove-circle-outline" size={28} color="#208aef" />
+          <Ionicons name="remove-circle-outline" size={28} color="#219ebc" />
         </Pressable>
         <Text className="w-6 text-center text-base font-semibold text-neutral-900 dark:text-white">{value}</Text>
         <Pressable hitSlop={8} disabled={value >= max} onPress={() => onChange(value + 1)} className={value >= max ? 'opacity-30' : ''}>
-          <Ionicons name="add-circle-outline" size={28} color="#208aef" />
+          <Ionicons name="add-circle-outline" size={28} color="#219ebc" />
         </Pressable>
       </View>
     </View>

@@ -36,7 +36,7 @@ export function SocialAuthButtons({ onError }: { onError?: (message: string) => 
         className="flex-row items-center justify-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 active:opacity-70 dark:border-neutral-700 dark:bg-neutral-900"
       >
         {loading ? (
-          <ActivityIndicator color="#208aef" />
+          <ActivityIndicator color="#219ebc" />
         ) : (
           <>
             <Ionicons name="logo-google" size={18} color="#ea4335" />

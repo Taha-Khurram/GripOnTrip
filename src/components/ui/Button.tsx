@@ -1,4 +1,6 @@
-import { ActivityIndicator, Pressable, Text, type PressableProps } from 'react-native';
+import { ActivityIndicator, Text, type PressableProps } from 'react-native';
+
+import { PressableScale } from './motion';
 
 type Variant = 'primary' | 'secondary' | 'outline' | 'ghost';
 type Size = 'sm' | 'md' | 'lg';
@@ -11,9 +13,12 @@ interface ButtonProps extends Omit<PressableProps, 'children'> {
   fullWidth?: boolean;
 }
 
+// Press feedback comes from PressableScale (scale + dim); no `active:` pseudo
+// variants here, which would otherwise trigger NativeWind's View→Pressable
+// upgrade and drop the reanimated animated style.
 const containerVariants: Record<Variant, string> = {
-  primary: 'bg-brand-500 active:bg-brand-600',
-  secondary: 'bg-accent-500 active:bg-accent-600',
+  primary: 'bg-brand-500',
+  secondary: 'bg-accent-500',
   outline: 'border border-brand-500 bg-transparent',
   ghost: 'bg-transparent',
 };
@@ -48,7 +53,7 @@ export function Button({
 }: ButtonProps) {
   const isDisabled = disabled || loading;
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
@@ -62,12 +67,12 @@ export function Button({
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'outline' || variant === 'ghost' ? '#208aef' : '#fff'} />
+        <ActivityIndicator color={variant === 'outline' || variant === 'ghost' ? '#219ebc' : '#fff'} />
       ) : (
         <Text className={['font-semibold', labelSizes[size], labelVariants[variant]].join(' ')}>
           {label}
         </Text>
       )}
-    </Pressable>
+    </PressableScale>
   );
 }

@@ -1,8 +1,8 @@
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Card } from '@/components/ui';
+import { Animated, Card, enterUp, PressableScale } from '@/components/ui';
 import { formatMoney } from '@/utils/format';
 import type { Product } from '../types';
 
@@ -10,11 +10,12 @@ import type { Product } from '../types';
  * Grid cell for the marketplace list. Half-width by design — wrap it in a
  * `flex-1` row (see the shop screen) so two sit side by side, like the web.
  */
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   return (
-    <Link href={{ pathname: '/shop/[id]', params: { id: product.id } }} asChild>
-      <Pressable accessibilityRole="button" className="flex-1">
-        <Card className="overflow-hidden p-0">
+    <Animated.View entering={enterUp(index)} className="flex-1">
+      <Link href={{ pathname: '/shop/[id]', params: { id: product.id } }} asChild>
+        <PressableScale accessibilityRole="button" className="flex-1">
+          <Card className="overflow-hidden p-0">
           <View>
             <Image
               source={{ uri: product.images[0]?.url }}
@@ -55,8 +56,9 @@ export function ProductCard({ product }: { product: Product }) {
               ) : null}
             </View>
           </View>
-        </Card>
-      </Pressable>
-    </Link>
+          </Card>
+        </PressableScale>
+      </Link>
+    </Animated.View>
   );
 }

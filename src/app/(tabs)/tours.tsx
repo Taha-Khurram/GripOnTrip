@@ -42,9 +42,9 @@ export default function ToursScreen() {
   }, [allTours, query, city]);
 
   const renderItem = useCallback(
-    ({ item }: { item: Tour }) => (
+    ({ item, index }: { item: Tour; index: number }) => (
       <View className="px-5 pb-4">
-        <TourCard tour={item} />
+        <TourCard tour={item} index={index} />
       </View>
     ),
     [],
@@ -78,7 +78,7 @@ export default function ToursScreen() {
       renderItem={renderItem}
       contentContainerClassName="pb-8 pt-3"
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#208aef" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />
       }
       keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
@@ -135,7 +135,7 @@ export default function ToursScreen() {
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="map-outline" size={28} color="#208aef" />
+            <Ionicons name="map-outline" size={28} color="#219ebc" />
           </View>
           <Text className="text-lg font-bold text-neutral-900 dark:text-white">
             No tours posted yet

@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Badge, Card } from '@/components/ui';
+import { Animated, Badge, Card, enterUp, PressableScale } from '@/components/ui';
 import { formatMoney } from '@/utils/format';
 import { icons8 } from '@/utils/icons8';
 import type { Tour, TourPackage } from '../types';
@@ -29,15 +29,16 @@ function PackageChip({ pkg }: { pkg: TourPackage }) {
   );
 }
 
-export function TourCard({ tour }: { tour: Tour }) {
+export function TourCard({ tour, index = 0 }: { tour: Tour; index?: number }) {
   const image = tour.images[0]?.url;
   const packageCount = tour.packages.length;
   const preview = tour.packages.slice(0, 3);
 
   return (
-    <Link href={`/tours/${tour.id}`} asChild>
-      <Pressable accessibilityRole="button">
-        <Card className="gap-3">
+    <Animated.View entering={enterUp(index)}>
+      <Link href={`/tours/${tour.id}`} asChild>
+        <PressableScale accessibilityRole="button">
+          <Card className="gap-3">
           {/* Operator header */}
           <View className="flex-row items-center gap-3">
             {image ? (
@@ -90,14 +91,15 @@ export function TourCard({ tour }: { tour: Tour }) {
               <View />
             )}
             <View className="flex-row items-center gap-1">
-              <Ionicons name="cube-outline" size={14} color="#208aef" />
+              <Ionicons name="cube-outline" size={14} color="#219ebc" />
               <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
                 {packageCount} package{packageCount === 1 ? '' : 's'}
               </Text>
             </View>
           </View>
-        </Card>
-      </Pressable>
-    </Link>
+          </Card>
+        </PressableScale>
+      </Link>
+    </Animated.View>
   );
 }

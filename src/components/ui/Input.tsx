@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import { Text, TextInput, View, type TextInputProps } from 'react-native';
 
 interface InputProps extends TextInputProps {
@@ -7,9 +7,17 @@ interface InputProps extends TextInputProps {
 }
 
 export const Input = forwardRef<TextInput, InputProps>(function Input(
-  { label, error, className = '', ...rest },
+  { label, error, className = '', onFocus, onBlur, ...rest },
   ref,
 ) {
+  const [focused, setFocused] = useState(false);
+
+  const borderClass = error
+    ? 'border-danger'
+    : focused
+      ? 'border-brand-500'
+      : 'border-neutral-200 dark:border-neutral-700';
+
   return (
     <View className="w-full gap-1.5">
       {label ? (
@@ -18,10 +26,18 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
       <TextInput
         ref={ref}
         placeholderTextColor="#9ca3af"
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
         className={[
-          'rounded-xl border bg-white px-4 py-3 text-base text-neutral-900',
+          'rounded-xl border bg-white px-4 py-3 text-base text-neutral-900 transition-colors',
           'dark:bg-neutral-900 dark:text-white',
-          error ? 'border-danger' : 'border-neutral-200 dark:border-neutral-700',
+          borderClass,
           className,
         ].join(' ')}
         {...rest}

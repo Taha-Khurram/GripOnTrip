@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
 
-const TINT = '#208aef';
+const TINT = '#219ebc';
 
 function ProfileButton() {
   return (

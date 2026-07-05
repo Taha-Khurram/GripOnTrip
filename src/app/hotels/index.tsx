@@ -66,9 +66,9 @@ export default function HotelsListScreen() {
   }, [data?.data, query, breakfast, freeCancel, sort]);
 
   const renderItem = useCallback(
-    ({ item }: { item: Hotel }) => (
+    ({ item, index }: { item: Hotel; index: number }) => (
       <View className="px-5 pb-4">
-        <HotelCard hotel={item} />
+        <HotelCard hotel={item} index={index} />
       </View>
     ),
     [],
@@ -104,7 +104,7 @@ export default function HotelsListScreen() {
       renderItem={renderItem}
       contentContainerClassName="pb-8"
       keyboardShouldPersistTaps="handled"
-      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#208aef" />}
+      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />}
       ListHeaderComponent={
         <View className="gap-3 px-5 pb-3 pt-3">
           <Stack.Screen options={{ title: 'Hotels & Stays' }} />
@@ -143,7 +143,7 @@ export default function HotelsListScreen() {
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="bed-outline" size={28} color="#208aef" />
+            <Ionicons name="bed-outline" size={28} color="#219ebc" />
           </View>
           <Text className="text-lg font-bold text-neutral-900 dark:text-white">No stays match</Text>
           <Text className="text-center text-sm text-neutral-500">

@@ -3,9 +3,20 @@ import { Image } from 'expo-image';
 import { Link, Stack, useRouter } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Button } from '@/components/ui';
+import { Button, ThemeToggle } from '@/components/ui';
 import { Screen } from '@/components/layout/Screen';
 import { useAuthStore } from '@/store/auth.store';
+
+function AppearanceSection({ className = '' }: { className?: string }) {
+  return (
+    <View className={['gap-2', className].join(' ')}>
+      <Text className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
+        Appearance
+      </Text>
+      <ThemeToggle />
+    </View>
+  );
+}
 
 function Row({
   icon,
@@ -19,7 +30,7 @@ function Row({
   return (
     <Link href={href as never} asChild>
       <Pressable className="flex-row items-center gap-3 border-b border-neutral-100 px-5 py-4 active:bg-neutral-50 dark:border-neutral-800 dark:active:bg-neutral-900">
-        <Ionicons name={icon} size={20} color="#208aef" />
+        <Ionicons name={icon} size={20} color="#219ebc" />
         <Text className="flex-1 text-base text-neutral-900 dark:text-white">{label}</Text>
         <Ionicons name="chevron-forward" size={18} color="#9ca3af" />
       </Pressable>
@@ -37,7 +48,7 @@ export default function ProfileScreen() {
         <Stack.Screen options={{ title: 'Profile' }} />
         <View className="items-center gap-3">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="person-outline" size={28} color="#208aef" />
+            <Ionicons name="person-outline" size={28} color="#219ebc" />
           </View>
           <Text className="text-center text-lg font-bold text-neutral-900 dark:text-white">
             Sign in to Grip On Trip
@@ -47,6 +58,8 @@ export default function ProfileScreen() {
           </Text>
         </View>
         <Button label="Sign in" fullWidth onPress={() => router.push('/(auth)/sign-in')} />
+
+        <AppearanceSection className="w-full pt-4" />
       </Screen>
     );
   }
@@ -74,6 +87,8 @@ export default function ProfileScreen() {
           <Row icon="search-outline" label="Search" href="/search" />
           <Row icon="sparkles-outline" label="AI Trip Planner" href="/trip-planner" />
         </View>
+
+        <AppearanceSection className="px-5 pt-6" />
 
         <View className="px-5 pt-8">
           <Button

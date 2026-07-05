@@ -1,17 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Card } from '@/components/ui';
+import { Animated, Card, enterUp, PressableScale } from '@/components/ui';
 import { formatMoney, formatRating } from '@/utils/format';
 import type { Hotel } from '../types';
 
-export function HotelCard({ hotel }: { hotel: Hotel }) {
+export function HotelCard({ hotel, index = 0 }: { hotel: Hotel; index?: number }) {
   return (
-    <Link href={`/hotels/${hotel.id}`} asChild>
-      <Pressable accessibilityRole="button">
-        <Card className="overflow-hidden p-0">
+    <Animated.View entering={enterUp(index)}>
+      <Link href={`/hotels/${hotel.id}`} asChild>
+        <PressableScale accessibilityRole="button">
+          <Card className="overflow-hidden p-0">
           <View>
             <Image
               source={{ uri: hotel.images[0]?.url }}
@@ -40,7 +41,7 @@ export function HotelCard({ hotel }: { hotel: Hotel }) {
               </Text>
               {hotel.rating != null ? (
                 <View className="ml-2 flex-row items-center gap-0.5">
-                  <Ionicons name="star" size={13} color="#f59e0b" />
+                  <Ionicons name="star" size={13} color="#ffb703" />
                   <Text className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                     {formatRating(hotel.rating)}
                   </Text>
@@ -75,8 +76,9 @@ export function HotelCard({ hotel }: { hotel: Hotel }) {
               </View>
             </View>
           </View>
-        </Card>
-      </Pressable>
-    </Link>
+          </Card>
+        </PressableScale>
+      </Link>
+    </Animated.View>
   );
 }

@@ -16,7 +16,7 @@ import { icons8 } from '@/utils/icons8';
 function Fact({ icon, label, value }: { icon: keyof typeof Ionicons.glyphMap; label: string; value: string }) {
   return (
     <View className="flex-1 items-center gap-1 rounded-2xl border border-neutral-100 py-3 dark:border-neutral-800">
-      <Ionicons name={icon} size={20} color="#208aef" />
+      <Ionicons name={icon} size={20} color="#219ebc" />
       <Text className="text-base font-bold text-neutral-900 dark:text-white">{value}</Text>
       <Text className="text-[11px] uppercase tracking-wide text-neutral-400">{label}</Text>
     </View>
@@ -124,7 +124,7 @@ export default function GuideDetailScreen() {
           ) : null}
           {guide.reviewCount > 0 || guide.rating > 0 ? (
             <View className="flex-row items-center gap-1">
-              <Ionicons name="star" size={14} color="#f59e0b" />
+              <Ionicons name="star" size={14} color="#ffb703" />
               <Text className="text-neutral-500">
                 {formatRating(guide.rating)} · {guide.reviewCount} review{guide.reviewCount === 1 ? '' : 's'}
               </Text>

@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Badge, Card } from '@/components/ui';
+import { Animated, Badge, Card, enterUp, PressableScale } from '@/components/ui';
 import { formatMoney, formatRating } from '@/utils/format';
 import { icons8 } from '@/utils/icons8';
 import type { UmrahPackage } from '../types';
@@ -19,14 +19,15 @@ function Feature({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label:
   );
 }
 
-export function UmrahPackageCard({ pkg }: { pkg: UmrahPackage }) {
+export function UmrahPackageCard({ pkg, index = 0 }: { pkg: UmrahPackage; index?: number }) {
   const image = pkg.images[0]?.url;
   const totalNights = pkg.makkahNights + pkg.madinahNights;
 
   return (
-    <Link href={{ pathname: '/umrah/[id]', params: { id: pkg.id } }} asChild>
-      <Pressable accessibilityRole="button">
-        <Card className="overflow-hidden p-0">
+    <Animated.View entering={enterUp(index)}>
+      <Link href={{ pathname: '/umrah/[id]', params: { id: pkg.id } }} asChild>
+        <PressableScale accessibilityRole="button">
+          <Card className="overflow-hidden p-0">
           <View>
             {image ? (
               <Image
@@ -59,7 +60,7 @@ export function UmrahPackageCard({ pkg }: { pkg: UmrahPackage }) {
                 {pkg.title}
               </Text>
               <View className="flex-row items-center gap-0.5">
-                <Ionicons name="star" size={13} color="#f59e0b" />
+                <Ionicons name="star" size={13} color="#ffb703" />
                 <Text className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                   {formatRating(pkg.rating)}
                 </Text>
@@ -94,8 +95,9 @@ export function UmrahPackageCard({ pkg }: { pkg: UmrahPackage }) {
               ) : null}
             </View>
           </View>
-        </Card>
-      </Pressable>
-    </Link>
+          </Card>
+        </PressableScale>
+      </Link>
+    </Animated.View>
   );
 }

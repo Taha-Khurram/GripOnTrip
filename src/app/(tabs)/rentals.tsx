@@ -18,9 +18,9 @@ export default function RentalsScreen() {
   const rentals = data?.data ?? [];
 
   const renderItem = useCallback(
-    ({ item }: { item: Rental }) => (
+    ({ item, index }: { item: Rental; index: number }) => (
       <View className="px-5 pb-4">
-        <RentalCard rental={item} />
+        <RentalCard rental={item} index={index} />
       </View>
     ),
     [],
@@ -54,7 +54,7 @@ export default function RentalsScreen() {
       renderItem={renderItem}
       contentContainerClassName="pb-8 pt-3"
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#208aef" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />
       }
       ListHeaderComponent={
         <View className="px-5 pb-3">
@@ -68,7 +68,7 @@ export default function RentalsScreen() {
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="home-outline" size={28} color="#208aef" />
+            <Ionicons name="home-outline" size={28} color="#219ebc" />
           </View>
           <Text className="text-lg font-bold text-neutral-900 dark:text-white">
             No rentals posted yet

@@ -47,7 +47,7 @@ export default function BookHotelScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-white dark:bg-black">
         <Stack.Screen options={{ title: 'Book' }} />
-        <ActivityIndicator color="#208aef" />
+        <ActivityIndicator color="#219ebc" />
       </View>
     );
   }
@@ -72,7 +72,7 @@ export default function BookHotelScreen() {
         <Stack.Screen options={{ title: 'Choose a room' }} />
         <Text className="text-xl font-bold text-neutral-900 dark:text-white">{hotel.title}</Text>
         {roomsLoading ? (
-          <ActivityIndicator color="#208aef" className="mt-8" />
+          <ActivityIndicator color="#219ebc" className="mt-8" />
         ) : rooms.length > 0 ? (
           <>
             <Text className="text-sm text-neutral-500">Select a room to continue.</Text>

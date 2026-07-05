@@ -45,7 +45,9 @@ export default function ShopScreen() {
   }, [allProducts, query, category]);
 
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => <ProductCard product={item} />,
+    ({ item, index }: { item: Product; index: number }) => (
+      <ProductCard product={item} index={index} />
+    ),
     [],
   );
 
@@ -79,7 +81,7 @@ export default function ShopScreen() {
       columnWrapperStyle={{ paddingHorizontal: 20, gap: 12 }}
       contentContainerClassName="gap-3 pb-8 pt-3"
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#208aef" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />
       }
       keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
@@ -141,7 +143,7 @@ export default function ShopScreen() {
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="bag-handle-outline" size={28} color="#208aef" />
+            <Ionicons name="bag-handle-outline" size={28} color="#219ebc" />
           </View>
           <Text className="text-lg font-bold text-neutral-900 dark:text-white">
             {query || category ? 'No matching products' : 'No products yet'}

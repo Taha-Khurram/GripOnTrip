@@ -1,23 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useColorScheme as useRNColorScheme } from 'react-native';
+import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 
 /**
- * To support static rendering, this value needs to be re-calculated on the client side for web
+ * Web variant — same source of truth as native (NativeWind), so a user theme
+ * override applies on web too. Falls back to 'light' during static rendering
+ * before the scheme resolves on the client.
  */
-export function useColorScheme() {
-  const [hasHydrated, setHasHydrated] = useState(false);
-
-  useEffect(() => {
-    // One-time hydration flag for web static rendering; intentional set-in-effect.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHasHydrated(true);
-  }, []);
-
-  const colorScheme = useRNColorScheme();
-
-  if (hasHydrated) {
-    return colorScheme;
-  }
-
-  return 'light';
+export function useColorScheme(): 'light' | 'dark' {
+  return useNativewindColorScheme().colorScheme ?? 'light';
 }

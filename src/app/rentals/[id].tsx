@@ -15,7 +15,7 @@ import { formatMoney, formatRating } from '@/utils/format';
 function Spec({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <View className="items-center gap-1">
-      <Ionicons name={icon} size={20} color="#208aef" />
+      <Ionicons name={icon} size={20} color="#219ebc" />
       <Text className="text-sm text-neutral-700 dark:text-neutral-300">{label}</Text>
     </View>
   );

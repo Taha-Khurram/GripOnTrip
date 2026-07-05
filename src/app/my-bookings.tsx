@@ -24,7 +24,7 @@ function BookingCard({ booking }: { booking: MyBooking }) {
         <Image source={{ uri: booking.imageUrl }} style={{ width: 96, height: 96 }} contentFit="cover" />
       ) : (
         <View className="h-24 w-24 items-center justify-center bg-brand-50">
-          <Ionicons name="bed-outline" size={26} color="#208aef" />
+          <Ionicons name="bed-outline" size={26} color="#219ebc" />
         </View>
       )}
       <View className="flex-1 gap-1 py-2 pr-3">
@@ -69,7 +69,7 @@ export default function MyBookingsScreen() {
       <Stack.Screen options={{ title: 'My Bookings' }} />
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color="#208aef" />
+          <ActivityIndicator color="#219ebc" />
         </View>
       ) : isError ? (
         <View className="flex-1 items-center justify-center gap-4 px-8">
@@ -82,11 +82,11 @@ export default function MyBookingsScreen() {
           keyExtractor={(b) => b.id}
           contentContainerClassName="gap-3 p-5"
           renderItem={({ item }) => <BookingCard booking={item} />}
-          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#208aef" />}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />}
           ListEmptyComponent={
             <View className="mt-24 items-center gap-3 px-8">
               <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-                <Ionicons name="briefcase-outline" size={28} color="#208aef" />
+                <Ionicons name="briefcase-outline" size={28} color="#219ebc" />
               </View>
               <Text className="text-lg font-bold text-neutral-900 dark:text-white">No bookings yet</Text>
               <Text className="text-center text-sm text-neutral-500">

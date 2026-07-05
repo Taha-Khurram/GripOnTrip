@@ -64,9 +64,9 @@ export default function UmrahScreen() {
   }, [data, query, sort]);
 
   const renderItem = useCallback(
-    ({ item }: { item: UmrahPackage }) => (
+    ({ item, index }: { item: UmrahPackage; index: number }) => (
       <View className="px-5 pb-4">
-        <UmrahPackageCard pkg={item} />
+        <UmrahPackageCard pkg={item} index={index} />
       </View>
     ),
     [],
