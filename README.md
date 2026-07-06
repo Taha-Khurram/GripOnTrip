@@ -1,44 +1,125 @@
+<div align="center">
+
+<img src="assets/images/icon.png" width="96" height="96" alt="Grip On Trip logo" />
+
 # Grip On Trip — Mobile App
 
-The official mobile app for [gripontrip.com](https://www.gripontrip.com) — a travel
-marketplace for hotels & stays, vacation rentals, guided tours, Umrah packages,
-verified local guides, and a travel gear marketplace, with an AI Trip Planner.
+**Direct prices. Zero commission.**
 
-Built with **Expo (React Native) + TypeScript + Expo Router + NativeWind (Tailwind)**.
+The official mobile app for [gripontrip.com](https://www.gripontrip.com) — a travel marketplace for
+hotels & stays, vacation rentals, guided tours, Umrah packages, verified local guides, and a travel-gear
+marketplace, with an AI Trip Planner and in-app assistant.
+
+<p>
+  <img alt="Expo SDK" src="https://img.shields.io/badge/Expo_SDK-57-000020?logo=expo&logoColor=white" />
+  <img alt="React Native" src="https://img.shields.io/badge/React_Native-0.86-20232a?logo=react&logoColor=61dafb" />
+  <img alt="React" src="https://img.shields.io/badge/React-19-20232a?logo=react&logoColor=61dafb" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white" />
+  <img alt="NativeWind" src="https://img.shields.io/badge/NativeWind-v4-38bdf8?logo=tailwindcss&logoColor=white" />
+  <img alt="Supabase" src="https://img.shields.io/badge/Supabase-auth-3ecf8e?logo=supabase&logoColor=white" />
+  <img alt="React Query" src="https://img.shields.io/badge/TanStack_Query-v5-ff4154?logo=reactquery&logoColor=white" />
+  <img alt="Platforms" src="https://img.shields.io/badge/platforms-iOS_%7C_Android-lightgrey" />
+</p>
+
+</div>
 
 ---
 
-## Tech Stack
+## ✨ Highlights
 
-| Concern            | Choice                                     |
-| ------------------ | ------------------------------------------ |
-| Framework          | Expo SDK 57 / React Native 0.86 / React 19 |
-| Language           | TypeScript (strict)                        |
-| Navigation         | Expo Router (file-based, typed routes)     |
-| Styling            | NativeWind v4 (Tailwind CSS)               |
-| Server state       | TanStack React Query                       |
-| Client state       | Zustand                                    |
-| Networking         | Axios (`src/api/client.ts`)                |
-| Forms & validation | React Hook Form + Zod                      |
-| Secure storage     | expo-secure-store / AsyncStorage           |
-| Icons              | `@expo/vector-icons` (Ionicons)            |
-| Linting/formatting | ESLint (expo config) + Prettier            |
+- 🏨 **Six marketplace verticals** — Hotels & Stays, Vacation Rentals, Guided Tours, Umrah Packages,
+  Verified Guides, and a travel-gear Marketplace, mirroring the website navigation.
+- 👤 **Full traveler account** — profile settings, wishlist, hotel bookings, rental bookings, and
+  host tools (owned properties + rental-listing management).
+- 🔐 **Real authentication** — email/password **and** Google OAuth via Supabase, with row-level-security
+  scoped data (the same backend the website uses).
+- ❤️ **Wishlist** — save any stay, rental, or tour with a tap; persisted per user on-device.
+- 🤖 **AI Trip Planner & assistant** — the same `GOT AI` experience as the web, in your pocket.
+- 🎨 **Polished, themeable UI** — a cohesive design system (NativeWind + brand tokens), full dark mode,
+  and spring-based motion throughout.
+- 🧱 **Scalable architecture** — typed, file-based routing and self-contained feature modules that are
+  trivial to extend.
 
-## Getting Started
+## 📱 App map
+
+| Area | Screens |
+| --- | --- |
+| **Discover** (bottom tabs) | Home · Tours · Rentals · Umrah · Shop · Guides |
+| **Detail & booking** | Hotel detail + booking · Rental detail · Tour · Umrah · Guide · Product |
+| **Account** | Profile hub · Profile settings · Wishlist · My bookings · My rental bookings |
+| **Hosting** | My properties · Manage rental properties |
+| **Auth** | Sign in · Sign up · Forgot password (Google OAuth + email) |
+| **Tools** | Search · AI Trip Planner · AI assistant |
+
+<!-- Add screenshots here once captured, e.g.:
+<p align="center">
+  <img src="docs/screens/home.png" width="220" />
+  <img src="docs/screens/profile.png" width="220" />
+  <img src="docs/screens/hotel.png" width="220" />
+</p>
+-->
+
+## 🧱 Tech stack
+
+| Concern            | Choice                                        |
+| ------------------ | --------------------------------------------- |
+| Framework          | Expo SDK 57 · React Native 0.86 · React 19    |
+| Language           | TypeScript (strict)                           |
+| Navigation         | Expo Router (file-based, typed routes)        |
+| Styling            | NativeWind v4 (Tailwind CSS) + brand tokens   |
+| Server state       | TanStack React Query                          |
+| Client state       | Zustand                                       |
+| Auth & user data   | Supabase (`@supabase/supabase-js`)            |
+| Networking         | Axios (`src/api/client.ts`)                   |
+| Forms & validation | React Hook Form + Zod                         |
+| Animation          | Reanimated (spring press + entrance)          |
+| Secure storage     | expo-secure-store / AsyncStorage              |
+| Icons              | `@expo/vector-icons` (Ionicons)               |
+| Tooling            | ESLint (expo config) + Prettier               |
+
+## 🏗️ Architecture
+
+The app talks to **two backends that mirror the website**:
+
+- **REST API (read-only)** — catalog/content (hotels, rentals, tours, umrah, guides, shop, reviews)
+  from `EXPO_PUBLIC_API_URL`. Paths live in [`src/api/endpoints.ts`](src/api/endpoints.ts) and flow
+  through the Axios client in [`src/api/client.ts`](src/api/client.ts).
+- **Supabase (auth + user data)** — sign-in and per-user data (profile, bookings, owned listings)
+  via row-level security, using the same project as the web. Client in
+  [`src/lib/supabase.ts`](src/lib/supabase.ts).
+
+Data always flows **component → React Query hook → `api.ts` → backend** — components never call Axios or
+Supabase directly. Each vertical is a self-contained **feature module**:
+
+```
+src/features/<vertical>/
+├── types.ts        # domain models
+├── api.ts          # endpoint / Supabase calls + mappers
+├── hooks.ts        # React Query hooks
+├── components/     # feature UI
+└── index.ts        # public exports
+```
+
+`hotels/` is the reference implementation — copy its shape to build a new vertical.
+
+## 🚀 Getting started
+
+**Prerequisites:** Node 18+, a package manager, and the [Expo](https://expo.dev) toolchain. iOS builds
+require macOS; on Windows use an Android device/emulator or a cloud build (see below).
 
 ```bash
 # 1. Install dependencies
 npm install
 
 # 2. Configure environment
-cp .env.example .env      # then edit values
+cp .env.example .env      # values are prefilled; the Supabase anon key is public/client-safe
 
 # 3. Start the dev server
-npm start                 # press i (iOS), a (Android), or w (web)
+npm start                 # then press a (Android), i (iOS), or w (web)
 ```
 
-> iOS builds require macOS. On Windows, use an Android emulator/device or the web
-> target, or the Expo Go app on a physical device.
+> Because the app uses native modules and custom-scheme OAuth, **Google sign-in requires a
+> [development build](#-building--releasing-eas)** rather than Expo Go.
 
 ### Scripts
 
@@ -52,93 +133,111 @@ npm start                 # press i (iOS), a (Android), or w (web)
 | `npm run format`    | Format with Prettier            |
 | `npm run typecheck` | Type-check with `tsc --noEmit`  |
 
-## Project Structure
+## 🔑 Environment variables
+
+Only `EXPO_PUBLIC_*` vars are exposed to the client. Define them in `.env` (copy from `.env.example`).
+Nothing is hardcoded in source — [`src/config/env.ts`](src/config/env.ts) reads every value from the
+environment and **fails loudly** if a required one is missing.
+
+| Variable                        | Required | Description                                              |
+| ------------------------------- | :------: | -------------------------------------------------------- |
+| `EXPO_PUBLIC_API_URL`           |    ✅    | Base URL of the read-only REST API                       |
+| `EXPO_PUBLIC_WEB_URL`           |    ✅    | Public website (deep links / web fallbacks)              |
+| `EXPO_PUBLIC_SUPABASE_URL`      |    ✅    | Supabase project URL (auth + user data)                  |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` |    ✅    | Supabase anon key — **public/client-safe**, RLS-guarded  |
+| `EXPO_PUBLIC_ENV`               |    —     | `development` \| `preview` \| `production`               |
+
+> The Supabase anon key is designed to ship in client bundles and is protected by row-level security,
+> not by secrecy. Never place server secrets (service-role keys, DB creds) in `EXPO_PUBLIC_*` vars.
+
+## 🔐 Authentication
+
+Email/password works out of the box. **Google OAuth** needs one-time dashboard setup:
+
+1. **Google Cloud** → create OAuth credentials → add redirect
+   `https://<your-project>.supabase.co/auth/v1/callback`.
+2. **Supabase → Authentication → Providers → Google** → enable + paste Client ID/Secret.
+3. **Supabase → Authentication → URL Configuration → Redirect URLs** → add `app://auth-callback`.
+4. Run it in a **development build** (the `app://` deep link doesn't work in Expo Go).
+
+## 📂 Project structure
 
 ```
 src/
-├── app/                    # Expo Router routes — files here are screens/URLs
-│   ├── _layout.tsx         # Root layout: providers (React Query, gestures, theme) + auth hydration
-│   ├── (tabs)/             # Bottom-tab group, mirrors the website nav
-│   │   ├── _layout.tsx     #   Tab bar config
-│   │   ├── index.tsx       #   Home
-│   │   └── tours / rentals / umrah / shop / guides
-│   ├── (auth)/             # Auth flow (sign-in / sign-up), presented as a modal
-│   ├── hotels/[id].tsx     # Hotel detail (dynamic route) — fully wired example
-│   ├── tours/[id].tsx      # Tour detail (stub)
-│   ├── trip-planner.tsx    # AI Trip Planner (stub)
-│   ├── search.tsx          # Search (stub)
-│   └── +not-found.tsx
-│
-├── api/                    # Networking layer
-│   ├── client.ts           #   Axios instance + auth + error normalization
-│   └── endpoints.ts        #   All API paths in one place
-│
+├── app/                    # Expo Router routes — files here ARE screens/URLs
+│   ├── _layout.tsx         #   Root layout: providers + auth hydration
+│   ├── (tabs)/             #   Bottom-tab group (mirrors website nav)
+│   ├── (auth)/             #   Sign in / up / reset (branded hero)
+│   ├── hotels/ · rentals/ · tours/ · umrah/ · guides/ · shop/   # detail + booking
+│   ├── profile.tsx         #   Account hub
+│   ├── profile-settings · wishlist · my-bookings · my-rental-bookings
+│   └── my-properties · manage-rental-properties
+├── api/                    # Axios client + centralized endpoints
 ├── components/
-│   ├── ui/                 # Design-system primitives: Button, Card, Input, Badge
-│   └── layout/             # Screen, ComingSoon, and other layout helpers
-│
-├── features/               # Feature modules (one folder per marketplace vertical)
-│   ├── hotels/             #   Reference implementation — copy this shape:
-│   │   ├── types.ts        #     domain models
-│   │   ├── api.ts          #     endpoint calls
-│   │   ├── hooks.ts        #     React Query hooks
-│   │   ├── components/     #     feature UI (HotelCard)
-│   │   └── index.ts        #     public exports
-│   └── auth / tours / rentals / umrah / guides / shop / booking / profile / trip-planner
-│
-├── store/                  # Zustand stores (auth.store.ts)
-├── lib/                    # Cross-cutting infra: query-client, storage
-├── config/                 # Typed env access (env.ts)
-├── constants/              # App config, categories, theme tokens
-├── hooks/                  # Shared hooks
-├── types/                  # Shared domain types
-└── utils/                  # Pure helpers (formatting, etc.)
+│   ├── ui/                 #   Design-system primitives (Button, Card, Input, Badge, motion…)
+│   ├── layout/             #   Screen, EmptyState, SignInGate, ComingSoon
+│   └── WishlistButton.tsx
+├── features/               # One folder per domain (hotels, rentals, tours, umrah,
+│   │                       #   guides, shop, auth, bookings, reviews, profile, assistant)
+│   └── <vertical>/         #   types · api · hooks · components · index
+├── store/                  # Zustand stores (auth, theme, wishlist)
+├── lib/                    # supabase client, query-client, storage
+├── config/                 # Typed env access
+├── constants/ · hooks/ · types/ · utils/
 ```
 
-Path alias `@/*` maps to `src/*` (and `@/assets/*` to `assets/*`).
+Path alias `@/*` → `src/*` (and `@/assets/*` → `assets/*`).
 
-## Conventions
+## 🏭 Building & releasing (EAS)
 
-- **Adding a screen:** create a file under `src/app/`. The path *is* the URL.
-  Route types are generated automatically (`typedRoutes` is on).
-- **Adding a vertical:** copy `src/features/hotels/` and swap the endpoints/types.
-  Keep API calls in `api.ts`, data hooks in `hooks.ts`, and register query keys in
-  `src/lib/query-client.ts`.
-- **Styling:** use Tailwind classes via `className`. Brand colors are `brand-*`
-  (primary blue) and `accent-*` (warm) — see `tailwind.config.js`.
-- **Data fetching:** always go through React Query hooks; never call Axios from a
-  component directly.
-- **Secrets:** never commit `.env`. Only `EXPO_PUBLIC_*` vars reach the client.
-
-## Building & Releasing (EAS)
-
-Build profiles are defined in `eas.json` (`development`, `preview`, `production`).
+Profiles are defined in [`eas.json`](eas.json). Env vars for **bundled** builds (preview/production)
+live there too, since those builds compile the JS in the cloud without your local `.env`.
 
 ```bash
 npm i -g eas-cli
 eas login
+
+# Development client (loads JS from your Metro server; needed for Google OAuth)
 eas build --profile development --platform android
+
+# Installable release APK (sideload to test)
+eas build --profile preview --platform android
+
+# Store-ready production build (.aab for Play Store / .ipa for App Store)
 eas build --profile production --platform all
-eas submit --profile production
+eas submit  --profile production --platform android
 ```
 
-## Backend
+After a dev build installs, run `npx expo start --dev-client -c` and open it on your device.
 
-The app uses **two backends**, sharing the same infrastructure as the website:
+## ✅ Quality gates
 
-- **REST API (read-only)** — catalog/content data (hotels, tours, rentals, umrah
-  packages, guides, shop products, reviews) is fetched from `EXPO_PUBLIC_API_URL`
-  (default `https://www.gripontrip.com/api`). Paths are centralized in
-  `src/api/endpoints.ts` and consumed through the Axios client in
-  `src/api/client.ts`. This layer is read-only.
-- **Supabase (auth + writes)** — authentication and all user writes (bookings,
-  reviews) go to Supabase, the same project the web app uses. Configured via
-  `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY`. The anon key is
-  public/client-safe and guarded by row-level security; writes are authorized by
-  the signed-in user's session.
+```bash
+npm run typecheck   # tsc --noEmit
+npm run lint        # eslint (expo config)
+```
 
-> Note: there is no dedicated Umrah endpoint — umrah packages are surfaced as
-> `[UMRAH]`-prefixed entries in the tours agencies feed.
+Both must pass before a change is considered done.
 
-Types under `src/features/*/types.ts` are the current working contract — align
-them with the real API/table responses as they firm up.
+## 🗺️ Roadmap
+
+- [ ] Booking & review **writes** to Supabase (reads are wired; submission is stubbed)
+- [ ] Push notifications for booking status changes
+- [ ] Build out tours / umrah / guides / shop to hotel-level depth
+- [ ] Server-backed wishlist sync across devices
+- [ ] Screenshot gallery + store listing assets
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for conventions (feature-module pattern, routing, styling) and
+the pre-flight checklist. In short: keep API calls in `api.ts`, data in React Query hooks, and styling
+in Tailwind `className`s — and make sure `typecheck` + `lint` pass.
+
+## 📄 License
+
+© Grip On Trip. All rights reserved. This is proprietary software for the gripontrip.com platform and is
+not licensed for redistribution.
+
+<div align="center">
+<sub>Built with Expo · React Native · Supabase</sub>
+</div>
