@@ -49,7 +49,12 @@ export default function RootLayout() {
               <Stack.Screen name="umrah/[id]" options={{ headerShown: true, title: 'Umrah Package' }} />
               <Stack.Screen name="guides/[id]" options={{ headerShown: true, title: 'Guide' }} />
               <Stack.Screen name="profile" options={{ headerShown: true, title: 'Profile' }} />
+              <Stack.Screen name="profile-settings" options={{ headerShown: true, title: 'Profile settings' }} />
+              <Stack.Screen name="wishlist" options={{ headerShown: true, title: 'My Wishlist' }} />
               <Stack.Screen name="my-bookings" options={{ headerShown: true, title: 'My Bookings' }} />
+              <Stack.Screen name="my-rental-bookings" options={{ headerShown: true, title: 'My Rental Bookings' }} />
+              <Stack.Screen name="my-properties" options={{ headerShown: true, title: 'My Properties' }} />
+              <Stack.Screen name="manage-rental-properties" options={{ headerShown: true, title: 'Manage Rental Properties' }} />
             </Stack>
             <AssistantWidget />
             <StatusBar style="auto" />

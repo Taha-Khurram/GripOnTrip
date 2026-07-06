@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Badge, Button, DetailSkeleton, Gallery } from '@/components/ui';
+import { WishlistButton } from '@/components/WishlistButton';
 import { useHotel, useHotelReviews, useHotelRooms, type Room } from '@/features/hotels';
 import { RoomCard } from '@/features/hotels/components/RoomCard';
 import { ReviewsSection } from '@/features/reviews';
@@ -69,7 +70,20 @@ export default function HotelDetailScreen() {
               <Text className="flex-1 text-2xl font-bold text-neutral-900 dark:text-white">
                 {hotel.title}
               </Text>
-              {hotel.directBooking ? <Badge label="0% commission" tone="success" /> : null}
+              <View className="flex-row items-center gap-3">
+                <WishlistButton
+                  item={{
+                    id: hotel.id,
+                    category: 'hotels',
+                    title: hotel.title,
+                    imageUrl: hotel.images[0]?.url,
+                    subtitle: hotel.location?.city ?? hotel.location?.address,
+                    price: hotel.price.amount,
+                    currency: hotel.price.currency,
+                  }}
+                />
+                {hotel.directBooking ? <Badge label="0% commission" tone="success" /> : null}
+              </View>
             </View>
             <View className="flex-row flex-wrap items-center gap-x-2">
               {hotel.rating != null ? (

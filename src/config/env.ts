@@ -2,33 +2,46 @@
  * Centralized, typed access to runtime environment variables.
  *
  * In Expo, only variables prefixed with `EXPO_PUBLIC_` are inlined into the
- * client bundle. Define them in `.env` (see `.env.example`). Never put secrets
- * here — anything shipped to the client is readable by end users.
+ * client bundle at build time. Define them in `.env` (copy from `.env.example`).
+ * Nothing here is hardcoded — every value comes from the environment so the app
+ * can be pointed at different backends per build without code changes. Never put
+ * real secrets in these vars; anything shipped to the client is readable by users
+ * (the Supabase anon key is public/client-safe and guarded by row-level security).
  */
 import Constants from 'expo-constants';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://www.gripontrip.com/api';
+/**
+ * Read a required `EXPO_PUBLIC_*` var, failing loudly (with a fix hint) when it
+ * is missing so misconfiguration surfaces immediately instead of as a confusing
+ * runtime error deep in the networking/auth layer.
+ */
+function requireEnv(name: string, value: string | undefined): string {
+  const trimmed = value?.trim();
+  if (!trimmed) {
+    throw new Error(
+      `[env] Missing ${name}. Copy .env.example to .env and set it, then restart ` +
+        `the dev server with a cleared cache (\`npx expo start -c\`).`,
+    );
+  }
+  return trimmed;
+}
 
-// The web app talks to this Supabase project directly for auth + bookings. The
-// anon key is a public, client-safe key (role: anon) — it is designed to ship in
-// client bundles and is protected by row-level security, not by secrecy.
-const SUPABASE_URL =
-  process.env.EXPO_PUBLIC_SUPABASE_URL ?? 'https://ivkorsriknpkrdnmmgwg.supabase.co';
-const SUPABASE_ANON_KEY =
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2a29yc3Jpa25wa3Jkbm1tZ3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4NTk5NTUsImV4cCI6MjA1MjQzNTk1NX0.NQQr9a97XmCSBN3JXoqboKbFJ2tD10mr_cv66DEjHGU';
+const ENVIRONMENT = process.env.EXPO_PUBLIC_ENV ?? 'development';
 
 export const env = {
   /** Base URL of the Grip On Trip REST API (read endpoints). */
-  apiUrl: API_URL,
+  apiUrl: requireEnv('EXPO_PUBLIC_API_URL', process.env.EXPO_PUBLIC_API_URL),
   /** Public website (used for deep links / web fallbacks). */
-  webUrl: process.env.EXPO_PUBLIC_WEB_URL ?? 'https://www.gripontrip.com',
-  /** Supabase project — used for auth + booking/review writes (same as web). */
-  supabaseUrl: SUPABASE_URL,
-  supabaseAnonKey: SUPABASE_ANON_KEY,
+  webUrl: requireEnv('EXPO_PUBLIC_WEB_URL', process.env.EXPO_PUBLIC_WEB_URL),
+  /** Supabase project — auth + booking/review writes (same project as the web). */
+  supabaseUrl: requireEnv('EXPO_PUBLIC_SUPABASE_URL', process.env.EXPO_PUBLIC_SUPABASE_URL),
+  supabaseAnonKey: requireEnv(
+    'EXPO_PUBLIC_SUPABASE_ANON_KEY',
+    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+  ),
   /** Current release channel / environment. */
-  env: process.env.EXPO_PUBLIC_ENV ?? 'development',
+  env: ENVIRONMENT,
   /** App version pulled from app.json. */
   appVersion: Constants.expoConfig?.version ?? '0.0.0',
-  isProduction: process.env.EXPO_PUBLIC_ENV === 'production',
+  isProduction: ENVIRONMENT === 'production',
 } as const;

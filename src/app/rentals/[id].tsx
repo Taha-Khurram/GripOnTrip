@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Linking, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { Badge, Button, DateField, DetailSkeleton, Gallery } from '@/components/ui';
+import { WishlistButton } from '@/components/WishlistButton';
 import { useRequireAuth } from '@/features/auth';
 import { useCreateRentalBooking } from '@/features/bookings';
 import { useRental } from '@/features/rentals';
@@ -80,7 +81,20 @@ export default function RentalDetailScreen() {
         <View className="gap-4 p-5">
           <View className="flex-row items-start justify-between gap-3">
             <Text className="flex-1 text-2xl font-bold text-neutral-900 dark:text-white">{rental.title}</Text>
-            <Badge label={rental.propertyType} tone="neutral" />
+            <View className="flex-row items-center gap-3">
+              <WishlistButton
+                item={{
+                  id: rental.id,
+                  category: 'rentals',
+                  title: rental.title,
+                  imageUrl: rental.images[0]?.url,
+                  subtitle: rental.location?.city,
+                  price: rental.price.amount,
+                  currency: rental.price.currency,
+                }}
+              />
+              <Badge label={rental.propertyType} tone="neutral" />
+            </View>
           </View>
 
           <Text className="text-neutral-500">

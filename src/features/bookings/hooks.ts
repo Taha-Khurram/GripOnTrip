@@ -26,12 +26,12 @@ export function useCreateGuideBooking() {
   return useMutation({ mutationFn: createGuideBooking });
 }
 
-/** The signed-in user's bookings. Disabled while logged out. */
+/** The signed-in user's hotel bookings. Disabled while logged out. */
 export function useMyBookings() {
   const userId = useAuthStore((s) => s.user?.id);
   return useQuery({
     queryKey: queryKeys.bookings.mine(userId),
-    queryFn: fetchMyBookings,
+    queryFn: () => fetchMyBookings(userId!),
     enabled: Boolean(userId),
   });
 }

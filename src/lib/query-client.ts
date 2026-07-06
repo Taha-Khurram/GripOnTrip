@@ -33,6 +33,12 @@ export const queryKeys = {
   bookings: {
     mine: (userId?: string) => ['bookings', 'mine', userId] as const,
   },
+  profile: {
+    detail: (userId?: string) => ['profile', 'detail', userId] as const,
+    rentalBookings: (userId?: string) => ['profile', 'rental-bookings', userId] as const,
+    properties: (userId?: string) => ['profile', 'properties', userId] as const,
+    rentalProperties: (userId?: string) => ['profile', 'rental-properties', userId] as const,
+  },
   tours: {
     all: ['tours'] as const,
     list: (params?: object) => ['tours', 'list', params] as const,

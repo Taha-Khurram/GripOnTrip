@@ -1,12 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Ionicons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 
-import { Button, Input } from '@/components/ui';
-import { Screen } from '@/components/layout/Screen';
-import { SocialAuthButtons, signInWithEmail, signInSchema, type SignInInput } from '@/features/auth';
+import { Animated, Button, Card, Input, enterUp } from '@/components/ui';
+import { AuthHeader, SocialAuthButtons, signInWithEmail, signInSchema, type SignInInput } from '@/features/auth';
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -31,61 +31,72 @@ export default function SignInScreen() {
   };
 
   return (
-    <Screen className="justify-center px-6">
-      <Text className="mb-6 text-2xl font-bold text-neutral-900 dark:text-white">Welcome back</Text>
+    <KeyboardAvoidingView
+      className="flex-1 bg-neutral-50 dark:bg-black"
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView contentContainerClassName="pb-10" keyboardShouldPersistTaps="handled">
+        <AuthHeader title="Welcome back" subtitle="Sign in to book stays, manage trips, and keep your wishlist." />
 
-      <View className="gap-4">
-        {formError ? (
-          <View className="rounded-xl bg-red-50 px-4 py-3 dark:bg-red-950">
-            <Text className="text-sm text-danger">{formError}</Text>
-          </View>
-        ) : null}
+        <Animated.View entering={enterUp(1)} className="-mt-8 px-5">
+          <Card className="gap-4 p-5">
+            {formError ? (
+              <View className="flex-row items-center gap-2 rounded-xl bg-red-50 px-4 py-3 dark:bg-red-950">
+                <Ionicons name="alert-circle" size={18} color="#dc2626" />
+                <Text className="flex-1 text-sm text-danger">{formError}</Text>
+              </View>
+            ) : null}
 
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              label="Email"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              value={value}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              error={errors.email?.message}
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Email"
+                  placeholder="you@example.com"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  keyboardType="email-address"
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  error={errors.email?.message}
+                />
+              )}
             />
-          )}
-        />
-        <Controller
-          control={control}
-          name="password"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              label="Password"
-              secureTextEntry
-              value={value}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              error={errors.password?.message}
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Password"
+                  placeholder="••••••••"
+                  secureTextEntry
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  error={errors.password?.message}
+                />
+              )}
             />
-          )}
-        />
 
-        <Link href="/(auth)/forgot-password" className="self-end text-sm font-semibold text-brand-600">
-          Forgot password?
-        </Link>
+            <Link href="/(auth)/forgot-password" className="self-end text-sm font-semibold text-brand-600">
+              Forgot password?
+            </Link>
 
-        <Button label="Sign In" loading={isSubmitting} onPress={handleSubmit(onSubmit)} fullWidth />
+            <Button label="Sign In" loading={isSubmitting} onPress={handleSubmit(onSubmit)} fullWidth />
 
-        <SocialAuthButtons onError={setFormError} />
+            <SocialAuthButtons onError={setFormError} />
+          </Card>
+        </Animated.View>
 
-        <View className="flex-row justify-center gap-1">
-          <Text className="text-neutral-500">New here?</Text>
+        <View className="mt-6 flex-row justify-center gap-1">
+          <Text className="text-neutral-500">New to Grip On Trip?</Text>
           <Link href="/(auth)/sign-up" className="font-semibold text-brand-600">
             Create an account
           </Link>
         </View>
-      </View>
-    </Screen>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
