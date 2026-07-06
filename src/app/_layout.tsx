@@ -4,9 +4,15 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import '@/global.css';
+
+// Reanimated 4's strict mode emits noisy warnings (including from library
+// internals) even when app code accesses shared values correctly. Keep real
+// warnings/errors, but disable the over-eager strict checks.
+configureReanimatedLogger({ level: ReanimatedLogLevel.warn, strict: false });
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AssistantWidget } from '@/features/assistant';
