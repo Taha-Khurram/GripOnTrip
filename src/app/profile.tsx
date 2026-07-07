@@ -7,10 +7,14 @@ import { Animated, Button, PressableScale, ThemeToggle, enterUp } from '@/compon
 import { Screen } from '@/components/layout/Screen';
 import { useAuthStore } from '@/store/auth.store';
 
-/** Small uppercase section heading, aligned to the screen gutter. */
+// The app's brand mark (same asset the auth header uses). Relative path so
+// Metro's asset plugin resolves it; swap this file to update every logo at once.
+const logo = require('../../assets/images/icon.png');
+
+/** Small uppercase section heading, centered above its group. */
 function SectionLabel({ children }: { children: string }) {
   return (
-    <Text className="px-5 pb-2 pt-6 text-xs font-semibold uppercase tracking-wider text-neutral-400">
+    <Text className="px-5 pb-2 pt-6 text-center text-xs font-semibold uppercase tracking-wider text-neutral-400">
       {children}
     </Text>
   );
@@ -48,23 +52,29 @@ function Row({
 }) {
   return (
     <Link href={href as never} asChild>
-      <PressableScale
-        activeScale={0.985}
-        className={[
-          'flex-row items-center gap-3 px-4 py-3.5',
-          last ? '' : 'border-b border-neutral-100 dark:border-neutral-800',
-        ].join(' ')}
-      >
+      {/* Layout lives on the inner View: NativeWind's className→style interop
+          is dropped when Link/asChild clones the reanimated PressableScale, so
+          the flex-row row would otherwise collapse to a vertical stack. */}
+      <PressableScale activeScale={0.985} accessibilityRole="button">
         <View
           className={[
-            'h-9 w-9 items-center justify-center rounded-xl',
-            tone === 'accent' ? 'bg-accent-50 dark:bg-accent-500/15' : 'bg-brand-50 dark:bg-brand-500/15',
+            'flex-row items-center gap-3 px-4 py-3.5',
+            last ? '' : 'border-b border-neutral-100 dark:border-neutral-800',
           ].join(' ')}
         >
-          <Ionicons name={icon} size={18} color={ICON_TINT[tone]} />
+          <View
+            className={[
+              'h-9 w-9 items-center justify-center rounded-xl',
+              tone === 'accent' ? 'bg-accent-50 dark:bg-accent-500/15' : 'bg-brand-50 dark:bg-brand-500/15',
+            ].join(' ')}
+          >
+            <Ionicons name={icon} size={18} color={ICON_TINT[tone]} />
+          </View>
+          <Text className="flex-1 text-[15px] font-medium text-neutral-900 dark:text-white">
+            {label}
+          </Text>
+          <Ionicons name="chevron-forward" size={18} color="#9ca3af" />
         </View>
-        <Text className="flex-1 text-[15px] text-neutral-900 dark:text-white">{label}</Text>
-        <Ionicons name="chevron-forward" size={18} color="#9ca3af" />
       </PressableScale>
     </Link>
   );
@@ -80,24 +90,34 @@ export default function ProfileScreen() {
         <Stack.Screen options={{ title: 'Profile' }} />
         <ScrollView contentContainerClassName="pb-12">
           {/* Sign-in prompt */}
-          <Animated.View entering={enterUp(0)} className="items-center gap-3 px-8 pb-2 pt-10">
-            <View className="h-20 w-20 items-center justify-center rounded-3xl bg-brand-50 dark:bg-brand-500/15">
-              <Ionicons name="person-outline" size={34} color="#219ebc" />
+          <Animated.View entering={enterUp(0)} className="items-center gap-2 px-8 pt-12">
+            {/* Brand badge is a self-contained circular logo — show it clean,
+                no tile, so its own artwork/border reads properly. */}
+            <View className="h-28 w-28 items-center justify-center">
+              <Image source={logo} style={{ width: 112, height: 112 }} contentFit="contain" />
             </View>
-            <Text className="text-center text-xl font-bold text-neutral-900 dark:text-white">
+            <Text className="text-center text-2xl font-bold text-neutral-900 dark:text-white">
               Sign in to Grip On Trip
             </Text>
             <Text className="text-center text-sm leading-5 text-neutral-500">
               Sign in to book stays, manage trips, save a wishlist, and leave reviews.
             </Text>
           </Animated.View>
-          <View className="px-5 pt-4">
-            <Button label="Sign in" fullWidth onPress={() => router.push('/(auth)/sign-in')} />
-          </View>
+
+          {/* Full-width primary CTA. Chrome lives on an inner View (not on the
+              PressableScale) so NativeWind's className→style interop is reliable
+              — a className on the animated pressable itself can be dropped. */}
+          <Animated.View entering={enterUp(1)} className="px-8 pt-6">
+            <PressableScale accessibilityRole="button" onPress={() => router.push('/(auth)/sign-in')}>
+              <View className="items-center justify-center rounded-xl bg-brand-500 py-4 shadow-sm shadow-brand-500/30">
+                <Text className="text-base font-semibold text-white">Sign in</Text>
+              </View>
+            </PressableScale>
+          </Animated.View>
 
           {/* Explore (no account required) */}
           <SectionLabel>Explore</SectionLabel>
-          <Group index={1}>
+          <Group index={2}>
             <Row icon="search-outline" label="Search" href="/search" />
             <Row icon="sparkles-outline" label="AI Trip Planner" href="/trip-planner" tone="accent" last />
           </Group>

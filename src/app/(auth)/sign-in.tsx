@@ -3,10 +3,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 
-import { Animated, Button, Card, Input, enterUp } from '@/components/ui';
-import { AuthHeader, SocialAuthButtons, signInWithEmail, signInSchema, type SignInInput } from '@/features/auth';
+import { Animated, Card, Input, PressableScale, enterUp } from '@/components/ui';
+import { AuthHeader, signInWithEmail, signInSchema, type SignInInput } from '@/features/auth';
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -80,18 +80,42 @@ export default function SignInScreen() {
               )}
             />
 
-            <Link href="/(auth)/forgot-password" className="self-end text-sm font-semibold text-brand-600">
+            <Link
+              href="/(auth)/forgot-password"
+              className="self-end text-sm font-semibold text-brand-600 dark:text-brand-300"
+            >
               Forgot password?
             </Link>
 
-            <Button label="Sign In" loading={isSubmitting} onPress={handleSubmit(onSubmit)} fullWidth />
+            {/* Sign-in CTA — chrome lives on an inner View so NativeWind's
+                className→style interop is reliable on the animated pressable
+                (matches the Profile screen's button). */}
+            <PressableScale
+              accessibilityRole="button"
+              disabled={isSubmitting}
+              onPress={handleSubmit(onSubmit)}
+            >
+              <View
+                className={[
+                  'flex-row items-center justify-center rounded-xl bg-brand-500 py-4 shadow-sm shadow-brand-500/30',
+                  isSubmitting ? 'opacity-70' : '',
+                ].join(' ')}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-base font-semibold text-white">Sign In</Text>
+                )}
+              </View>
+            </PressableScale>
 
-            <SocialAuthButtons onError={setFormError} />
+            {/* Social sign-in temporarily disabled.
+            <SocialAuthButtons onError={setFormError} /> */}
           </Card>
         </Animated.View>
 
         <View className="mt-6 flex-row justify-center gap-1">
-          <Text className="text-neutral-500">New to Grip On Trip?</Text>
+          <Text className="text-neutral-600 dark:text-neutral-300">New to Grip On Trip?</Text>
           <Link href="/(auth)/sign-up" className="font-semibold text-brand-600">
             Create an account
           </Link>

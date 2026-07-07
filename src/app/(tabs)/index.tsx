@@ -1,11 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { Link, useRouter } from 'expo-router';
 import { ScrollView, Text, View } from 'react-native';
 
 import { Animated, Card, enterUp, PressableScale } from '@/components/ui';
 import { APP_NAME, APP_TAGLINE, CATEGORIES } from '@/constants/config';
-import { CATEGORY_ICON, icons8 } from '@/utils/icons8';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -24,13 +22,19 @@ export default function HomeScreen() {
         <Text className="text-sm font-medium tracking-wide text-brand-50">{APP_NAME}</Text>
         <Text className="mt-1.5 text-3xl font-bold leading-tight text-white">{APP_TAGLINE}</Text>
 
+        <Text className="mt-5 text-[15px] font-medium text-brand-50">
+          Where do you want to go?
+        </Text>
+
         <PressableScale
           onPress={() => router.push('/search')}
           activeScale={0.98}
-          className="mt-6 flex-row items-center gap-3 rounded-2xl bg-white px-4 py-3.5 shadow-sm shadow-black/10"
+          className="mt-2.5 flex-row items-center gap-3 rounded-2xl bg-white px-4 py-4 shadow-lg shadow-brand-900/30"
         >
           <Ionicons name="search" size={18} color="#219ebc" />
-          <Text className="text-[15px] text-neutral-400">Where do you want to go?</Text>
+          <Text className="text-[15px] font-medium text-neutral-500">
+            Search hotels, tours, rentals…
+          </Text>
         </PressableScale>
       </Animated.View>
 
@@ -38,18 +42,18 @@ export default function HomeScreen() {
       <Animated.View entering={enterUp(1)} className="mx-5 -mt-5">
         <Link href="/trip-planner" asChild>
           <PressableScale>
-            <Card className="flex-row items-center gap-3 border-0 bg-accent-500 shadow-md shadow-accent-500/25">
-              <View className="h-11 w-11 items-center justify-center rounded-2xl bg-white/20">
+            <View className="flex-row items-center gap-3 rounded-2xl bg-accent-500 p-4 shadow-lg shadow-accent-500/40">
+              <View className="h-11 w-11 items-center justify-center rounded-2xl bg-white/25">
                 <Ionicons name="sparkles" size={22} color="#fff" />
               </View>
               <View className="flex-1">
                 <Text className="text-base font-bold text-white">AI Trip Planner</Text>
-                <Text className="text-[13px] text-accent-50">
+                <Text className="text-[13px] font-medium text-white/90">
                   Build a personalized itinerary in seconds.
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#fff" />
-            </Card>
+            </View>
           </PressableScale>
         </Link>
       </Animated.View>
@@ -63,23 +67,13 @@ export default function HomeScreen() {
       </Animated.Text>
       <View className="flex-row flex-wrap gap-3 px-5">
         {CATEGORIES.map((cat, i) => {
-          const icon = CATEGORY_ICON[cat.key];
           return (
             <Animated.View key={cat.key} entering={enterUp(3 + i)} className="w-[47%]">
               <Link href={cat.route as never} asChild>
                 <PressableScale>
                   <Card className="gap-2.5">
                     <View className="h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 dark:bg-brand-500/15">
-                      {icon ? (
-                        <Image
-                          source={{ uri: icons8(icon.name, icon.style) }}
-                          style={{ width: 34, height: 34 }}
-                          contentFit="contain"
-                          transition={200}
-                        />
-                      ) : (
-                        <Ionicons name={cat.icon as never} size={22} color="#219ebc" />
-                      )}
+                      <Ionicons name={cat.icon as never} size={24} color="#219ebc" />
                     </View>
                     <Text className="text-base font-semibold text-neutral-900 dark:text-white">
                       {cat.label}

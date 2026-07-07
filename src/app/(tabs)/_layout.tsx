@@ -28,7 +28,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => <Ionicons name="compass-outline" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="map-outline" color={color} size={size} />,
           headerRight: () => <ProfileButton />,
         }}
       />
@@ -36,7 +36,7 @@ export default function TabsLayout() {
         name="tours"
         options={{
           title: 'Tours',
-          tabBarIcon: ({ color, size }) => <Ionicons name="map-outline" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="bus-outline" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
@@ -57,14 +57,14 @@ export default function TabsLayout() {
         name="shop"
         options={{
           title: 'Shop',
-          tabBarIcon: ({ color, size }) => <Ionicons name="bag-handle-outline" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="bag-outline" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="guides"
         options={{
           title: 'Guides',
-          tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="compass-outline" color={color} size={size} />,
         }}
       />
     </Tabs>

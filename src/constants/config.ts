@@ -21,7 +21,7 @@ export const CATEGORIES: CategoryMeta[] = [
   {
     key: 'hotels',
     label: 'Hotels & Stays',
-    icon: 'bed-outline',
+    icon: 'business-outline',
     description: 'Luxury accommodations with direct owner access.',
     route: '/hotels',
   },
@@ -35,7 +35,7 @@ export const CATEGORIES: CategoryMeta[] = [
   {
     key: 'tours',
     label: 'Guided Tours',
-    icon: 'map-outline',
+    icon: 'bus-outline',
     description: 'Expert-curated travel experiences.',
     route: '/(tabs)/tours',
   },
@@ -49,14 +49,14 @@ export const CATEGORIES: CategoryMeta[] = [
   {
     key: 'guides',
     label: 'Verified Guides',
-    icon: 'people-outline',
+    icon: 'compass-outline',
     description: 'Local experts for cultural & hiking experiences.',
     route: '/(tabs)/guides',
   },
   {
     key: 'shop',
     label: 'Marketplace',
-    icon: 'bag-handle-outline',
+    icon: 'bag-outline',
     description: 'Travel gear and local products.',
     route: '/(tabs)/shop',
   },

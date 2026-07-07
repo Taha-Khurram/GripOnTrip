@@ -47,7 +47,7 @@ export function AuthHeader({ title, subtitle }: { title: string; subtitle?: stri
         <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-lg shadow-black/25">
           <Image source={logo} style={{ width: 46, height: 46, borderRadius: 12 }} contentFit="contain" />
         </View>
-        <Text className="text-2xl font-extrabold tracking-tight text-white">{title}</Text>
+        <Text className="text-center text-2xl font-extrabold tracking-tight text-white">{title}</Text>
         {subtitle ? (
           <Text className="max-w-[280px] text-center text-sm leading-5 text-white/80">{subtitle}</Text>
         ) : null}
