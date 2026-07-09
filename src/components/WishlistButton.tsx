@@ -30,7 +30,7 @@ export function WishlistButton({ item, size = 22, chip = false }: WishlistButton
       <Ionicons
         name={saved ? 'heart' : 'heart-outline'}
         size={size}
-        color={saved ? '#ef4444' : chip ? '#fff' : '#9ca3af'}
+        color={saved ? '#ef4444' : chip ? '#fff' : '#9aa7ac'}
       />
     </Pressable>
   );

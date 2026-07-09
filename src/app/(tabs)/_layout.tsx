@@ -1,14 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Pressable, View } from 'react-native';
 
-const TINT = '#219ebc';
+const TINT = '#1a7a8c';
 
 function ProfileButton() {
   return (
     <Link href="/profile" asChild>
       <Pressable accessibilityLabel="Profile" hitSlop={8} style={{ marginRight: 16 }}>
-        <Ionicons name="person-circle-outline" size={26} color={TINT} />
+        <View className="h-9 w-9 items-center justify-center rounded-full bg-brand-50 border border-hairline">
+          <Ionicons name="person-outline" size={18} color={TINT} />
+        </View>
       </Pressable>
     </Link>
   );
@@ -19,9 +21,19 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: TINT,
-        tabBarInactiveTintColor: '#9ca3af',
+        tabBarInactiveTintColor: '#9aa7ac',
         headerShown: true,
-        headerTitleStyle: { fontWeight: '700' },
+        headerStyle: { backgroundColor: '#f5efe4' },
+        headerShadowVisible: false,
+        headerTitleStyle: { fontFamily: 'Outfit_700Bold', fontSize: 20, color: '#0c2b36' },
+        tabBarStyle: {
+          backgroundColor: '#ffffff',
+          borderTopColor: '#e6dcc8',
+          height: 62,
+          paddingTop: 6,
+          paddingBottom: 8,
+        },
+        tabBarLabelStyle: { fontFamily: 'Figtree_500Medium', fontSize: 11 },
       }}
     >
       <Tabs.Screen

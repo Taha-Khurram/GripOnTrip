@@ -28,8 +28,8 @@ export function AmenityGrid({ amenities }: { amenities: string[] }) {
     <View className="flex-row flex-wrap">
       {amenities.map((a) => (
         <View key={a} className="w-1/2 flex-row items-center gap-2 py-1.5">
-          <Ionicons name={amenityIcon(a)} size={18} color="#219ebc" />
-          <Text className="flex-1 text-sm text-neutral-700 dark:text-neutral-300" numberOfLines={1}>
+          <Ionicons name={amenityIcon(a)} size={18} color="#1a7a8c" />
+          <Text className="flex-1 text-sm text-muted" numberOfLines={1}>
             {a}
           </Text>
         </View>

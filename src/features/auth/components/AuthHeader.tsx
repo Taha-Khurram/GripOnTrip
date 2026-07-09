@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Animated, enterUp } from '@/components/ui';
+import { Animated, enterUp, OceanHero } from '@/components/ui';
 
 // Relative path (not the @/ alias): assets are resolved by Metro's asset plugin
 // and this avoids relying on tsconfig-path resolution for a non-JS require.
@@ -20,14 +20,14 @@ export function AuthHeader({ title, subtitle }: { title: string; subtitle?: stri
   const insets = useSafeAreaInsets();
 
   return (
-    <View
-      className="overflow-hidden rounded-b-[36px] bg-brand-600 px-6 pb-12 dark:bg-brand-800"
+    <OceanHero
+      className="rounded-b-[36px] px-6 pb-14"
       style={{ paddingTop: insets.top + 8 }}
     >
-      {/* Decorative orbs for depth (no gradient lib needed). */}
+      {/* Soft bokeh orbs for depth over the gradient. */}
       <View className="absolute -right-12 -top-10 h-48 w-48 rounded-full bg-white/10" />
-      <View className="absolute -bottom-16 -left-12 h-44 w-44 rounded-full bg-brand-800/30 dark:bg-black/20" />
-      <View className="absolute right-10 bottom-6 h-16 w-16 rounded-full bg-accent-500/20" />
+      <View className="absolute -bottom-16 -left-12 h-44 w-44 rounded-full bg-black/15" />
+      <View className="absolute right-10 bottom-8 h-16 w-16 rounded-full bg-accent-500/25" />
 
       {router.canGoBack() ? (
         <Pressable
@@ -44,14 +44,14 @@ export function AuthHeader({ title, subtitle }: { title: string; subtitle?: stri
       )}
 
       <Animated.View entering={enterUp(0)} className="items-center gap-3">
-        <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-lg shadow-black/25">
+        <View className="h-16 w-16 items-center justify-center rounded-3xl bg-white shadow-glow">
           <Image source={logo} style={{ width: 46, height: 46, borderRadius: 12 }} contentFit="contain" />
         </View>
-        <Text className="text-center text-2xl font-extrabold tracking-tight text-white">{title}</Text>
+        <Text className="text-center font-display-x text-2xl text-white">{title}</Text>
         {subtitle ? (
           <Text className="max-w-[280px] text-center text-sm leading-5 text-white/80">{subtitle}</Text>
         ) : null}
       </Animated.View>
-    </View>
+    </OceanHero>
   );
 }

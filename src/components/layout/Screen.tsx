@@ -9,10 +9,10 @@ interface ScreenProps {
   className?: string;
 }
 
-/** Consistent screen wrapper: safe-area aware, themed background. */
+/** Consistent screen wrapper: safe-area aware, sandy-cream canvas. */
 export function Screen({ children, edges = ['top', 'left', 'right'], className = '' }: ScreenProps) {
   return (
-    <SafeAreaView edges={edges} className="flex-1 bg-neutral-50 dark:bg-black">
+    <SafeAreaView edges={edges} className="flex-1 bg-background">
       <View className={['flex-1', className].join(' ')}>{children}</View>
     </SafeAreaView>
   );

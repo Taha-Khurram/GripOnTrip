@@ -4,13 +4,12 @@ interface CardProps extends ViewProps {
   className?: string;
 }
 
-/** Surface container: rounded corners, hairline border, soft shadow, dark-mode aware. */
+/** Surface container: soft rounded corners, hairline border, ambient shadow. */
 export function Card({ className = '', children, ...rest }: CardProps) {
   return (
     <View
       className={[
-        'rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm shadow-black/5',
-        'dark:border-neutral-800 dark:bg-neutral-900',
+        'rounded-3xl border border-hairline bg-surface p-4 shadow-card',
         className,
       ].join(' ')}
       {...rest}

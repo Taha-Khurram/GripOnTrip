@@ -16,9 +16,9 @@ import { icons8 } from '@/utils/icons8';
 function Fact({ icon, label, value }: { icon: keyof typeof Ionicons.glyphMap; label: string; value: string }) {
   return (
     <View className="flex-1 items-center gap-1 rounded-2xl border border-neutral-100 py-3 dark:border-neutral-800">
-      <Ionicons name={icon} size={20} color="#219ebc" />
-      <Text className="text-base font-bold text-neutral-900 dark:text-white">{value}</Text>
-      <Text className="text-[11px] uppercase tracking-wide text-neutral-400">{label}</Text>
+      <Ionicons name={icon} size={20} color="#1a7a8c" />
+      <Text className="text-base font-bold text-ink">{value}</Text>
+      <Text className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</Text>
     </View>
   );
 }
@@ -47,7 +47,7 @@ export default function GuideDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white dark:bg-black">
+      <View className="flex-1 bg-background">
         <Stack.Screen options={{ title: 'Guide' }} />
         <DetailSkeleton />
       </View>
@@ -56,8 +56,8 @@ export default function GuideDetailScreen() {
 
   if (isError || !guide) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-8 dark:bg-black">
-        <Text className="text-center text-neutral-500">
+      <View className="flex-1 items-center justify-center bg-background px-8">
+        <Text className="text-center text-muted">
           Couldn&apos;t load this guide. Pull back and try again.
         </Text>
       </View>
@@ -92,7 +92,7 @@ export default function GuideDetailScreen() {
     name.trim().length > 1 && /\S+@\S+\.\S+/.test(email) && phone.trim().length >= 6;
 
   return (
-    <ScrollView className="flex-1 bg-white dark:bg-black" contentContainerClassName="pb-8">
+    <ScrollView className="flex-1 bg-background" contentContainerClassName="pb-8">
       <Stack.Screen options={{ title: guide.name }} />
 
       {/* Profile header */}
@@ -111,21 +111,21 @@ export default function GuideDetailScreen() {
         )}
 
         <View className="flex-row items-center gap-2">
-          <Text className="text-2xl font-bold text-neutral-900 dark:text-white">{guide.name}</Text>
+          <Text className="text-2xl font-display text-ink">{guide.name}</Text>
           {guide.isVerified ? <Badge label="Verified" tone="success" /> : null}
         </View>
 
         <View className="flex-row items-center gap-3">
           {guide.city ? (
             <View className="flex-row items-center gap-1">
-              <Ionicons name="location-outline" size={15} color="#9ca3af" />
-              <Text className="text-neutral-500">{guide.city}</Text>
+              <Ionicons name="location-outline" size={15} color="#9aa7ac" />
+              <Text className="text-muted">{guide.city}</Text>
             </View>
           ) : null}
           {guide.reviewCount > 0 || guide.rating > 0 ? (
             <View className="flex-row items-center gap-1">
-              <Ionicons name="star" size={14} color="#ffb703" />
-              <Text className="text-neutral-500">
+              <Ionicons name="star" size={14} color="#f39024" />
+              <Text className="text-muted">
                 {formatRating(guide.rating)} · {guide.reviewCount} review{guide.reviewCount === 1 ? '' : 's'}
               </Text>
             </View>
@@ -151,7 +151,7 @@ export default function GuideDetailScreen() {
 
         {guide.languages.length > 0 ? (
           <View className="gap-2">
-            <Text className="text-sm font-semibold text-neutral-900 dark:text-white">Speaks</Text>
+            <Text className="text-sm font-semibold text-ink">Speaks</Text>
             <View className="flex-row flex-wrap gap-2">
               {guide.languages.map((lang) => (
                 <Badge key={lang} label={lang} tone="neutral" />
@@ -162,8 +162,8 @@ export default function GuideDetailScreen() {
 
         {guide.bio ? (
           <View className="gap-1.5">
-            <Text className="text-sm font-semibold text-neutral-900 dark:text-white">About</Text>
-            <Text className="leading-6 text-neutral-700 dark:text-neutral-300">{guide.bio}</Text>
+            <Text className="text-sm font-semibold text-ink">About</Text>
+            <Text className="leading-6 text-muted">{guide.bio}</Text>
           </View>
         ) : null}
 
@@ -179,7 +179,7 @@ export default function GuideDetailScreen() {
         {/* Booking enquiry */}
         {open ? (
           <View className="gap-3 rounded-2xl border border-neutral-100 p-4 dark:border-neutral-800">
-            <Text className="text-base font-bold text-neutral-900 dark:text-white">Hire this guide</Text>
+            <Text className="text-base font-bold text-ink">Hire this guide</Text>
             <Input label="Name" value={name} onChangeText={setName} />
             <Input
               label="Email"
@@ -194,19 +194,19 @@ export default function GuideDetailScreen() {
               <DateField label="To" value={end} min={new Date(addDays(start, 1))} onChange={setEnd} />
             </View>
             <View className="gap-1.5">
-              <Text className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Message</Text>
+              <Text className="text-sm font-medium text-ink">Message</Text>
               <TextInput
                 placeholder="Where you're headed, group size, questions…"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#9aa7ac"
                 multiline
                 value={message}
                 onChangeText={setMessage}
-                className="min-h-16 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                className="min-h-16 rounded-xl border border-hairline bg-white px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
               />
             </View>
 
-            <View className="flex-row items-center justify-between rounded-xl bg-neutral-50 px-4 py-3 dark:bg-neutral-800/60">
-              <Text className="text-sm text-neutral-600 dark:text-neutral-300">
+            <View className="flex-row items-center justify-between rounded-xl bg-surface-sunk px-4 py-3">
+              <Text className="text-sm text-muted">
                 {formatMoney(guide.price)} × {days} day{days === 1 ? '' : 's'}
               </Text>
               <Text className="text-base font-bold text-brand-600">

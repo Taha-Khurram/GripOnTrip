@@ -9,8 +9,6 @@
 import { colorScheme } from 'nativewind';
 import { create } from 'zustand';
 
-import { storage, StorageKeys } from '@/lib/storage';
-
 export type ThemePreference = 'system' | 'light' | 'dark';
 
 interface ThemeState {
@@ -25,16 +23,15 @@ export const useThemeStore = create<ThemeState>((set) => ({
   preference: 'system',
   isHydrating: true,
 
+  // "Ocean & Sun" ships light-only. We keep the store's shape for compatibility
+  // but always resolve to light so the cream canvas is consistent everywhere.
   hydrate: async () => {
-    const saved = await storage.getJSON<ThemePreference>(StorageKeys.themePreference);
-    const pref = saved ?? 'system';
-    colorScheme.set(pref);
-    set({ preference: pref, isHydrating: false });
+    colorScheme.set('light');
+    set({ preference: 'light', isHydrating: false });
   },
 
-  setPreference: (pref) => {
-    colorScheme.set(pref);
-    void storage.setJSON(StorageKeys.themePreference, pref);
-    set({ preference: pref });
+  setPreference: () => {
+    colorScheme.set('light');
+    set({ preference: 'light' });
   },
 }));

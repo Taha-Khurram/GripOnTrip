@@ -3,7 +3,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef } from 'react';
 import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Badge, Button, DetailSkeleton, Gallery } from '@/components/ui';
+import { Badge, Button, DetailSkeleton, Gallery, PressableScale } from '@/components/ui';
 import { WishlistButton } from '@/components/WishlistButton';
 import { useHotel, useHotelReviews, useHotelRooms, type Room } from '@/features/hotels';
 import { RoomCard } from '@/features/hotels/components/RoomCard';
@@ -12,7 +12,7 @@ import { AmenityGrid } from '@/utils/amenities';
 import { formatMoney, formatRating } from '@/utils/format';
 
 function SectionTitle({ children }: { children: string }) {
-  return <Text className="text-lg font-bold text-neutral-900 dark:text-white">{children}</Text>;
+  return <Text className="font-display text-lg text-ink">{children}</Text>;
 }
 
 export default function HotelDetailScreen() {
@@ -27,8 +27,8 @@ export default function HotelDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white dark:bg-black">
-        <Stack.Screen options={{ title: 'Hotel' }} />
+      <View className="flex-1 bg-white">
+        <Stack.Screen options={{ headerShown: false }} />
         <DetailSkeleton />
       </View>
     );
@@ -36,8 +36,9 @@ export default function HotelDetailScreen() {
 
   if (isError || !hotel) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-8 dark:bg-black">
-        <Text className="text-center text-neutral-500">
+      <View className="flex-1 items-center justify-center bg-white px-8">
+        <Stack.Screen options={{ headerShown: false }} />
+        <Text className="text-center text-muted">
           Couldn&apos;t load this hotel. Pull back and try again.
         </Text>
       </View>
@@ -58,18 +59,27 @@ export default function HotelDetailScreen() {
     : undefined;
 
   return (
-    <View className="flex-1 bg-white dark:bg-black">
-      <Stack.Screen options={{ title: hotel.title }} />
-      <ScrollView ref={scrollRef} contentContainerClassName="pb-32">
-        <Gallery images={hotel.images.map((i) => i.url)} />
+    <View className="flex-1 bg-white">
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScrollView ref={scrollRef} contentContainerClassName="pb-32" showsVerticalScrollIndicator={false}>
+        {/* Gallery with floating back button */}
+        <View>
+          <Gallery images={hotel.images.map((i) => i.url)} />
+          <PressableScale
+            onPress={() => router.back()}
+            activeScale={0.9}
+            className="absolute left-4 top-12 h-10 w-10 items-center justify-center rounded-full bg-black/40"
+          >
+            <Ionicons name="chevron-back" size={22} color="#fff" />
+          </PressableScale>
+        </View>
 
-        <View className="gap-4 p-5">
+        {/* Content sheet — overlaps the gallery with a rounded top */}
+        <View className="-mt-6 gap-4 rounded-t-[28px] bg-white p-5 pt-6">
           {/* Title + rating */}
-          <View className="gap-1">
+          <View className="gap-1.5">
             <View className="flex-row items-start justify-between gap-3">
-              <Text className="flex-1 text-2xl font-bold text-neutral-900 dark:text-white">
-                {hotel.title}
-              </Text>
+              <Text className="flex-1 font-display-x text-2xl leading-8 text-ink">{hotel.title}</Text>
               <View className="flex-row items-center gap-3">
                 <WishlistButton
                   item={{
@@ -88,21 +98,19 @@ export default function HotelDetailScreen() {
             <View className="flex-row flex-wrap items-center gap-x-2">
               {hotel.rating != null ? (
                 <View className="flex-row items-center gap-1">
-                  <Ionicons name="star" size={14} color="#ffb703" />
-                  <Text className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-                    {formatRating(hotel.rating)}
-                  </Text>
-                  <Text className="text-sm text-neutral-500">({reviews.length} reviews)</Text>
+                  <Ionicons name="star" size={14} color="#f39024" />
+                  <Text className="text-sm font-semibold text-ink">{formatRating(hotel.rating)}</Text>
+                  <Text className="text-sm text-muted">({reviews.length} reviews)</Text>
                 </View>
               ) : null}
               {hotel.propertyType ? (
-                <Text className="text-sm text-neutral-500">· {hotel.propertyType}</Text>
+                <Text className="text-sm text-muted">· {hotel.propertyType}</Text>
               ) : null}
             </View>
             {hotel.location?.address ? (
               <View className="mt-1 flex-row items-start gap-1">
-                <Ionicons name="location-outline" size={15} color="#9ca3af" />
-                <Text className="flex-1 text-sm text-neutral-500">{hotel.location.address}</Text>
+                <Ionicons name="location-outline" size={15} color="#9aa7ac" />
+                <Text className="flex-1 text-sm text-muted">{hotel.location.address}</Text>
               </View>
             ) : null}
           </View>
@@ -117,10 +125,10 @@ export default function HotelDetailScreen() {
 
           {/* Price */}
           <View className="flex-row items-baseline gap-2">
-            <Text className="text-2xl font-bold text-brand-600">{formatMoney(hotel.price)}</Text>
-            <Text className="text-sm text-neutral-400">/ night</Text>
+            <Text className="font-display-x text-2xl text-brand-600">{formatMoney(hotel.price)}</Text>
+            <Text className="text-sm text-muted-foreground">/ night</Text>
             {hotel.originalPrice ? (
-              <Text className="text-sm text-neutral-400 line-through">
+              <Text className="text-sm text-muted-foreground line-through">
                 {formatMoney(hotel.originalPrice)}
               </Text>
             ) : null}
@@ -131,17 +139,23 @@ export default function HotelDetailScreen() {
 
           {/* Check-in / out */}
           {hotel.checkInTime || hotel.checkOutTime ? (
-            <View className="flex-row gap-8">
+            <View className="flex-row gap-3">
               {hotel.checkInTime ? (
-                <View>
-                  <Text className="text-xs uppercase text-neutral-400">Check-in</Text>
-                  <Text className="text-sm text-neutral-700 dark:text-neutral-300">{hotel.checkInTime}</Text>
+                <View className="flex-1 flex-row items-center gap-2.5 rounded-2xl border border-hairline bg-surface-sunk/50 p-3.5">
+                  <Ionicons name="log-in-outline" size={20} color="#156473" />
+                  <View>
+                    <Text className="text-xs uppercase tracking-wide text-muted-foreground">Check-in</Text>
+                    <Text className="text-sm font-semibold text-ink">{hotel.checkInTime}</Text>
+                  </View>
                 </View>
               ) : null}
               {hotel.checkOutTime ? (
-                <View>
-                  <Text className="text-xs uppercase text-neutral-400">Check-out</Text>
-                  <Text className="text-sm text-neutral-700 dark:text-neutral-300">{hotel.checkOutTime}</Text>
+                <View className="flex-1 flex-row items-center gap-2.5 rounded-2xl border border-hairline bg-surface-sunk/50 p-3.5">
+                  <Ionicons name="log-out-outline" size={20} color="#156473" />
+                  <View>
+                    <Text className="text-xs uppercase tracking-wide text-muted-foreground">Check-out</Text>
+                    <Text className="text-sm font-semibold text-ink">{hotel.checkOutTime}</Text>
+                  </View>
                 </View>
               ) : null}
             </View>
@@ -161,9 +175,12 @@ export default function HotelDetailScreen() {
               <SectionTitle>Nearby</SectionTitle>
               <View className="flex-row flex-wrap gap-2">
                 {hotel.nearbyAttractions.map((a) => (
-                  <View key={a} className="flex-row items-center gap-1 rounded-full bg-neutral-100 px-3 py-1.5 dark:bg-neutral-800">
-                    <Ionicons name="pin-outline" size={13} color="#219ebc" />
-                    <Text className="text-xs text-neutral-700 dark:text-neutral-300">{a}</Text>
+                  <View
+                    key={a}
+                    className="flex-row items-center gap-1 rounded-full bg-brand-50 px-3 py-1.5"
+                  >
+                    <Ionicons name="pin-outline" size={13} color="#1a7a8c" />
+                    <Text className="text-xs font-medium text-brand-700">{a}</Text>
                   </View>
                 ))}
               </View>
@@ -183,7 +200,7 @@ export default function HotelDetailScreen() {
                 <RoomCard key={room.id} room={room} currency={hotel.price.currency} onSelect={openBooking} />
               ))
             ) : (
-              <Text className="text-sm text-neutral-500">
+              <Text className="text-sm text-muted">
                 No individual rooms listed — you can still request to book below.
               </Text>
             )}
@@ -191,15 +208,13 @@ export default function HotelDetailScreen() {
 
           {/* Bank transfer info */}
           {hotel.bank?.accountNumber ? (
-            <View className="gap-1 rounded-2xl bg-neutral-50 p-4 dark:bg-neutral-900">
+            <View className="gap-1 rounded-2xl border border-hairline bg-surface-sunk/50 p-4">
               <SectionTitle>Bank transfer</SectionTitle>
-              {hotel.bank.name ? <Text className="text-sm text-neutral-600 dark:text-neutral-400">{hotel.bank.name}</Text> : null}
+              {hotel.bank.name ? <Text className="text-sm text-muted">{hotel.bank.name}</Text> : null}
               {hotel.bank.accountTitle ? (
-                <Text className="text-sm text-neutral-600 dark:text-neutral-400">{hotel.bank.accountTitle}</Text>
+                <Text className="text-sm text-muted">{hotel.bank.accountTitle}</Text>
               ) : null}
-              <Text className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                {hotel.bank.accountNumber}
-              </Text>
+              <Text className="text-sm font-semibold text-ink">{hotel.bank.accountNumber}</Text>
             </View>
           ) : null}
 
@@ -211,7 +226,7 @@ export default function HotelDetailScreen() {
               className="flex-row items-center justify-center gap-2 py-2"
               onPress={() => Linking.openURL(`tel:${hotel.phone}`)}
             >
-              <Ionicons name="call-outline" size={16} color="#219ebc" />
+              <Ionicons name="call-outline" size={16} color="#1a7a8c" />
               <Text className="text-sm font-semibold text-brand-600">Call the property</Text>
             </Pressable>
           ) : null}
@@ -219,12 +234,16 @@ export default function HotelDetailScreen() {
       </ScrollView>
 
       {/* Sticky booking bar */}
-      <View className="absolute bottom-0 w-full flex-row items-center justify-between border-t border-neutral-100 bg-white px-5 py-3 dark:border-neutral-800 dark:bg-neutral-950">
+      <View className="absolute bottom-0 w-full flex-row items-center justify-between border-t border-hairline bg-white px-5 pb-8 pt-3">
         <View>
-          <Text className="text-lg font-bold text-brand-600">
-            {formatMoney(cheapestRoom ? { amount: cheapestRoom.pricePerNight, currency: hotel.price.currency } : hotel.price)}
+          <Text className="font-display-x text-xl text-brand-600">
+            {formatMoney(
+              cheapestRoom
+                ? { amount: cheapestRoom.pricePerNight, currency: hotel.price.currency }
+                : hotel.price,
+            )}
           </Text>
-          <Text className="text-xs text-neutral-400">
+          <Text className="text-xs text-muted-foreground">
             {rooms.length > 0 ? 'from / night' : '/ night'}
           </Text>
         </View>

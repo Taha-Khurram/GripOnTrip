@@ -10,8 +10,8 @@ import type { Rental } from '../types';
 function Spec({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <View className="flex-row items-center gap-1">
-      <Ionicons name={icon} size={14} color="#9ca3af" />
-      <Text className="text-xs text-neutral-500">{label}</Text>
+      <Ionicons name={icon} size={14} color="#9aa7ac" />
+      <Text className="text-xs text-muted">{label}</Text>
     </View>
   );
 }
@@ -31,7 +31,7 @@ export function RentalCard({ rental, index = 0 }: { rental: Rental; index?: numb
           <View className="gap-1 p-3">
             <View className="flex-row items-center justify-between">
               <Text
-                className="flex-1 text-base font-semibold text-neutral-900 dark:text-white"
+                className="flex-1 text-base font-semibold text-ink"
                 numberOfLines={1}
               >
                 {rental.title}
@@ -39,7 +39,7 @@ export function RentalCard({ rental, index = 0 }: { rental: Rental; index?: numb
               <Badge label={rental.propertyType} tone="neutral" />
             </View>
             {rental.location?.city ? (
-              <Text className="text-sm text-neutral-500">{rental.location.city}</Text>
+              <Text className="text-sm text-muted">{rental.location.city}</Text>
             ) : null}
             <View className="mt-1 flex-row items-center gap-3">
               {rental.bedrooms != null ? (
@@ -55,7 +55,7 @@ export function RentalCard({ rental, index = 0 }: { rental: Rental; index?: numb
             <View className="mt-1 flex-row items-center justify-between">
               <Text className="text-base font-bold text-brand-600">
                 {formatMoney(rental.price)}
-                <Text className="text-xs font-normal text-neutral-400"> / month</Text>
+                <Text className="text-xs font-normal text-muted-foreground"> / month</Text>
               </Text>
               {rental.rating != null ? (
                 <Text className="text-sm text-neutral-600">★ {formatRating(rental.rating)}</Text>

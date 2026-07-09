@@ -1,116 +1,90 @@
 /** @type {import('tailwindcss').Config} */
 // NativeWind v4 uses Tailwind CSS v3 under the hood.
 //
-// Brand palette (Grip On Trip travel scheme):
-//   sky blue #8ecae6 · blue-green #219ebc · deep space blue #023047
-//   amber flame #ffb703 · princeton orange #fb8500
+// Design system: "Ocean & Sun" (see docs/Design.md)
+//   primary ocean teal     #1a7a8c   (brand-500)
+//   primary deep teal      #0c3b4a   (brand-800)
+//   sun warm orange        #f39024   (accent-500)
+//   background sandy cream #f5efe4   (bg-background)
+//   foreground deep navy   #0c2b36   (text-ink / text-foreground)
 //
-// The design tokens the app actually consumes are `brand-*` (cool ramp:
-// sky → blue-green → deep space) and `accent-*` (warm ramp: amber → orange).
-// The raw named families are also exposed for one-off use.
+// The app consumes the `brand-*` (ocean ramp) and `accent-*` (sun ramp)
+// tokens, plus the semantic aliases (`background`, `ink`, `sun`, `primary`…)
+// for one-off, intention-revealing usage. The app is light-only.
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
       colors: {
-        // Primary cool ramp — sky blue → blue-green (500) → deep space blue.
+        // Primary cool ramp — ocean teal (500) → deep teal (800).
         brand: {
-          50: '#e8f4fa',
-          100: '#d2eaf5',
-          200: '#bbdff0',
-          300: '#8ecae6', // sky blue
-          400: '#51aed9',
-          500: '#219ebc', // blue-green — primary
-          600: '#1a7d95',
-          700: '#145d70',
-          800: '#023047', // deep space blue
-          900: '#011c2a',
+          50: '#eef6f8',
+          100: '#d5e9ed',
+          200: '#b0d5dc',
+          300: '#7fbcc7',
+          400: '#47a0af',
+          500: '#1a7a8c', // ocean teal — primary
+          600: '#156473',
+          700: '#114f5b',
+          800: '#0c3b4a', // deep teal
+          900: '#082a35',
         },
-        // Warm ramp — amber flame → princeton orange (500).
+        // Warm ramp — sun orange (500).
         accent: {
-          50: '#fff1cd',
-          100: '#ffe39b',
-          200: '#ffd569',
-          300: '#ffb663',
-          400: '#ff9e2f',
-          500: '#fb8500', // princeton orange — primary accent
-          600: '#c86b00',
-          700: '#965000',
-          800: '#643500',
-          900: '#321b00',
+          50: '#fef2e2',
+          100: '#fce0bd',
+          200: '#f9c98a',
+          300: '#f6b160',
+          400: '#f59f3f',
+          500: '#f39024', // sun — primary accent
+          600: '#db7a13',
+          700: '#b5620f',
+          800: '#8f4c0d',
+          900: '#6b3809',
         },
-        success: '#16a34a',
-        warning: '#ffb703', // amber flame
-        danger: '#dc2626',
 
-        // Raw named palette families (full ramps as provided).
-        skyblue: {
-          DEFAULT: '#8ecae6',
-          100: '#0d2e3d',
-          200: '#1b5c7a',
-          300: '#288ab7',
-          400: '#51aed9',
-          500: '#8ecae6',
-          600: '#a5d5eb',
-          700: '#bbdff0',
-          800: '#d2eaf5',
-          900: '#e8f4fa',
-        },
-        bluegreen: {
-          DEFAULT: '#219ebc',
-          100: '#071f25',
-          200: '#0d3e4b',
-          300: '#145d70',
-          400: '#1a7d95',
-          500: '#219ebc',
-          600: '#39bcdc',
-          700: '#6bcce5',
-          800: '#9cddee',
-          900: '#ceeef6',
-        },
-        deepspace: {
-          DEFAULT: '#023047',
-          100: '#00090e',
-          200: '#01131c',
-          300: '#011c2a',
-          400: '#012638',
-          500: '#023047',
-          600: '#04699b',
-          700: '#06a3f1',
-          800: '#54c3fb',
-          900: '#a9e1fd',
-        },
-        amberflame: {
-          DEFAULT: '#ffb703',
-          100: '#342500',
-          200: '#684b00',
-          300: '#9c7000',
-          400: '#d09500',
-          500: '#ffb703',
-          600: '#ffc637',
-          700: '#ffd569',
-          800: '#ffe39b',
-          900: '#fff1cd',
-        },
-        princeton: {
-          DEFAULT: '#fb8500',
-          100: '#321b00',
-          200: '#643500',
-          300: '#965000',
-          400: '#c86b00',
-          500: '#fb8500',
-          600: '#ff9e2f',
-          700: '#ffb663',
-          800: '#ffce97',
-          900: '#ffe7cb',
-        },
+        // Semantic aliases (intention-revealing; map onto the ramps above).
+        primary: '#1a7a8c',
+        'primary-deep': '#0c3b4a',
+        sun: '#f39024',
+        background: '#f5efe4', // sandy cream — app canvas
+        surface: '#ffffff', // cards / sheets
+        'surface-sunk': '#efe7d6', // recessed wells on cream
+        foreground: '#0c2b36', // deep navy ink — primary text
+        ink: '#0c2b36',
+        muted: '#5f7178', // secondary text on cream/white
+        'muted-foreground': '#7c8a90',
+        hairline: '#e6dcc8', // border on cream
+        'hairline-strong': '#d9ccb2',
+
+        success: '#1f9d55',
+        warning: '#f0a020',
+        danger: '#dc2626',
       },
       fontFamily: {
-        sans: ['var(--font-display)'],
-        mono: ['var(--font-mono)'],
-        rounded: ['var(--font-rounded)'],
-        serif: ['var(--font-serif)'],
+        // Body — Figtree. Default text family.
+        sans: ['Figtree_400Regular'],
+        body: ['Figtree_400Regular'],
+        'body-medium': ['Figtree_500Medium'],
+        'body-semibold': ['Figtree_600SemiBold'],
+        // Display — Outfit. Headings / brand voice.
+        display: ['Outfit_700Bold'],
+        'display-semibold': ['Outfit_600SemiBold'],
+        'display-x': ['Outfit_800ExtraBold'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
+      },
+      borderRadius: {
+        '4xl': '2rem',
+        '5xl': '2.5rem',
+      },
+      boxShadow: {
+        // Soft ambient depth for cards and floating panels.
+        soft: '0px 10px 30px rgba(12, 59, 74, 0.12)',
+        card: '0px 4px 16px rgba(12, 59, 74, 0.07)',
+        // Warm colored glow for the sun CTA.
+        glow: '0px 12px 32px rgba(243, 144, 36, 0.4)',
+        'glow-ocean': '0px 12px 32px rgba(26, 122, 140, 0.35)',
       },
     },
   },

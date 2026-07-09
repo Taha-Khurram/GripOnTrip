@@ -16,8 +16,8 @@ import { formatMoney, formatRating } from '@/utils/format';
 function Spec({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <View className="items-center gap-1">
-      <Ionicons name={icon} size={20} color="#219ebc" />
-      <Text className="text-sm text-neutral-700 dark:text-neutral-300">{label}</Text>
+      <Ionicons name={icon} size={20} color="#1a7a8c" />
+      <Text className="text-sm text-muted">{label}</Text>
     </View>
   );
 }
@@ -39,7 +39,7 @@ export default function RentalDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white dark:bg-black">
+      <View className="flex-1 bg-background">
         <Stack.Screen options={{ title: 'Rental' }} />
         <DetailSkeleton />
       </View>
@@ -48,8 +48,8 @@ export default function RentalDetailScreen() {
 
   if (isError || !rental) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-8 dark:bg-black">
-        <Text className="text-center text-neutral-500">
+      <View className="flex-1 items-center justify-center bg-background px-8">
+        <Text className="text-center text-muted">
           Couldn&apos;t load this rental. Pull back and try again.
         </Text>
       </View>
@@ -74,13 +74,13 @@ export default function RentalDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white dark:bg-black">
+    <View className="flex-1 bg-background">
       <Stack.Screen options={{ title: rental.title }} />
       <ScrollView contentContainerClassName="pb-32">
         <Gallery images={rental.images.map((i) => i.url)} />
         <View className="gap-4 p-5">
           <View className="flex-row items-start justify-between gap-3">
-            <Text className="flex-1 text-2xl font-bold text-neutral-900 dark:text-white">{rental.title}</Text>
+            <Text className="flex-1 text-2xl font-display text-ink">{rental.title}</Text>
             <View className="flex-row items-center gap-3">
               <WishlistButton
                 item={{
@@ -97,7 +97,7 @@ export default function RentalDetailScreen() {
             </View>
           </View>
 
-          <Text className="text-neutral-500">
+          <Text className="text-muted">
             {rental.location?.city}
             {rental.rating != null ? ` · ★ ${formatRating(rental.rating)}` : ''}
           </Text>
@@ -112,30 +112,30 @@ export default function RentalDetailScreen() {
 
           {rental.amenities.length > 0 ? (
             <View className="gap-2">
-              <Text className="text-lg font-bold text-neutral-900 dark:text-white">Amenities</Text>
+              <Text className="text-lg font-display text-ink">Amenities</Text>
               <AmenityGrid amenities={rental.amenities} />
             </View>
           ) : null}
 
           {rental.description ? (
-            <Text className="leading-6 text-neutral-700 dark:text-neutral-300">{rental.description}</Text>
+            <Text className="leading-6 text-muted">{rental.description}</Text>
           ) : null}
 
           {/* Request-to-book form */}
           {open && isAuthenticated ? (
             <View className="gap-3 rounded-2xl border border-neutral-100 p-4 dark:border-neutral-800">
-              <Text className="text-base font-bold text-neutral-900 dark:text-white">Request dates</Text>
+              <Text className="text-base font-bold text-ink">Request dates</Text>
               <View className="flex-row gap-3">
                 <DateField label="Move-in" value={start} min={new Date()} onChange={setStart} />
                 <DateField label="Move-out" value={end} min={new Date(addDays(start, 1))} onChange={setEnd} />
               </View>
               <TextInput
                 placeholder="Message to the owner (optional)"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#9aa7ac"
                 multiline
                 value={message}
                 onChangeText={setMessage}
-                className="min-h-16 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                className="min-h-16 rounded-xl border border-hairline bg-white px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
               />
               {error ? <Text className="text-xs text-danger">{error}</Text> : null}
               <Button label="Send request" loading={isPending} onPress={submit} fullWidth />
@@ -156,12 +156,12 @@ export default function RentalDetailScreen() {
       {/* Sticky action bar */}
       <View className="absolute bottom-0 w-full flex-row items-center justify-between border-t border-neutral-100 bg-white px-5 py-3 dark:border-neutral-800 dark:bg-neutral-950">
         <View className="flex-row items-baseline gap-2">
-          <Text className="text-lg font-bold text-brand-600">
+          <Text className="text-lg font-display text-brand-600">
             {formatMoney(rental.price)}
-            <Text className="text-xs font-normal text-neutral-400"> / month</Text>
+            <Text className="text-xs font-normal text-muted-foreground"> / month</Text>
           </Text>
           {rental.originalPrice ? (
-            <Text className="text-xs text-neutral-400 line-through">{formatMoney(rental.originalPrice)}</Text>
+            <Text className="text-xs text-muted-foreground line-through">{formatMoney(rental.originalPrice)}</Text>
           ) : null}
         </View>
         {rental.externalBookingUrl ? (

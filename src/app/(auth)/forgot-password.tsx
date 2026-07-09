@@ -34,7 +34,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-neutral-50 dark:bg-black"
+      className="flex-1 bg-background"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerClassName="pb-10" keyboardShouldPersistTaps="handled">
@@ -50,7 +50,7 @@ export default function ForgotPasswordScreen() {
                 <View className="h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-950">
                   <Ionicons name="mail-open-outline" size={30} color="#16a34a" />
                 </View>
-                <Text className="text-center text-sm leading-5 text-neutral-500">
+                <Text className="text-center text-sm leading-5 text-muted">
                   If an account exists for that email, a reset link is on its way. Check your inbox.
                 </Text>
                 <Button label="Back to sign in" variant="outline" onPress={() => router.back()} fullWidth />

@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
 
+import { ListHero } from '@/components/layout/ListHero';
 import { Button, ListSkeleton } from '@/components/ui';
 import { ProductCard, useProducts, type Product } from '@/features/shop';
 
@@ -53,7 +54,7 @@ export default function ShopScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-neutral-50 dark:bg-black">
+      <View className="flex-1 bg-background">
         <ListSkeleton count={4} />
       </View>
     );
@@ -61,9 +62,9 @@ export default function ShopScreen() {
 
   if (isError) {
     return (
-      <View className="flex-1 items-center justify-center gap-4 bg-neutral-50 px-8 dark:bg-black">
-        <Ionicons name="cloud-offline-outline" size={40} color="#9ca3af" />
-        <Text className="text-center text-neutral-500">
+      <View className="flex-1 items-center justify-center gap-4 bg-background px-8">
+        <Ionicons name="cloud-offline-outline" size={40} color="#9aa7ac" />
+        <Text className="text-center text-muted">
           Couldn&apos;t load the marketplace. Check your connection and try again.
         </Text>
         <Button label="Retry" variant="outline" onPress={() => refetch()} />
@@ -73,36 +74,32 @@ export default function ShopScreen() {
 
   return (
     <FlatList
-      className="flex-1 bg-neutral-50 dark:bg-black"
+      className="flex-1 bg-background"
       data={products}
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
       numColumns={2}
       columnWrapperStyle={{ paddingHorizontal: 20, gap: 12 }}
-      contentContainerClassName="gap-3 pb-8 pt-3"
+      contentContainerClassName="gap-3 pb-8"
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#1a7a8c" />
       }
       keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
-        <View className="gap-3 px-5 pb-3 pt-3">
-          <View className="flex-row items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 dark:border-neutral-700 dark:bg-neutral-900">
-            <Ionicons name="search" size={18} color="#9ca3af" />
-            <TextInput
-              placeholder="Search products or brands"
-              placeholderTextColor="#9ca3af"
-              value={query}
-              onChangeText={setQuery}
-              className="flex-1 text-base text-neutral-900 dark:text-white"
-            />
-            {query ? (
-              <Pressable onPress={() => setQuery('')} hitSlop={8}>
-                <Ionicons name="close-circle" size={18} color="#9ca3af" />
-              </Pressable>
-            ) : null}
-          </View>
+        <>
+          <ListHero
+            variant="sun"
+            icon="bag-outline"
+            eyebrow="Shop"
+            title="Marketplace"
+            subtitle="Travel gear and local products."
+            query={query}
+            onChangeQuery={setQuery}
+            placeholder="Search products or brands"
+          />
 
-          {categories.length > 0 ? (
+          <View className="gap-3 px-5 pb-3 pt-4">
+            {categories.length > 0 ? (
             <FlatList
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -118,13 +115,13 @@ export default function ShopScreen() {
                       'rounded-full border px-3 py-1.5',
                       active
                         ? 'border-brand-500 bg-brand-500'
-                        : 'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900',
+                        : 'border-hairline bg-white dark:border-neutral-700 dark:bg-neutral-900',
                     ].join(' ')}
                   >
                     <Text
                       className={[
                         'text-xs font-semibold',
-                        active ? 'text-white' : 'text-neutral-600 dark:text-neutral-300',
+                        active ? 'text-white' : 'text-muted',
                       ].join(' ')}
                     >
                       {item}
@@ -135,20 +132,21 @@ export default function ShopScreen() {
             />
           ) : null}
 
-          <Text className="text-sm text-neutral-500">
-            {products.length} item{products.length === 1 ? '' : 's'} available
-          </Text>
-        </View>
+            <Text className="text-sm text-muted">
+              {products.length} item{products.length === 1 ? '' : 's'} available
+            </Text>
+          </View>
+        </>
       }
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="bag-handle-outline" size={28} color="#219ebc" />
+            <Ionicons name="bag-handle-outline" size={28} color="#1a7a8c" />
           </View>
-          <Text className="text-lg font-bold text-neutral-900 dark:text-white">
+          <Text className="text-lg font-display text-ink">
             {query || category ? 'No matching products' : 'No products yet'}
           </Text>
-          <Text className="text-center text-sm text-neutral-500">
+          <Text className="text-center text-sm text-muted">
             {query || category
               ? 'Try a different search or category.'
               : 'Products posted from the dashboard will appear here. Pull down to refresh.'}

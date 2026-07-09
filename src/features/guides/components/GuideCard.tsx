@@ -39,7 +39,7 @@ export function GuideCard({ guide, index = 0 }: { guide: Guide; index?: number }
             <View className="flex-1">
               <View className="flex-row items-center gap-2">
                 <Text
-                  className="flex-1 text-base font-bold text-neutral-900 dark:text-white"
+                  className="flex-1 text-base font-bold text-ink"
                   numberOfLines={1}
                 >
                   {guide.name}
@@ -49,16 +49,16 @@ export function GuideCard({ guide, index = 0 }: { guide: Guide; index?: number }
               <View className="mt-0.5 flex-row items-center gap-3">
                 {guide.city ? (
                   <View className="flex-row items-center gap-1">
-                    <Ionicons name="location-outline" size={13} color="#9ca3af" />
-                    <Text className="text-xs text-neutral-500" numberOfLines={1}>
+                    <Ionicons name="location-outline" size={13} color="#9aa7ac" />
+                    <Text className="text-xs text-muted" numberOfLines={1}>
                       {guide.city}
                     </Text>
                   </View>
                 ) : null}
                 {guide.reviewCount > 0 || guide.rating > 0 ? (
                   <View className="flex-row items-center gap-1">
-                    <Ionicons name="star" size={12} color="#ffb703" />
-                    <Text className="text-xs text-neutral-500">
+                    <Ionicons name="star" size={12} color="#f39024" />
+                    <Text className="text-xs text-muted">
                       {formatRating(guide.rating)} ({guide.reviewCount})
                     </Text>
                   </View>
@@ -84,7 +84,7 @@ export function GuideCard({ guide, index = 0 }: { guide: Guide; index?: number }
 
           {guide.bio ? (
             <Text
-              className="text-sm leading-5 text-neutral-600 dark:text-neutral-400"
+              className="text-sm leading-5 text-muted"
               numberOfLines={2}
             >
               {guide.bio}
@@ -95,16 +95,16 @@ export function GuideCard({ guide, index = 0 }: { guide: Guide; index?: number }
           <View className="flex-row items-center justify-between">
             {guide.dailyRate > 0 ? (
               <Text className="text-base font-bold text-brand-600">
-                <Text className="text-xs font-normal text-neutral-400">from </Text>
+                <Text className="text-xs font-normal text-muted-foreground">from </Text>
                 {formatMoney(guide.price)}
-                <Text className="text-xs font-normal text-neutral-400"> /day</Text>
+                <Text className="text-xs font-normal text-muted-foreground"> /day</Text>
               </Text>
             ) : (
               <View />
             )}
             <View className="flex-row items-center gap-1">
               <Text className="text-sm font-medium text-brand-600">View profile</Text>
-              <Ionicons name="chevron-forward" size={14} color="#219ebc" />
+              <Ionicons name="chevron-forward" size={14} color="#1a7a8c" />
             </View>
           </View>
           </Card>

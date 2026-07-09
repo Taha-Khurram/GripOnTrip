@@ -1,5 +1,6 @@
 export { Button } from './Button';
 export { Card } from './Card';
+export { Chip } from './Chip';
 export { Input } from './Input';
 export { Badge } from './Badge';
 export { Gallery } from './Gallery';
@@ -8,3 +9,4 @@ export { Stepper } from './Stepper';
 export { Skeleton, CardSkeleton, ListSkeleton, DetailSkeleton } from './Skeleton';
 export { PressableScale, enterUp, STAGGER, Animated } from './motion';
 export { ThemeToggle } from './ThemeToggle';
+export { OceanHero, SunCTA, DeepPanel, ImageBand } from './Gradient';

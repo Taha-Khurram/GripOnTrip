@@ -9,8 +9,8 @@ import { formatMoney, formatRating } from '@/utils/format';
 function Attribute({ label, value }: { label: string; value: string }) {
   return (
     <View className="gap-0.5">
-      <Text className="text-xs uppercase text-neutral-400">{label}</Text>
-      <Text className="text-sm text-neutral-700 dark:text-neutral-300">{value}</Text>
+      <Text className="text-xs uppercase text-muted-foreground">{label}</Text>
+      <Text className="text-sm text-muted">{value}</Text>
     </View>
   );
 }
@@ -21,7 +21,7 @@ export default function ProductDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white dark:bg-black">
+      <View className="flex-1 bg-background">
         <Stack.Screen options={{ title: 'Product' }} />
         <DetailSkeleton />
       </View>
@@ -30,9 +30,9 @@ export default function ProductDetailScreen() {
 
   if (isError || !product) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-8 dark:bg-black">
+      <View className="flex-1 items-center justify-center bg-background px-8">
         <Stack.Screen options={{ title: 'Product' }} />
-        <Text className="text-center text-neutral-500">
+        <Text className="text-center text-muted">
           Couldn&apos;t load this product. Pull back and try again.
         </Text>
       </View>
@@ -40,7 +40,7 @@ export default function ProductDetailScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white dark:bg-black">
+    <View className="flex-1 bg-background">
       <Stack.Screen options={{ title: product.title }} />
       <ScrollView contentContainerClassName="pb-32">
         <Gallery images={product.images.map((i) => i.url)} />
@@ -52,12 +52,12 @@ export default function ProductDetailScreen() {
             {product.productCategory ? <Badge label={product.productCategory} tone="neutral" /> : null}
           </View>
 
-          <Text className="text-2xl font-bold text-neutral-900 dark:text-white">{product.title}</Text>
+          <Text className="text-2xl font-display text-ink">{product.title}</Text>
 
           <View className="flex-row items-baseline gap-3">
-            <Text className="text-2xl font-bold text-brand-600">{formatMoney(product.price)}</Text>
+            <Text className="text-2xl font-display text-brand-600">{formatMoney(product.price)}</Text>
             {product.originalPrice ? (
-              <Text className="text-base text-neutral-400 line-through">
+              <Text className="text-base text-muted-foreground line-through">
                 {formatMoney(product.originalPrice)}
               </Text>
             ) : null}
@@ -86,7 +86,7 @@ export default function ProductDetailScreen() {
               </Text>
             </View>
             {product.rating != null ? (
-              <Text className="text-sm text-neutral-600 dark:text-neutral-400">
+              <Text className="text-sm text-muted">
                 ★ {formatRating(product.rating)}
               </Text>
             ) : null}
@@ -110,9 +110,9 @@ export default function ProductDetailScreen() {
       {/* Sticky action bar — purchase completes on gripontrip.com */}
       <View className="absolute bottom-0 w-full flex-row items-center justify-between gap-3 border-t border-neutral-100 bg-white px-5 py-3 dark:border-neutral-800 dark:bg-neutral-950">
         <View className="flex-row items-baseline gap-2">
-          <Text className="text-lg font-bold text-brand-600">{formatMoney(product.price)}</Text>
+          <Text className="text-lg font-display text-brand-600">{formatMoney(product.price)}</Text>
           {product.originalPrice ? (
-            <Text className="text-xs text-neutral-400 line-through">
+            <Text className="text-xs text-muted-foreground line-through">
               {formatMoney(product.originalPrice)}
             </Text>
           ) : null}

@@ -32,7 +32,7 @@ export default function SignInScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-neutral-50 dark:bg-black"
+      className="flex-1 bg-background"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerClassName="pb-10" keyboardShouldPersistTaps="handled">
@@ -97,7 +97,7 @@ export default function SignInScreen() {
             >
               <View
                 className={[
-                  'flex-row items-center justify-center rounded-xl bg-brand-500 py-4 shadow-sm shadow-brand-500/30',
+                  'flex-row items-center justify-center rounded-2xl bg-brand-500 py-4 shadow-glow-ocean',
                   isSubmitting ? 'opacity-70' : '',
                 ].join(' ')}
               >
@@ -115,7 +115,7 @@ export default function SignInScreen() {
         </Animated.View>
 
         <View className="mt-6 flex-row justify-center gap-1">
-          <Text className="text-neutral-600 dark:text-neutral-300">New to Grip On Trip?</Text>
+          <Text className="text-muted">New to Grip On Trip?</Text>
           <Link href="/(auth)/sign-up" className="font-semibold text-brand-600">
             Create an account
           </Link>

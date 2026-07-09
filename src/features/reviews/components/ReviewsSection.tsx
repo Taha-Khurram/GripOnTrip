@@ -13,13 +13,13 @@ function ReviewItem({ review }: { review: HotelReview }) {
   return (
     <View className="gap-1 border-b border-neutral-100 py-3 dark:border-neutral-800">
       <View className="flex-row items-center justify-between">
-        <Text className="font-semibold text-neutral-900 dark:text-white">{review.authorName}</Text>
+        <Text className="font-semibold text-ink">{review.authorName}</Text>
         <StarRating value={review.rating} size={14} />
       </View>
       {review.comment ? (
-        <Text className="text-sm leading-5 text-neutral-600 dark:text-neutral-400">{review.comment}</Text>
+        <Text className="text-sm leading-5 text-muted">{review.comment}</Text>
       ) : null}
-      <Text className="text-xs text-neutral-400">{formatDate(review.createdAt)}</Text>
+      <Text className="text-xs text-muted-foreground">{formatDate(review.createdAt)}</Text>
     </View>
   );
 }
@@ -57,7 +57,7 @@ export function ReviewsSection({ hotelId, reviews }: { hotelId: string; reviews:
   return (
     <View className="gap-2">
       <View className="flex-row items-center justify-between">
-        <Text className="text-lg font-bold text-neutral-900 dark:text-white">
+        <Text className="text-lg font-display text-ink">
           Reviews {reviews.length > 0 ? `(${reviews.length})` : ''}
         </Text>
         {!open ? (
@@ -76,11 +76,11 @@ export function ReviewsSection({ hotelId, reviews }: { hotelId: string; reviews:
           <StarRating value={rating} onChange={setRating} size={26} />
           <TextInput
             placeholder="Share your experience…"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor="#9aa7ac"
             multiline
             value={comment}
             onChangeText={setComment}
-            className="min-h-20 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+            className="min-h-20 rounded-xl border border-hairline bg-white px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
           />
           {error ? <Text className="text-xs text-danger">{error}</Text> : null}
           <View className="flex-row gap-3">
@@ -95,7 +95,7 @@ export function ReviewsSection({ hotelId, reviews }: { hotelId: string; reviews:
       ) : null}
 
       {reviews.length === 0 ? (
-        <Text className="text-sm text-neutral-500">No reviews yet. Be the first to review this stay.</Text>
+        <Text className="text-sm text-muted">No reviews yet. Be the first to review this stay.</Text>
       ) : (
         <View>
           {reviews.map((r) => (

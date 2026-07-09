@@ -32,22 +32,22 @@ export function DateField({
 
   return (
     <View className="flex-1 gap-1.5">
-      <Text className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{label}</Text>
+      <Text className="text-sm font-medium text-ink">{label}</Text>
       <Pressable
         onPress={() => setOpen(true)}
-        className="flex-row items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900"
+        className="flex-row items-center gap-2 rounded-xl border border-hairline bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900"
       >
-        <Ionicons name="calendar-outline" size={16} color="#219ebc" />
-        <Text className="text-base text-neutral-900 dark:text-white">{formatDate(value)}</Text>
+        <Ionicons name="calendar-outline" size={16} color="#1a7a8c" />
+        <Text className="text-base text-ink">{formatDate(value)}</Text>
       </Pressable>
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <Pressable className="flex-1 justify-end bg-black/40" onPress={() => setOpen(false)}>
-          <Pressable className="max-h-[60%] rounded-t-3xl bg-white dark:bg-neutral-900" onPress={() => {}}>
+          <Pressable className="max-h-[60%] rounded-t-3xl bg-surface" onPress={() => {}}>
             <View className="flex-row items-center justify-between border-b border-neutral-100 px-5 py-4 dark:border-neutral-800">
-              <Text className="text-lg font-bold text-neutral-900 dark:text-white">{label}</Text>
+              <Text className="text-lg font-display text-ink">{label}</Text>
               <Pressable hitSlop={8} onPress={() => setOpen(false)}>
-                <Ionicons name="close" size={22} color="#9ca3af" />
+                <Ionicons name="close" size={22} color="#9aa7ac" />
               </Pressable>
             </View>
             <FlatList
@@ -70,12 +70,12 @@ export function DateField({
                     <Text
                       className={[
                         'text-base',
-                        active ? 'font-bold text-brand-600' : 'text-neutral-800 dark:text-neutral-200',
+                        active ? 'font-bold text-brand-600' : 'text-ink',
                       ].join(' ')}
                     >
                       {formatDate(item)}
                     </Text>
-                    {active ? <Ionicons name="checkmark" size={18} color="#219ebc" /> : null}
+                    {active ? <Ionicons name="checkmark" size={18} color="#1a7a8c" /> : null}
                   </Pressable>
                 );
               }}

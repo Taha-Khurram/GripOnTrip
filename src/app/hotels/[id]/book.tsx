@@ -45,19 +45,19 @@ export default function BookHotelScreen() {
 
   if (isLoading || !hotel) {
     return (
-      <View className="flex-1 items-center justify-center bg-white dark:bg-black">
+      <View className="flex-1 items-center justify-center bg-background">
         <Stack.Screen options={{ title: 'Book' }} />
-        <ActivityIndicator color="#219ebc" />
+        <ActivityIndicator color="#1a7a8c" />
       </View>
     );
   }
 
   if (AUTH_GATING_ENABLED && !user) {
     return (
-      <View className="flex-1 items-center justify-center gap-4 bg-white px-8 dark:bg-black">
+      <View className="flex-1 items-center justify-center gap-4 bg-background px-8">
         <Stack.Screen options={{ title: 'Book' }} />
-        <Ionicons name="lock-closed-outline" size={40} color="#9ca3af" />
-        <Text className="text-center text-neutral-500">Please sign in to complete your booking.</Text>
+        <Ionicons name="lock-closed-outline" size={40} color="#9aa7ac" />
+        <Text className="text-center text-muted">Please sign in to complete your booking.</Text>
         <Button label="Sign in" fullWidth onPress={() => router.replace('/(auth)/sign-in')} />
       </View>
     );
@@ -68,22 +68,22 @@ export default function BookHotelScreen() {
   // them to contact the property instead.
   if (!room && !confirmed) {
     return (
-      <ScrollView className="flex-1 bg-white dark:bg-black" contentContainerClassName="gap-3 p-5 pb-10">
+      <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-3 p-5 pb-10">
         <Stack.Screen options={{ title: 'Choose a room' }} />
-        <Text className="text-xl font-bold text-neutral-900 dark:text-white">{hotel.title}</Text>
+        <Text className="text-xl font-display text-ink">{hotel.title}</Text>
         {roomsLoading ? (
-          <ActivityIndicator color="#219ebc" className="mt-8" />
+          <ActivityIndicator color="#1a7a8c" className="mt-8" />
         ) : rooms.length > 0 ? (
           <>
-            <Text className="text-sm text-neutral-500">Select a room to continue.</Text>
+            <Text className="text-sm text-muted">Select a room to continue.</Text>
             {rooms.map((r) => (
               <RoomCard key={r.id} room={r} currency={currency} onSelect={(sel) => setSelectedRoomId(sel.id)} />
             ))}
           </>
         ) : (
           <View className="mt-8 items-center gap-3">
-            <Ionicons name="bed-outline" size={40} color="#9ca3af" />
-            <Text className="text-center text-neutral-500">
+            <Ionicons name="bed-outline" size={40} color="#9aa7ac" />
+            <Text className="text-center text-muted">
               This property has no rooms available to book online right now.
             </Text>
             {hotel.phone ? (
@@ -99,15 +99,15 @@ export default function BookHotelScreen() {
 
   if (confirmed) {
     return (
-      <View className="flex-1 items-center justify-center gap-4 bg-white px-8 dark:bg-black">
+      <View className="flex-1 items-center justify-center gap-4 bg-background px-8">
         <Stack.Screen options={{ title: 'Booking confirmed' }} />
         <View className="h-20 w-20 items-center justify-center rounded-full bg-green-50">
           <Ionicons name="checkmark-circle" size={56} color="#16a34a" />
         </View>
-        <Text className="text-center text-xl font-bold text-neutral-900 dark:text-white">
+        <Text className="text-center text-xl font-display text-ink">
           Booking requested!
         </Text>
-        <Text className="text-center text-sm text-neutral-500">
+        <Text className="text-center text-sm text-muted">
           Your request for {hotel.title} is pending confirmation from the host.
           {hotel.paymentType ? ` Payment: ${hotel.paymentType}.` : ''}
         </Text>
@@ -149,19 +149,19 @@ export default function BookHotelScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-white dark:bg-black" contentContainerClassName="gap-5 p-5 pb-10" keyboardShouldPersistTaps="handled">
+    <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-5 p-5 pb-10" keyboardShouldPersistTaps="handled">
       <Stack.Screen options={{ title: 'Book your stay' }} />
 
       {/* Summary header */}
       <View className="gap-1">
-        <Text className="text-xl font-bold text-neutral-900 dark:text-white">{hotel.title}</Text>
+        <Text className="text-xl font-display text-ink">{hotel.title}</Text>
         {room ? (
           <View className="flex-row items-center gap-2">
             <Badge label={room.roomType} tone="brand" />
-            {room.bedType ? <Text className="text-sm text-neutral-500">{room.bedType}</Text> : null}
+            {room.bedType ? <Text className="text-sm text-muted">{room.bedType}</Text> : null}
           </View>
         ) : null}
-        <Text className="text-sm text-neutral-500">
+        <Text className="text-sm text-muted">
           {formatMoney({ amount: nightlyRate, currency })} / night
         </Text>
       </View>
@@ -180,18 +180,18 @@ export default function BookHotelScreen() {
         <DateField label="Check-out" value={checkOut} min={new Date(addDays(checkIn, 1))} onChange={setCheckOut} />
       </View>
       {availability ? (
-        <Text className="-mt-2 text-xs text-neutral-400">
+        <Text className="-mt-2 text-xs text-muted-foreground">
           Available {formatDate(availability.start)} – {formatDate(availability.end)}
         </Text>
       ) : null}
 
       {/* Guests */}
       <View className="rounded-2xl border border-neutral-100 p-4 dark:border-neutral-800">
-        <Text className="mb-1 text-sm font-semibold text-neutral-900 dark:text-white">Guests</Text>
+        <Text className="mb-1 text-sm font-semibold text-ink">Guests</Text>
         <Stepper label="Adults" value={adults} onChange={setAdults} min={1} />
         <Stepper label="Children" value={children} onChange={setChildren} />
         {room?.capacity ? (
-          <Text className="pt-1 text-xs text-neutral-400">This room sleeps up to {room.capacity}.</Text>
+          <Text className="pt-1 text-xs text-muted-foreground">This room sleeps up to {room.capacity}.</Text>
         ) : null}
       </View>
 
@@ -200,14 +200,14 @@ export default function BookHotelScreen() {
         <Input label="Full name" value={name} onChangeText={setName} />
         <Input label="Email" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} />
         <View className="gap-1.5">
-          <Text className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Special requests</Text>
+          <Text className="text-sm font-medium text-ink">Special requests</Text>
           <TextInput
             placeholder="Late check-in, extra bed…"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor="#9aa7ac"
             multiline
             value={requests}
             onChangeText={setRequests}
-            className="min-h-16 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+            className="min-h-16 rounded-xl border border-hairline bg-white px-4 py-3 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
           />
         </View>
       </View>
@@ -215,18 +215,18 @@ export default function BookHotelScreen() {
       {/* Price breakdown */}
       <View className="gap-2 rounded-2xl bg-neutral-50 p-4 dark:bg-neutral-900">
         <View className="flex-row justify-between">
-          <Text className="text-sm text-neutral-600 dark:text-neutral-400">
+          <Text className="text-sm text-muted">
             {formatMoney({ amount: nightlyRate, currency })} × {nights} night{nights === 1 ? '' : 's'}
           </Text>
-          <Text className="text-sm text-neutral-800 dark:text-neutral-200">{formatMoney({ amount: total, currency })}</Text>
+          <Text className="text-sm text-ink">{formatMoney({ amount: total, currency })}</Text>
         </View>
         <View className="h-px bg-neutral-200 dark:bg-neutral-700" />
         <View className="flex-row justify-between">
-          <Text className="text-base font-bold text-neutral-900 dark:text-white">Total</Text>
+          <Text className="text-base font-bold text-ink">Total</Text>
           <Text className="text-base font-bold text-brand-600">{formatMoney({ amount: total, currency })}</Text>
         </View>
         {hotel.paymentType ? (
-          <Text className="text-xs text-neutral-500">Payment: {hotel.paymentType}</Text>
+          <Text className="text-xs text-muted">Payment: {hotel.paymentType}</Text>
         ) : null}
       </View>
 
@@ -243,7 +243,7 @@ export default function BookHotelScreen() {
         disabled={!canBook}
         onPress={submit}
       />
-      <Text className="text-center text-xs text-neutral-400">
+      <Text className="text-center text-xs text-muted-foreground">
         You won&apos;t be charged now — the host confirms your request first.
       </Text>
     </ScrollView>

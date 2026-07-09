@@ -12,7 +12,7 @@ function Feature({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label:
   return (
     <View className="flex-row items-center gap-1">
       <Ionicons name={icon} size={13} color="#059669" />
-      <Text className="text-[11px] text-neutral-600 dark:text-neutral-300" numberOfLines={1}>
+      <Text className="text-[11px] text-muted" numberOfLines={1}>
         {label}
       </Text>
     </View>
@@ -54,23 +54,23 @@ export function UmrahPackageCard({ pkg, index = 0 }: { pkg: UmrahPackage; index?
           <View className="gap-1.5 p-3">
             <View className="flex-row items-center justify-between gap-2">
               <Text
-                className="flex-1 text-base font-bold text-neutral-900 dark:text-white"
+                className="flex-1 text-base font-bold text-ink"
                 numberOfLines={1}
               >
                 {pkg.title}
               </Text>
               <View className="flex-row items-center gap-0.5">
-                <Ionicons name="star" size={13} color="#ffb703" />
-                <Text className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+                <Ionicons name="star" size={13} color="#f39024" />
+                <Text className="text-sm font-semibold text-ink">
                   {formatRating(pkg.rating)}
                 </Text>
                 {pkg.reviewCount > 0 ? (
-                  <Text className="text-xs text-neutral-400"> ({pkg.reviewCount})</Text>
+                  <Text className="text-xs text-muted-foreground"> ({pkg.reviewCount})</Text>
                 ) : null}
               </View>
             </View>
 
-            <Text className="text-sm text-neutral-500" numberOfLines={1}>
+            <Text className="text-sm text-muted" numberOfLines={1}>
               {pkg.packageName}
             </Text>
 
@@ -85,12 +85,12 @@ export function UmrahPackageCard({ pkg, index = 0 }: { pkg: UmrahPackage; index?
             <View className="mt-1 flex-row items-end justify-between">
               <Text className="text-base font-bold text-emerald-600">
                 {formatMoney(pkg.price)}
-                <Text className="text-xs font-normal text-neutral-400"> / person</Text>
+                <Text className="text-xs font-normal text-muted-foreground"> / person</Text>
               </Text>
               {pkg.departureLocation ? (
                 <View className="flex-row items-center gap-1">
-                  <Ionicons name="airplane-outline" size={13} color="#9ca3af" />
-                  <Text className="text-xs text-neutral-500">{pkg.departureLocation}</Text>
+                  <Ionicons name="airplane-outline" size={13} color="#9aa7ac" />
+                  <Text className="text-xs text-muted">{pkg.departureLocation}</Text>
                 </View>
               ) : null}
             </View>

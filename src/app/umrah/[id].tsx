@@ -10,7 +10,7 @@ import { useAuthStore } from '@/store/auth.store';
 import { formatMoney, formatRating } from '@/utils/format';
 
 function SectionTitle({ children }: { children: string }) {
-  return <Text className="text-lg font-bold text-neutral-900 dark:text-white">{children}</Text>;
+  return <Text className="text-lg font-display text-ink">{children}</Text>;
 }
 
 /** One city stay block (Makkah / Madinah). */
@@ -29,10 +29,10 @@ function StayCard({
     <View className="flex-1 gap-1 rounded-2xl border border-neutral-100 p-4 dark:border-neutral-800">
       <View className="flex-row items-center gap-2">
         <Ionicons name="business-outline" size={16} color="#059669" />
-        <Text className="text-sm font-bold text-neutral-900 dark:text-white">{city}</Text>
+        <Text className="text-sm font-bold text-ink">{city}</Text>
       </View>
-      <Text className="text-sm text-neutral-700 dark:text-neutral-300">{hotel}</Text>
-      <Text className="text-xs text-neutral-500">{dist}</Text>
+      <Text className="text-sm text-muted">{hotel}</Text>
+      <Text className="text-xs text-muted">{dist}</Text>
       <Text className="mt-1 text-xs font-semibold text-emerald-600">
         {nights} night{nights === 1 ? '' : 's'}
       </Text>
@@ -44,8 +44,8 @@ function Row({ icon, label, value }: { icon: keyof typeof Ionicons.glyphMap; lab
   return (
     <View className="flex-row items-center gap-3 py-1.5">
       <Ionicons name={icon} size={18} color="#059669" />
-      <Text className="text-sm text-neutral-500">{label}</Text>
-      <Text className="flex-1 text-right text-sm font-medium text-neutral-800 dark:text-neutral-200">{value}</Text>
+      <Text className="text-sm text-muted">{label}</Text>
+      <Text className="flex-1 text-right text-sm font-medium text-ink">{value}</Text>
     </View>
   );
 }
@@ -72,7 +72,7 @@ export default function UmrahDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white dark:bg-black">
+      <View className="flex-1 bg-background">
         <Stack.Screen options={{ title: 'Umrah Package' }} />
         <DetailSkeleton />
       </View>
@@ -81,9 +81,9 @@ export default function UmrahDetailScreen() {
 
   if (isError || !pkg) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-8 dark:bg-black">
+      <View className="flex-1 items-center justify-center bg-background px-8">
         <Stack.Screen options={{ title: 'Umrah Package' }} />
-        <Text className="text-center text-neutral-500">
+        <Text className="text-center text-muted">
           Couldn&apos;t load this Umrah package. Pull back and try again.
         </Text>
       </View>
@@ -131,7 +131,7 @@ export default function UmrahDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white dark:bg-black">
+    <View className="flex-1 bg-background">
       <Stack.Screen options={{ title: pkg.title }} />
       <ScrollView ref={scrollRef} contentContainerClassName="pb-32">
         <Gallery images={pkg.images.map((i) => i.url)} />
@@ -140,26 +140,26 @@ export default function UmrahDetailScreen() {
           {/* Title + rating */}
           <View className="gap-1">
             <View className="flex-row items-start justify-between gap-3">
-              <Text className="flex-1 text-2xl font-bold text-neutral-900 dark:text-white">{pkg.title}</Text>
+              <Text className="flex-1 text-2xl font-display text-ink">{pkg.title}</Text>
               <Badge label={pkg.tag} tone="success" />
             </View>
-            <Text className="text-base text-neutral-600 dark:text-neutral-400">{pkg.packageName}</Text>
+            <Text className="text-base text-muted">{pkg.packageName}</Text>
             <View className="mt-1 flex-row flex-wrap items-center gap-x-2">
               <View className="flex-row items-center gap-1">
-                <Ionicons name="star" size={14} color="#ffb703" />
-                <Text className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+                <Ionicons name="star" size={14} color="#f39024" />
+                <Text className="text-sm font-semibold text-ink">
                   {formatRating(pkg.rating)}
                 </Text>
-                <Text className="text-sm text-neutral-500">({pkg.reviewCount} reviews)</Text>
+                <Text className="text-sm text-muted">({pkg.reviewCount} reviews)</Text>
               </View>
               {totalNights > 0 ? (
-                <Text className="text-sm text-neutral-500">· {totalNights} nights total</Text>
+                <Text className="text-sm text-muted">· {totalNights} nights total</Text>
               ) : null}
             </View>
             {pkg.departureLocation ? (
               <View className="mt-1 flex-row items-center gap-1">
-                <Ionicons name="airplane-outline" size={15} color="#9ca3af" />
-                <Text className="text-sm text-neutral-500">Departs from {pkg.departureLocation}</Text>
+                <Ionicons name="airplane-outline" size={15} color="#9aa7ac" />
+                <Text className="text-sm text-muted">Departs from {pkg.departureLocation}</Text>
               </View>
             ) : null}
           </View>
@@ -174,8 +174,8 @@ export default function UmrahDetailScreen() {
 
           {/* Price */}
           <View className="flex-row items-baseline gap-2">
-            <Text className="text-2xl font-bold text-emerald-600">{formatMoney(pkg.price)}</Text>
-            <Text className="text-sm text-neutral-400">/ person</Text>
+            <Text className="text-2xl font-display text-emerald-600">{formatMoney(pkg.price)}</Text>
+            <Text className="text-sm text-muted-foreground">/ person</Text>
           </View>
 
           {/* Stay */}
@@ -200,14 +200,14 @@ export default function UmrahDetailScreen() {
           {pkg.description ? (
             <View className="gap-2">
               <SectionTitle>About this package</SectionTitle>
-              <Text className="leading-6 text-neutral-700 dark:text-neutral-300">{pkg.description}</Text>
+              <Text className="leading-6 text-muted">{pkg.description}</Text>
             </View>
           ) : null}
 
           {pkg.priceIncludes ? (
             <View className="gap-1">
               <SectionTitle>Price includes</SectionTitle>
-              <Text className="text-sm leading-5 text-neutral-600 dark:text-neutral-400">{pkg.priceIncludes}</Text>
+              <Text className="text-sm leading-5 text-muted">{pkg.priceIncludes}</Text>
             </View>
           ) : null}
 
@@ -218,7 +218,7 @@ export default function UmrahDetailScreen() {
                 <Ionicons name="checkmark-circle" size={20} color="#16a34a" />
                 <Text className="text-sm font-bold text-success">Umrah booking request submitted!</Text>
               </View>
-              <Text className="text-sm text-neutral-600 dark:text-neutral-300">
+              <Text className="text-sm text-muted">
                 Reference <Text className="font-bold">{bookingRef}</Text>. Our Hajj &amp; Umrah
                 specialists will review the details and coordinate with you shortly.
               </Text>
@@ -233,7 +233,7 @@ export default function UmrahDetailScreen() {
                 formY.current = e.nativeEvent.layout.y;
               }}
             >
-              <Text className="text-base font-bold text-neutral-900 dark:text-white">Umrah booking enquiry</Text>
+              <Text className="text-base font-bold text-ink">Umrah booking enquiry</Text>
               <Stepper label="Pilgrims" value={pilgrims} onChange={setPilgrims} min={1} max={20} />
               <Input label="Departure city" value={departureCity} onChangeText={setDepartureCity} placeholder="e.g. Islamabad" />
               <Input label="Travel period" value={travelPeriod} onChangeText={setTravelPeriod} placeholder="e.g. October 2026" />
@@ -241,8 +241,8 @@ export default function UmrahDetailScreen() {
               <Input label="Email" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} />
               <Input label="Phone" keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
 
-              <View className="flex-row items-center justify-between rounded-xl bg-neutral-50 px-4 py-3 dark:bg-neutral-900">
-                <Text className="text-sm text-neutral-500">
+              <View className="flex-row items-center justify-between rounded-xl bg-surface-sunk px-4 py-3">
+                <Text className="text-sm text-muted">
                   {pilgrims} × {formatMoney(pkg.price)}
                 </Text>
                 <Text className="text-base font-bold text-emerald-600">
@@ -277,8 +277,8 @@ export default function UmrahDetailScreen() {
       {/* Sticky booking bar */}
       <View className="absolute bottom-0 w-full flex-row items-center justify-between border-t border-neutral-100 bg-white px-5 py-3 dark:border-neutral-800 dark:bg-neutral-950">
         <View>
-          <Text className="text-lg font-bold text-emerald-600">{formatMoney(pkg.price)}</Text>
-          <Text className="text-xs text-neutral-400">per person</Text>
+          <Text className="text-lg font-display text-emerald-600">{formatMoney(pkg.price)}</Text>
+          <Text className="text-xs text-muted-foreground">per person</Text>
         </View>
         <Button label={bookingRef ? 'Book again' : 'Book this package'} onPress={openForm} />
       </View>

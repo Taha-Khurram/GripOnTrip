@@ -25,25 +25,25 @@ function RentalBookingCard({ booking, index }: { booking: MyRentalBooking; index
           <Image source={{ uri: booking.imageUrl }} style={{ width: 104, height: 104 }} contentFit="cover" />
         ) : (
           <View className="h-[104px] w-[104px] items-center justify-center bg-brand-50 dark:bg-brand-500/15">
-            <Ionicons name="home-outline" size={26} color="#219ebc" />
+            <Ionicons name="home-outline" size={26} color="#1a7a8c" />
           </View>
         )}
         <View className="flex-1 gap-1 py-2.5 pr-3">
           <View className="flex-row items-start justify-between gap-2">
-            <Text className="flex-1 text-base font-semibold text-neutral-900 dark:text-white" numberOfLines={1}>
+            <Text className="flex-1 text-base font-semibold text-ink" numberOfLines={1}>
               {booking.propertyTitle ?? 'Rental booking'}
             </Text>
             <Badge label={booking.status} tone={STATUS_TONE[booking.status.toLowerCase()] ?? 'neutral'} />
           </View>
           {booking.city ? (
             <View className="flex-row items-center gap-1">
-              <Ionicons name="location-outline" size={13} color="#9ca3af" />
-              <Text className="text-xs text-neutral-500">{booking.city}</Text>
+              <Ionicons name="location-outline" size={13} color="#9aa7ac" />
+              <Text className="text-xs text-muted">{booking.city}</Text>
             </View>
           ) : null}
           <View className="flex-row items-center gap-1">
-            <Ionicons name="calendar-outline" size={13} color="#9ca3af" />
-            <Text className="text-xs text-neutral-500">
+            <Ionicons name="calendar-outline" size={13} color="#9aa7ac" />
+            <Text className="text-xs text-muted">
               {formatDate(booking.startDate)} → {formatDate(booking.endDate)}
             </Text>
           </View>
@@ -62,7 +62,7 @@ function RentalBookingsList() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator color="#219ebc" />
+        <ActivityIndicator color="#1a7a8c" />
       </View>
     );
   }
@@ -81,7 +81,7 @@ function RentalBookingsList() {
       keyExtractor={(b) => b.id}
       contentContainerClassName="gap-3 p-5"
       renderItem={({ item, index }) => <RentalBookingCard booking={item} index={index} />}
-      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />}
+      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#1a7a8c" />}
       ListEmptyComponent={
         <View className="mt-24">
           <EmptyState
@@ -97,7 +97,7 @@ function RentalBookingsList() {
 
 export default function MyRentalBookingsScreen() {
   return (
-    <View className="flex-1 bg-neutral-50 dark:bg-black">
+    <View className="flex-1 bg-background">
       <Stack.Screen options={{ title: 'My Rental Bookings' }} />
       <SignInGate icon="home-outline" message="Sign in to see your rental bookings.">
         <RentalBookingsList />

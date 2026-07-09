@@ -23,39 +23,39 @@ export function RoomCard({
         <Image source={{ uri: room.images[0] }} style={{ width: '100%', height: 140 }} contentFit="cover" />
       ) : null}
       <View className="gap-2 p-4">
-        <Text className="text-base font-bold text-neutral-900 dark:text-white">{room.roomType}</Text>
+        <Text className="text-base font-bold text-ink">{room.roomType}</Text>
 
         <View className="flex-row flex-wrap gap-2">
           {room.capacity != null ? (
             <View className="flex-row items-center gap-1">
-              <Ionicons name="people-outline" size={14} color="#9ca3af" />
-              <Text className="text-xs text-neutral-500">Sleeps {room.capacity}</Text>
+              <Ionicons name="people-outline" size={14} color="#9aa7ac" />
+              <Text className="text-xs text-muted">Sleeps {room.capacity}</Text>
             </View>
           ) : null}
           {room.bedType ? (
             <View className="flex-row items-center gap-1">
-              <Ionicons name="bed-outline" size={14} color="#9ca3af" />
-              <Text className="text-xs text-neutral-500">{room.bedType}</Text>
+              <Ionicons name="bed-outline" size={14} color="#9aa7ac" />
+              <Text className="text-xs text-muted">{room.bedType}</Text>
             </View>
           ) : null}
           {room.roomSizeSqft ? (
             <View className="flex-row items-center gap-1">
-              <Ionicons name="resize-outline" size={14} color="#9ca3af" />
-              <Text className="text-xs text-neutral-500">{room.roomSizeSqft} sqft</Text>
+              <Ionicons name="resize-outline" size={14} color="#9aa7ac" />
+              <Text className="text-xs text-muted">{room.roomSizeSqft} sqft</Text>
             </View>
           ) : null}
         </View>
 
         {room.amenities.length > 0 ? (
-          <Text className="text-xs text-neutral-500" numberOfLines={2}>
+          <Text className="text-xs text-muted" numberOfLines={2}>
             {room.amenities.slice(0, 5).join(' · ')}
           </Text>
         ) : null}
 
         <View className="mt-1 flex-row items-center justify-between">
-          <Text className="text-lg font-bold text-brand-600">
+          <Text className="text-lg font-display text-brand-600">
             {formatMoney({ amount: room.pricePerNight, currency })}
-            <Text className="text-xs font-normal text-neutral-400"> / night</Text>
+            <Text className="text-xs font-normal text-muted-foreground"> / night</Text>
           </Text>
           {soldOut ? (
             <Badge label="Sold out" tone="neutral" />

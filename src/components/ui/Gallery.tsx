@@ -16,7 +16,7 @@ export function Gallery({ images, height = 260 }: { images: string[]; height?: n
   if (images.length === 0) {
     return (
       <View style={{ width: '100%', height }} className="items-center justify-center bg-brand-50">
-        <Ionicons name="image-outline" size={48} color="#219ebc" />
+        <Ionicons name="image-outline" size={48} color="#1a7a8c" />
       </View>
     );
   }

@@ -16,7 +16,7 @@ function PackageCard({ pkg, onBook }: { pkg: TourPackage; onBook: (pkg: TourPack
   return (
     <Card className="gap-3 p-4">
       <View className="flex-row items-start justify-between gap-3">
-        <Text className="flex-1 text-lg font-bold text-neutral-900 dark:text-white">{pkg.name}</Text>
+        <Text className="flex-1 text-lg font-display text-ink">{pkg.name}</Text>
         <Text className="text-base font-bold text-brand-600">
           {formatMoney({ amount: pkg.amount, currency: 'PKR' })}
         </Text>
@@ -31,25 +31,25 @@ function PackageCard({ pkg, onBook }: { pkg: TourPackage; onBook: (pkg: TourPack
       </View>
 
       {pkg.description ? (
-        <Text className="leading-6 text-neutral-700 dark:text-neutral-300">{pkg.description}</Text>
+        <Text className="leading-6 text-muted">{pkg.description}</Text>
       ) : null}
 
       {pkg.attractionPlaces ? (
         <View className="flex-row items-start gap-2">
-          <Ionicons name="location-outline" size={16} color="#219ebc" />
-          <Text className="flex-1 text-sm text-neutral-600 dark:text-neutral-400">{pkg.attractionPlaces}</Text>
+          <Ionicons name="location-outline" size={16} color="#1a7a8c" />
+          <Text className="flex-1 text-sm text-muted">{pkg.attractionPlaces}</Text>
         </View>
       ) : null}
 
       {pkg.itinerary.length > 0 ? (
         <View className="gap-2">
-          <Text className="text-sm font-semibold text-neutral-900 dark:text-white">Itinerary</Text>
+          <Text className="text-sm font-semibold text-ink">Itinerary</Text>
           {pkg.itinerary.map((day) => (
             <View key={day.day} className="flex-row gap-3">
               <View className="h-6 w-6 items-center justify-center rounded-full bg-brand-50">
                 <Text className="text-xs font-bold text-brand-600">{day.day}</Text>
               </View>
-              <Text className="flex-1 text-sm leading-5 text-neutral-700 dark:text-neutral-300">{day.activity}</Text>
+              <Text className="flex-1 text-sm leading-5 text-muted">{day.activity}</Text>
             </View>
           ))}
         </View>
@@ -57,8 +57,8 @@ function PackageCard({ pkg, onBook }: { pkg: TourPackage; onBook: (pkg: TourPack
 
       {pkg.priceIncludes ? (
         <View className="gap-1">
-          <Text className="text-sm font-semibold text-neutral-900 dark:text-white">Includes</Text>
-          <Text className="text-sm leading-5 text-neutral-600 dark:text-neutral-400">{pkg.priceIncludes}</Text>
+          <Text className="text-sm font-semibold text-ink">Includes</Text>
+          <Text className="text-sm leading-5 text-muted">{pkg.priceIncludes}</Text>
         </View>
       ) : null}
 
@@ -84,7 +84,7 @@ export default function TourDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white dark:bg-black">
+      <View className="flex-1 bg-background">
         <Stack.Screen options={{ title: 'Tour' }} />
         <DetailSkeleton />
       </View>
@@ -93,8 +93,8 @@ export default function TourDetailScreen() {
 
   if (isError || !tour) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-8 dark:bg-black">
-        <Text className="text-center text-neutral-500">
+      <View className="flex-1 items-center justify-center bg-background px-8">
+        <Text className="text-center text-muted">
           Couldn&apos;t load this tour operator. Pull back and try again.
         </Text>
       </View>
@@ -130,52 +130,52 @@ export default function TourDetailScreen() {
   const canSubmit = name.trim().length > 1 && /\S+@\S+\.\S+/.test(email) && phone.trim().length >= 6;
 
   return (
-    <ScrollView className="flex-1 bg-white dark:bg-black" contentContainerClassName="pb-8">
+    <ScrollView className="flex-1 bg-background" contentContainerClassName="pb-8">
       <Stack.Screen options={{ title: tour.title }} />
 
       {image ? (
         <Image source={{ uri: image }} style={{ width: '100%', height: 220 }} contentFit="cover" />
       ) : (
         <View className="h-52 w-full items-center justify-center bg-brand-50">
-          <Ionicons name="map-outline" size={56} color="#219ebc" />
+          <Ionicons name="map-outline" size={56} color="#1a7a8c" />
         </View>
       )}
 
       <View className="gap-3 p-5">
         <View className="flex-row items-center justify-between gap-3">
-          <Text className="flex-1 text-2xl font-bold text-neutral-900 dark:text-white">{tour.title}</Text>
+          <Text className="flex-1 text-2xl font-display text-ink">{tour.title}</Text>
           {tour.flag ? <Badge label={tour.flag} tone="accent" /> : null}
         </View>
 
         {tour.operatingCities.length > 0 ? (
           <View className="flex-row items-start gap-2">
-            <Ionicons name="navigate-outline" size={16} color="#9ca3af" />
-            <Text className="flex-1 text-neutral-500">{tour.operatingCities.join(' · ')}</Text>
+            <Ionicons name="navigate-outline" size={16} color="#9aa7ac" />
+            <Text className="flex-1 text-muted">{tour.operatingCities.join(' · ')}</Text>
           </View>
         ) : null}
 
-        {tour.bio ? <Text className="leading-6 text-neutral-700 dark:text-neutral-300">{tour.bio}</Text> : null}
+        {tour.bio ? <Text className="leading-6 text-muted">{tour.bio}</Text> : null}
 
         {tour.departureLocation || tour.returnLocation ? (
           <View className="flex-row gap-8">
             {tour.departureLocation ? (
               <View className="gap-0.5">
-                <Text className="text-xs uppercase text-neutral-400">Departs</Text>
-                <Text className="text-sm text-neutral-700 dark:text-neutral-300">{tour.departureLocation}</Text>
+                <Text className="text-xs uppercase text-muted-foreground">Departs</Text>
+                <Text className="text-sm text-muted">{tour.departureLocation}</Text>
               </View>
             ) : null}
             {tour.returnLocation ? (
               <View className="gap-0.5">
-                <Text className="text-xs uppercase text-neutral-400">Returns</Text>
-                <Text className="text-sm text-neutral-700 dark:text-neutral-300">{tour.returnLocation}</Text>
+                <Text className="text-xs uppercase text-muted-foreground">Returns</Text>
+                <Text className="text-sm text-muted">{tour.returnLocation}</Text>
               </View>
             ) : null}
           </View>
         ) : null}
 
         {tour.startingPrice ? (
-          <Text className="text-xl font-bold text-brand-600">
-            <Text className="text-sm font-normal text-neutral-400">from </Text>
+          <Text className="text-xl font-display text-brand-600">
+            <Text className="text-sm font-normal text-muted-foreground">from </Text>
             {formatMoney(tour.price)}
           </Text>
         ) : null}
@@ -200,19 +200,19 @@ export default function TourDetailScreen() {
 
         {open && isAuthenticated ? (
           <View className="gap-3 rounded-2xl border border-neutral-100 p-4 dark:border-neutral-800">
-            <Text className="text-base font-bold text-neutral-900 dark:text-white">Booking enquiry</Text>
+            <Text className="text-base font-bold text-ink">Booking enquiry</Text>
             <Input label="Name" value={name} onChangeText={setName} />
             <Input label="Email" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} />
             <Input label="Phone" keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
             <View className="gap-1.5">
-              <Text className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Message</Text>
+              <Text className="text-sm font-medium text-ink">Message</Text>
               <TextInput
                 placeholder="Dates, group size, questions…"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#9aa7ac"
                 multiline
                 value={message}
                 onChangeText={setMessage}
-                className="min-h-16 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                className="min-h-16 rounded-xl border border-hairline bg-white px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
               />
             </View>
             {error ? <Text className="text-xs text-danger">{error}</Text> : null}
@@ -229,7 +229,7 @@ export default function TourDetailScreen() {
 
         {tour.packages.length > 0 ? (
           <View className="mt-2 gap-3">
-            <Text className="text-lg font-bold text-neutral-900 dark:text-white">
+            <Text className="text-lg font-display text-ink">
               Packages ({tour.packages.length})
             </Text>
             {tour.packages.map((pkg) => (
@@ -237,7 +237,7 @@ export default function TourDetailScreen() {
             ))}
           </View>
         ) : (
-          <Text className="mt-2 text-sm text-neutral-500">
+          <Text className="mt-2 text-sm text-muted">
             This operator hasn&apos;t published any packages yet.
           </Text>
         )}

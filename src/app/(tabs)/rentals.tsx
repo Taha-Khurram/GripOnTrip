@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FlatList, RefreshControl, Text, View } from 'react-native';
 
+import { ListHero } from '@/components/layout/ListHero';
 import { Button, ListSkeleton } from '@/components/ui';
 import { RentalCard, useRentals, type Rental } from '@/features/rentals';
 
@@ -14,8 +15,20 @@ import { RentalCard, useRentals, type Rental } from '@/features/rentals';
  */
 export default function RentalsScreen() {
   const { data, isLoading, isError, isRefetching, refetch } = useRentals();
+  const [query, setQuery] = useState('');
 
-  const rentals = data?.data ?? [];
+  const allRentals = useMemo(() => data?.data ?? [], [data?.data]);
+
+  const rentals = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return allRentals;
+    return allRentals.filter(
+      (r) =>
+        r.title.toLowerCase().includes(q) ||
+        r.propertyType.toLowerCase().includes(q) ||
+        (r.location?.city?.toLowerCase().includes(q) ?? false),
+    );
+  }, [allRentals, query]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: Rental; index: number }) => (
@@ -28,7 +41,7 @@ export default function RentalsScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-neutral-50 dark:bg-black">
+      <View className="flex-1 bg-background">
         <ListSkeleton count={5} />
       </View>
     );
@@ -36,9 +49,9 @@ export default function RentalsScreen() {
 
   if (isError) {
     return (
-      <View className="flex-1 items-center justify-center gap-4 bg-neutral-50 px-8 dark:bg-black">
-        <Ionicons name="cloud-offline-outline" size={40} color="#9ca3af" />
-        <Text className="text-center text-neutral-500">
+      <View className="flex-1 items-center justify-center gap-4 bg-background px-8">
+        <Ionicons name="cloud-offline-outline" size={40} color="#9aa7ac" />
+        <Text className="text-center text-muted">
           Couldn&apos;t load vacation rentals. Check your connection and try again.
         </Text>
         <Button label="Retry" variant="outline" onPress={() => refetch()} />
@@ -48,32 +61,44 @@ export default function RentalsScreen() {
 
   return (
     <FlatList
-      className="flex-1 bg-neutral-50 dark:bg-black"
+      className="flex-1 bg-background"
       data={rentals}
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
-      contentContainerClassName="pb-8 pt-3"
+      contentContainerClassName="pb-8"
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f39024" />
       }
+      keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
-        <View className="px-5 pb-3">
-          <Text className="text-sm text-neutral-500">
-            {rentals.length > 0
-              ? `${data?.total ?? rentals.length} rental${(data?.total ?? rentals.length) === 1 ? '' : 's'} available`
-              : ' '}
-          </Text>
-        </View>
+        <>
+          <ListHero
+            variant="sun"
+            icon="home-outline"
+            eyebrow="Stay"
+            title="Vacation Rentals"
+            subtitle="Villas, apartments and unique properties."
+            query={query}
+            onChangeQuery={setQuery}
+            placeholder="Search rentals, cities or types"
+          />
+
+          <View className="px-5 pb-3 pt-4">
+            <Text className="text-sm text-muted">
+              {rentals.length} rental{rentals.length === 1 ? '' : 's'} available
+            </Text>
+          </View>
+        </>
       }
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="home-outline" size={28} color="#219ebc" />
+            <Ionicons name="home-outline" size={28} color="#1a7a8c" />
           </View>
-          <Text className="text-lg font-bold text-neutral-900 dark:text-white">
+          <Text className="text-lg font-display text-ink">
             No rentals posted yet
           </Text>
-          <Text className="text-center text-sm text-neutral-500">
+          <Text className="text-center text-sm text-muted">
             New vacation rentals posted from the dashboard will appear here. Pull down to refresh.
           </Text>
         </View>

@@ -54,20 +54,20 @@ function WishlistRow({ item, index }: { item: WishlistItem; index: number }) {
             <Image source={{ uri: item.imageUrl }} style={{ width: 104, height: 104 }} contentFit="cover" />
           ) : (
             <View className="h-[104px] w-[104px] items-center justify-center bg-brand-50 dark:bg-brand-500/15">
-              <Ionicons name={CATEGORY_ICON[item.category] ?? 'heart-outline'} size={26} color="#219ebc" />
+              <Ionicons name={CATEGORY_ICON[item.category] ?? 'heart-outline'} size={26} color="#1a7a8c" />
             </View>
           )}
           <View className="flex-1 justify-center gap-1 py-2.5 pr-2">
             <View className="self-start rounded-full bg-neutral-100 px-2 py-0.5 dark:bg-neutral-800">
-              <Text className="text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
+              <Text className="text-[10px] font-semibold uppercase tracking-wide text-muted">
                 {CATEGORY_LABEL[item.category] ?? item.category}
               </Text>
             </View>
-            <Text className="text-base font-semibold text-neutral-900 dark:text-white" numberOfLines={1}>
+            <Text className="text-base font-semibold text-ink" numberOfLines={1}>
               {item.title}
             </Text>
             {item.subtitle ? (
-              <Text className="text-xs text-neutral-500" numberOfLines={1}>
+              <Text className="text-xs text-muted" numberOfLines={1}>
                 {item.subtitle}
               </Text>
             ) : null}
@@ -90,7 +90,7 @@ export default function WishlistScreen() {
   const items = useWishlistStore((s) => s.items);
 
   return (
-    <View className="flex-1 bg-neutral-50 dark:bg-black">
+    <View className="flex-1 bg-background">
       <Stack.Screen options={{ title: 'My Wishlist' }} />
       <SignInGate icon="heart-outline" message="Sign in to see items you've saved.">
         <FlatList

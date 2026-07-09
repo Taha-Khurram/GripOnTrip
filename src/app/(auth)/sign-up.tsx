@@ -38,7 +38,7 @@ export default function SignUpScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-neutral-50 dark:bg-black"
+      className="flex-1 bg-background"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerClassName="pb-10" keyboardShouldPersistTaps="handled">
@@ -128,7 +128,7 @@ export default function SignUpScreen() {
         </Animated.View>
 
         <View className="mt-6 flex-row justify-center gap-1">
-          <Text className="text-neutral-500">Already have an account?</Text>
+          <Text className="text-muted">Already have an account?</Text>
           <Link href="/(auth)/sign-in" className="font-semibold text-brand-600">
             Sign in
           </Link>

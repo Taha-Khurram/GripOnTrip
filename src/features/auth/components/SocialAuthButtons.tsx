@@ -25,7 +25,7 @@ export function SocialAuthButtons({ onError }: { onError?: (message: string) => 
     <View className="gap-3">
       <View className="flex-row items-center gap-3">
         <View className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
-        <Text className="text-xs text-neutral-400">or</Text>
+        <Text className="text-xs text-muted-foreground">or</Text>
         <View className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
       </View>
 
@@ -33,14 +33,14 @@ export function SocialAuthButtons({ onError }: { onError?: (message: string) => 
         accessibilityRole="button"
         disabled={loading}
         onPress={handleGoogle}
-        className="flex-row items-center justify-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 active:opacity-70 dark:border-neutral-700 dark:bg-neutral-900"
+        className="flex-row items-center justify-center gap-3 rounded-xl border border-hairline bg-white px-4 py-3 active:opacity-70 dark:border-neutral-700 dark:bg-neutral-900"
       >
         {loading ? (
-          <ActivityIndicator color="#219ebc" />
+          <ActivityIndicator color="#1a7a8c" />
         ) : (
           <>
             <Ionicons name="logo-google" size={18} color="#ea4335" />
-            <Text className="text-base font-semibold text-neutral-900 dark:text-white">
+            <Text className="text-base font-semibold text-ink">
               Continue with Google
             </Text>
           </>

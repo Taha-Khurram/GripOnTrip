@@ -55,26 +55,26 @@ function RentalPropertyCard({ property, index }: { property: MyRentalProperty; i
             <Image source={{ uri: property.imageUrl }} style={{ width: 104, height: 104 }} contentFit="cover" />
           ) : (
             <View className="h-[104px] w-[104px] items-center justify-center bg-brand-50 dark:bg-brand-500/15">
-              <Ionicons name="home-outline" size={26} color="#219ebc" />
+              <Ionicons name="home-outline" size={26} color="#1a7a8c" />
             </View>
           )}
           <View className="flex-1 gap-1 py-2.5 pr-3">
             <View className="flex-row items-start justify-between gap-2">
-              <Text className="flex-1 text-base font-semibold text-neutral-900 dark:text-white" numberOfLines={1}>
+              <Text className="flex-1 text-base font-semibold text-ink" numberOfLines={1}>
                 {property.title}
               </Text>
               {property.status ? <Badge label={property.status} tone={statusTone(property.status)} /> : null}
             </View>
             {property.city ? (
               <View className="flex-row items-center gap-1">
-                <Ionicons name="location-outline" size={13} color="#9ca3af" />
-                <Text className="text-xs text-neutral-500">{property.city}</Text>
+                <Ionicons name="location-outline" size={13} color="#9aa7ac" />
+                <Text className="text-xs text-muted">{property.city}</Text>
               </View>
             ) : null}
-            {specs ? <Text className="text-xs text-neutral-500">{specs}</Text> : null}
+            {specs ? <Text className="text-xs text-muted">{specs}</Text> : null}
             <Text className="text-sm font-bold text-brand-600">
               {formatMoney({ amount: property.pricePerMonth, currency: property.currency })}
-              <Text className="text-xs font-normal text-neutral-400"> / month</Text>
+              <Text className="text-xs font-normal text-muted-foreground"> / month</Text>
             </Text>
           </View>
         </PressableScale>
@@ -105,7 +105,7 @@ function RentalPropertiesList() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator color="#219ebc" />
+        <ActivityIndicator color="#1a7a8c" />
       </View>
     );
   }
@@ -124,7 +124,7 @@ function RentalPropertiesList() {
       keyExtractor={(p) => p.id}
       contentContainerClassName="gap-3 p-5"
       renderItem={({ item, index }) => <RentalPropertyCard property={item} index={index} />}
-      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#219ebc" />}
+      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#1a7a8c" />}
       ListEmptyComponent={
         <View className="mt-24">
           <EmptyState
@@ -140,7 +140,7 @@ function RentalPropertiesList() {
 
 export default function ManageRentalPropertiesScreen() {
   return (
-    <View className="flex-1 bg-neutral-50 dark:bg-black">
+    <View className="flex-1 bg-background">
       <Stack.Screen options={{ title: 'Manage Rental Properties' }} />
       <SignInGate icon="home-outline" message="Sign in to manage your rental listings.">
         <RentalPropertiesList />

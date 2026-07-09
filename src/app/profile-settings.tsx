@@ -52,7 +52,7 @@ function SettingsForm() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator color="#219ebc" />
+        <ActivityIndicator color="#1a7a8c" />
       </View>
     );
   }
@@ -75,12 +75,12 @@ function SettingsForm() {
               />
             ) : (
               <View className="h-24 w-24 items-center justify-center rounded-full bg-brand-500">
-                <Text className="text-3xl font-bold text-white">{displayName.charAt(0).toUpperCase()}</Text>
+                <Text className="text-3xl font-display-x text-white">{displayName.charAt(0).toUpperCase()}</Text>
               </View>
             )}
           </View>
-          <Text className="text-lg font-bold text-neutral-900 dark:text-white">{displayName}</Text>
-          <Text className="text-sm text-neutral-500">{email}</Text>
+          <Text className="text-lg font-display text-ink">{displayName}</Text>
+          <Text className="text-sm text-muted">{email}</Text>
           {role ? (
             <View className="mt-1 rounded-full bg-brand-50 px-3 py-1 dark:bg-brand-500/15">
               <Text className="text-xs font-semibold capitalize text-brand-700 dark:text-brand-300">{role}</Text>
@@ -134,7 +134,7 @@ function SettingsForm() {
             />
             <View>
               <Input label="Email" value={email} editable={false} className="opacity-60" />
-              <Text className="px-1 pt-1 text-xs text-neutral-400">
+              <Text className="px-1 pt-1 text-xs text-muted-foreground">
                 Email can&apos;t be changed here.
               </Text>
             </View>

@@ -16,16 +16,16 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
     ? 'border-danger'
     : focused
       ? 'border-brand-500'
-      : 'border-neutral-200 dark:border-neutral-700';
+      : 'border-hairline';
 
   return (
     <View className="w-full gap-1.5">
       {label ? (
-        <Text className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{label}</Text>
+        <Text className="text-sm font-body-medium text-ink">{label}</Text>
       ) : null}
       <TextInput
         ref={ref}
-        placeholderTextColor="#9ca3af"
+        placeholderTextColor="#9aa7ac"
         onFocus={(e) => {
           setFocused(true);
           onFocus?.(e);
@@ -35,8 +35,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
           onBlur?.(e);
         }}
         className={[
-          'rounded-xl border bg-white px-4 py-3 text-base text-neutral-900 transition-colors',
-          'dark:bg-neutral-900 dark:text-white',
+          'rounded-2xl border bg-surface px-4 py-3.5 text-base text-ink',
           borderClass,
           className,
         ].join(' ')}

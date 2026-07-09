@@ -11,13 +11,13 @@ import type { Tour, TourPackage } from '../types';
 /** Compact preview of one package (name · nights · price). */
 function PackageChip({ pkg }: { pkg: TourPackage }) {
   return (
-    <View className="rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-2 dark:border-neutral-800 dark:bg-neutral-800/60">
-      <Text className="text-xs font-semibold text-neutral-800 dark:text-neutral-100" numberOfLines={1}>
+    <View className="rounded-xl border border-hairline bg-surface-sunk px-3 py-2">
+      <Text className="text-xs font-semibold text-ink" numberOfLines={1}>
         {pkg.name}
       </Text>
       <View className="mt-0.5 flex-row items-center gap-2">
         {pkg.nights != null ? (
-          <Text className="text-[11px] text-neutral-500">
+          <Text className="text-[11px] text-muted">
             {pkg.nights} night{pkg.nights === 1 ? '' : 's'}
           </Text>
         ) : null}
@@ -55,15 +55,15 @@ export function TourCard({ tour, index = 0 }: { tour: Tour; index?: number }) {
             )}
             <View className="flex-1">
               <View className="flex-row items-center gap-2">
-                <Text className="flex-1 text-base font-bold text-neutral-900 dark:text-white" numberOfLines={1}>
+                <Text className="flex-1 text-base font-bold text-ink" numberOfLines={1}>
                   {tour.title}
                 </Text>
                 {tour.flag ? <Badge label={tour.flag} tone="accent" /> : null}
               </View>
               {tour.operatingCities.length > 0 ? (
                 <View className="mt-0.5 flex-row items-center gap-1">
-                  <Ionicons name="location-outline" size={13} color="#9ca3af" />
-                  <Text className="flex-1 text-xs text-neutral-500" numberOfLines={1}>
+                  <Ionicons name="location-outline" size={13} color="#9aa7ac" />
+                  <Text className="flex-1 text-xs text-muted" numberOfLines={1}>
                     {tour.operatingCities.join(' · ')}
                   </Text>
                 </View>
@@ -84,15 +84,15 @@ export function TourCard({ tour, index = 0 }: { tour: Tour; index?: number }) {
           <View className="flex-row items-center justify-between">
             {tour.startingPrice ? (
               <Text className="text-base font-bold text-brand-600">
-                <Text className="text-xs font-normal text-neutral-400">from </Text>
+                <Text className="text-xs font-normal text-muted-foreground">from </Text>
                 {formatMoney(tour.price)}
               </Text>
             ) : (
               <View />
             )}
             <View className="flex-row items-center gap-1">
-              <Ionicons name="cube-outline" size={14} color="#219ebc" />
-              <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
+              <Ionicons name="cube-outline" size={14} color="#1a7a8c" />
+              <Text className="text-sm font-medium text-muted">
                 {packageCount} package{packageCount === 1 ? '' : 's'}
               </Text>
             </View>

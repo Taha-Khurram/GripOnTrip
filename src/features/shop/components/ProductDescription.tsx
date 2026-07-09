@@ -17,7 +17,7 @@ function Inline({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         part.startsWith('**') && part.endsWith('**') ? (
-          <Text key={i} className="font-bold text-neutral-900 dark:text-white">
+          <Text key={i} className="font-bold text-ink">
             {part.slice(2, -2)}
           </Text>
         ) : (
@@ -49,7 +49,7 @@ export function ProductDescription({ markdown }: { markdown: string }) {
           const content = heading[2];
           const size = level === 1 ? 'text-lg' : level === 2 ? 'text-base' : 'text-sm';
           return (
-            <Text key={i} className={`${size} font-bold text-neutral-900 dark:text-white`}>
+            <Text key={i} className={`${size} font-bold text-ink`}>
               <Inline text={content} />
             </Text>
           );
@@ -60,8 +60,8 @@ export function ProductDescription({ markdown }: { markdown: string }) {
         if (bullet) {
           return (
             <View key={i} className="flex-row gap-2 pl-1">
-              <Text className="text-neutral-400">•</Text>
-              <Text className="flex-1 leading-6 text-neutral-700 dark:text-neutral-300">
+              <Text className="text-muted-foreground">•</Text>
+              <Text className="flex-1 leading-6 text-muted">
                 <Inline text={bullet[1]} />
               </Text>
             </View>
@@ -70,7 +70,7 @@ export function ProductDescription({ markdown }: { markdown: string }) {
 
         // Paragraph
         return (
-          <Text key={i} className="leading-6 text-neutral-700 dark:text-neutral-300">
+          <Text key={i} className="leading-6 text-muted">
             <Inline text={line} />
           </Text>
         );
