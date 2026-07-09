@@ -35,8 +35,9 @@ marketplace, with an AI Trip Planner and in-app assistant.
   scoped data (the same backend the website uses).
 - ❤️ **Wishlist** — save any stay, rental, or tour with a tap; persisted per user on-device.
 - 🤖 **AI Trip Planner & assistant** — the same `GOT AI` experience as the web, in your pocket.
-- 🎨 **Polished, themeable UI** — a cohesive design system (NativeWind + brand tokens), full dark mode,
-  and spring-based motion throughout.
+- 🎨 **"Ocean & Sun" design system** — a cohesive light theme (NativeWind + brand/accent tokens),
+  Outfit/Figtree display type, soft gradient heroes (`OceanHero`/`SunCTA`) shared across every listing
+  screen, and spring-based motion throughout. See [`docs/Design.md`](docs/Design.md).
 - 🧱 **Scalable architecture** — typed, file-based routing and self-contained feature modules that are
   trivial to extend.
 
@@ -66,7 +67,8 @@ marketplace, with an AI Trip Planner and in-app assistant.
 | Framework          | Expo SDK 57 · React Native 0.86 · React 19    |
 | Language           | TypeScript (strict)                           |
 | Navigation         | Expo Router (file-based, typed routes)        |
-| Styling            | NativeWind v4 (Tailwind CSS) + brand tokens   |
+| Styling            | NativeWind v4 (Tailwind CSS) + "Ocean & Sun" tokens |
+| Typography         | Outfit (display) + Figtree (body) via `@expo-google-fonts` |
 | Server state       | TanStack React Query                          |
 | Client state       | Zustand                                       |
 | Auth & user data   | Supabase (`@supabase/supabase-js`)            |
@@ -174,8 +176,8 @@ src/
 │   └── my-properties · manage-rental-properties
 ├── api/                    # Axios client + centralized endpoints
 ├── components/
-│   ├── ui/                 #   Design-system primitives (Button, Card, Input, Badge, motion…)
-│   ├── layout/             #   Screen, EmptyState, SignInGate, ComingSoon
+│   ├── ui/                 #   Design-system primitives (Button, Card, Input, Badge, Gradient, motion…)
+│   ├── layout/             #   Screen, ListHero, EmptyState, SignInGate, ComingSoon
 │   └── WishlistButton.tsx
 ├── features/               # One folder per domain (hotels, rentals, tours, umrah,
 │   │                       #   guides, shop, auth, bookings, reviews, profile, assistant)
@@ -221,11 +223,18 @@ Both must pass before a change is considered done.
 
 ## 🗺️ Roadmap
 
+**Recently shipped:** the unified **"Ocean & Sun" design system** with a shared listing hero across
+every vertical, and the **AI Trip Planner** (preferences → generated itinerary).
+
 - [ ] Booking & review **writes** to Supabase (reads are wired; submission is stubbed)
+- [ ] Payments integration (provider TBD)
 - [ ] Push notifications for booking status changes
-- [ ] Build out tours / umrah / guides / shop to hotel-level depth
+- [ ] Bring Tours / Umrah / Guides / Shop to full hotel-level depth (filters, detail parity)
 - [ ] Server-backed wishlist sync across devices
 - [ ] Screenshot gallery + store listing assets
+
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the full phased plan and [`docs/DEV_BUILD_GUIDE.md`](docs/DEV_BUILD_GUIDE.md)
+for building on a device.
 
 ## 🤝 Contributing
 
