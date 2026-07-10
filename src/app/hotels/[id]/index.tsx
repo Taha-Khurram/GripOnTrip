@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -38,7 +38,6 @@ export default function HotelDetailScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 bg-white">
-        <Stack.Screen options={{ headerShown: false }} />
         <DetailSkeleton />
       </View>
     );
@@ -47,7 +46,6 @@ export default function HotelDetailScreen() {
   if (isError || !hotel) {
     return (
       <View className="flex-1 items-center justify-center bg-white px-8">
-        <Stack.Screen options={{ headerShown: false }} />
         <Text className="text-center text-muted">
           Couldn&apos;t load this hotel. Pull back and try again.
         </Text>
@@ -90,7 +88,6 @@ export default function HotelDetailScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      <Stack.Screen options={{ headerShown: false }} />
       <ScrollView ref={scrollRef} contentContainerClassName="pb-32" showsVerticalScrollIndicator={false}>
         {/* Gallery with floating back button */}
         <View>
