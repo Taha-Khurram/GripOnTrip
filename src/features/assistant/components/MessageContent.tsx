@@ -41,14 +41,14 @@ function openLink(url: string) {
 
 function InlineText({ segments }: { segments: Segment[] }) {
   return (
-    <Text className="text-[15px] leading-6 text-white">
+    <Text className="text-[15px] leading-6 text-ink">
       {segments.map((seg, i) => {
         if (seg.url) {
           return (
             <Text
               key={i}
               onPress={() => openLink(seg.url!)}
-              className="font-semibold text-yellow-400 underline"
+              className="font-semibold text-accent-600 underline"
             >
               {seg.text}
             </Text>
@@ -80,7 +80,7 @@ export function MessageContent({ content }: { content: string }) {
         if (bullet) {
           return (
             <View key={index} className="flex-row gap-2 pl-1">
-              <Text className="text-[15px] leading-6 text-yellow-400">•</Text>
+              <Text className="text-[15px] leading-6 text-accent-500">•</Text>
               <View className="flex-1">
                 <InlineText segments={parseInline(bullet[1])} />
               </View>
@@ -92,7 +92,7 @@ export function MessageContent({ content }: { content: string }) {
         if (numbered) {
           return (
             <View key={index} className="flex-row gap-2 pl-1">
-              <Text className="text-[15px] leading-6 text-yellow-400">{numbered[1]}.</Text>
+              <Text className="text-[15px] leading-6 text-accent-500">{numbered[1]}.</Text>
               <View className="flex-1">
                 <InlineText segments={parseInline(numbered[2])} />
               </View>

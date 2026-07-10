@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { OceanHero, PressableScale } from '@/components/ui';
 import { useAssistantChat } from '../hooks';
 import type { ChatMessage } from '../types';
 import { AssistantSearchStrip } from './AssistantSearchStrip';
@@ -22,9 +23,18 @@ import { TypingDots } from './TypingDots';
 /** Routes where the assistant should stay hidden (auth modal), mirroring the web. */
 const HIDDEN_ROUTES = /^\/(sign-in|sign-up|forgot-password)/;
 
+/** Quick-start prompts shown before the traveller has typed anything. */
+const SUGGESTIONS = [
+  { icon: 'bed-outline', label: 'Hotels in Islamabad' },
+  { icon: 'person-outline', label: 'Find a guide in Naran' },
+  { icon: 'compass-outline', label: 'Top places to visit' },
+] as const;
+
 /**
  * The "GOT AI Assistant" — a floating chat button plus a full chat panel, mounted
  * globally so it's reachable from every screen (exactly like the website widget).
+ * Styled in the app's "Ocean & Sun" system: ocean-teal header, sandy-cream canvas,
+ * white agent bubbles, teal traveller bubbles, sun-orange send.
  */
 export function AssistantWidget() {
   const pathname = usePathname();
@@ -61,46 +71,61 @@ export function AssistantWidget() {
 
 function ChatPanel({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const insets = useSafeAreaInsets();
-  const { messages, send, isTyping } = useAssistantChat();
+  const { messages, send, reset, isTyping } = useAssistantChat();
   const [input, setInput] = useState('');
   const scrollRef = useRef<ScrollView>(null);
 
   const scrollToEnd = () => scrollRef.current?.scrollToEnd({ animated: true });
 
-  const handleSend = () => {
-    const text = input;
+  const submit = (text: string) => {
     if (!text.trim() || isTyping) return;
     setInput('');
     send(text);
   };
 
+  const showSuggestions = messages.length <= 1 && !isTyping;
+
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 bg-slate-900" style={{ paddingTop: insets.top }}>
-        {/* Header */}
-        <View className="flex-row items-center gap-3 border-b border-white/10 px-4 pb-3 pt-2">
-          <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-500">
-            <Text className="text-xl">🤖</Text>
-          </View>
-          <View className="flex-1">
-            <Text className="text-base font-semibold text-white">GOT AI Assistant</Text>
-            <View className="flex-row items-center gap-1.5">
-              <View className="h-1.5 w-1.5 rounded-full bg-yellow-400" />
-              <Text className="text-[10px] font-medium uppercase tracking-wide text-yellow-400">
-                Agent Online
-              </Text>
+      <View className="flex-1 bg-background">
+        {/* Header — ocean-teal hero */}
+        <OceanHero style={{ paddingTop: insets.top + 6 }} className="rounded-b-[28px] px-4 pb-4 shadow-glow-ocean">
+          <View className="flex-row items-center gap-3">
+            <View className="h-11 w-11 items-center justify-center rounded-full bg-white/20">
+              <Text className="text-xl">🤖</Text>
             </View>
+            <View className="flex-1">
+              <Text className="font-display text-[17px] text-white">GOT AI Assistant</Text>
+              <View className="flex-row items-center gap-1.5">
+                <View className="h-1.5 w-1.5 rounded-full bg-accent-400" />
+                <Text className="text-[10px] font-body-semibold uppercase tracking-wide text-accent-200">
+                  Agent online
+                </Text>
+              </View>
+            </View>
+
+            <PressableScale
+              accessibilityRole="button"
+              accessibilityLabel="Start a new chat"
+              activeScale={0.9}
+              hitSlop={8}
+              onPress={reset}
+              className="h-9 w-9 items-center justify-center rounded-full bg-white/15"
+            >
+              <Ionicons name="refresh" size={18} color="#fff" />
+            </PressableScale>
+            <PressableScale
+              accessibilityRole="button"
+              accessibilityLabel="Close assistant"
+              activeScale={0.9}
+              hitSlop={8}
+              onPress={onClose}
+              className="h-9 w-9 items-center justify-center rounded-full bg-white/15"
+            >
+              <Ionicons name="close" size={20} color="#fff" />
+            </PressableScale>
           </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Close assistant"
-            hitSlop={8}
-            onPress={onClose}
-            className="rounded-full border border-white/10 p-2 active:bg-white/10"
-          >
-            <Ionicons name="close" size={20} color="#cbd5e1" />
-          </Pressable>
-        </View>
+        </OceanHero>
 
         <KeyboardAvoidingView
           className="flex-1"
@@ -113,48 +138,79 @@ function ChatPanel({ visible, onClose }: { visible: boolean; onClose: () => void
             contentContainerClassName="gap-3 py-4"
             onContentSizeChange={scrollToEnd}
             keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
             {messages.map((message, index) => (
               <MessageBubble key={index} message={message} onNavigate={onClose} />
             ))}
+
             {isTyping ? (
-              <View className="max-w-[88%] self-start rounded-2xl rounded-tl-sm border border-white/10 bg-white/5 px-4 py-3">
-                <TypingDots />
+              <View className="flex-row items-end gap-2">
+                <Avatar />
+                <View className="rounded-2xl rounded-tl-sm border border-hairline bg-surface px-4 py-3 shadow-card">
+                  <TypingDots />
+                </View>
+              </View>
+            ) : null}
+
+            {showSuggestions ? (
+              <View className="mt-1 flex-row flex-wrap gap-2 pl-9">
+                {SUGGESTIONS.map((s) => (
+                  <Pressable
+                    key={s.label}
+                    accessibilityRole="button"
+                    onPress={() => submit(s.label)}
+                    className="flex-row items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-2 active:bg-brand-100"
+                  >
+                    <Ionicons name={s.icon} size={13} color="#156473" />
+                    <Text className="text-[13px] font-body-medium text-brand-700">{s.label}</Text>
+                  </Pressable>
+                ))}
               </View>
             ) : null}
           </ScrollView>
 
           {/* Composer */}
           <View
-            className="flex-row items-center gap-2 border-t border-white/10 bg-slate-900 px-3 py-3"
+            className="flex-row items-end gap-2 border-t border-hairline bg-surface px-3 py-3"
             style={{ paddingBottom: insets.bottom + 8 }}
           >
             <TextInput
               value={input}
               onChangeText={setInput}
               placeholder="Search hotels, find guides…"
-              placeholderTextColor="#94a3b8"
-              className="flex-1 rounded-full bg-white/10 px-4 py-2.5 text-[15px] text-white"
+              placeholderTextColor="#7c8a90"
+              className="max-h-28 flex-1 rounded-3xl border border-hairline bg-surface-sunk px-4 py-3 text-[15px] text-ink"
               returnKeyType="send"
-              onSubmitEditing={handleSend}
+              multiline
+              onSubmitEditing={() => submit(input)}
               editable={!isTyping}
             />
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Send message"
-              onPress={handleSend}
+              onPress={() => submit(input)}
               disabled={!input.trim() || isTyping}
               className={[
-                'h-11 w-11 items-center justify-center rounded-full',
-                !input.trim() || isTyping ? 'bg-white/10' : 'bg-brand-500 active:bg-brand-600',
+                'h-12 w-12 items-center justify-center rounded-full',
+                !input.trim() || isTyping ? 'bg-hairline' : 'bg-accent-500 active:bg-accent-600',
               ].join(' ')}
             >
-              <Ionicons name="send" size={18} color={!input.trim() || isTyping ? '#64748b' : '#fff'} />
+              <Ionicons name="send" size={18} color={!input.trim() || isTyping ? '#7c8a90' : '#fff'} />
             </Pressable>
           </View>
         </KeyboardAvoidingView>
       </View>
     </Modal>
+  );
+}
+
+/** Small ocean-teal agent avatar shown beside assistant messages. */
+function Avatar() {
+  return (
+    <View className="h-7 w-7 items-center justify-center rounded-full bg-brand-500">
+      <Ionicons name="sparkles" size={13} color="#fff" />
+    </View>
   );
 }
 
@@ -167,22 +223,25 @@ function MessageBubble({
 }) {
   if (message.role === 'user') {
     return (
-      <View className="max-w-[82%] self-end rounded-2xl rounded-tr-sm bg-brand-500 px-4 py-2.5">
+      <View className="max-w-[82%] self-end rounded-2xl rounded-tr-sm bg-brand-500 px-4 py-2.5 shadow-card">
         <Text className="text-[15px] leading-6 text-white">{message.content}</Text>
       </View>
     );
   }
 
   return (
-    <View className="w-full items-start">
-      <View className="max-w-[88%] rounded-2xl rounded-tl-sm border border-white/10 bg-white/5 px-4 py-2.5">
-        <MessageContent content={message.content} />
-      </View>
-      {message.searchAction ? (
-        <View className="w-full pl-1">
-          <AssistantSearchStrip action={message.searchAction} onNavigate={onNavigate} />
+    <View className="w-full flex-row items-start gap-2">
+      <Avatar />
+      <View className="flex-1 items-start gap-2">
+        <View className="max-w-full rounded-2xl rounded-tl-sm border border-hairline bg-surface px-4 py-2.5 shadow-card">
+          <MessageContent content={message.content} />
         </View>
-      ) : null}
+        {message.searchAction ? (
+          <View className="w-full">
+            <AssistantSearchStrip action={message.searchAction} onNavigate={onNavigate} />
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 }

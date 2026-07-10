@@ -30,7 +30,7 @@ function Dot({ delay }: { delay: number }) {
   return (
     <Animated.View
       style={{ opacity: value, transform: [{ scale: value }] }}
-      className="h-2 w-2 rounded-full bg-slate-300"
+      className="h-2 w-2 rounded-full bg-brand-400"
     />
   );
 }

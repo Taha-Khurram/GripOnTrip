@@ -31,14 +31,14 @@ function Loading({ city }: { city: string }) {
   return (
     <View className="flex-row items-center gap-2 py-4">
       <ActivityIndicator size="small" color="#f39024" />
-      <Text className="text-[11px] font-light text-slate-300">Finding matches in {city}…</Text>
+      <Text className="text-[11px] font-light text-muted">Finding matches in {city}…</Text>
     </View>
   );
 }
 
 function Empty({ kind, city }: { kind: string; city: string }) {
   return (
-    <Text className="py-2 text-[11px] font-light italic text-slate-400">
+    <Text className="py-2 text-[11px] font-light italic text-muted">
       No active {kind} listed in {city} at the moment.
     </Text>
   );
@@ -75,7 +75,7 @@ function HotelStripCard({ hotel, onPress }: { hotel: Hotel; onPress: () => void 
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      className="w-[170px] overflow-hidden rounded-2xl border border-white/10 bg-slate-800"
+      className="w-[170px] overflow-hidden rounded-2xl border border-hairline bg-surface shadow-card"
     >
       <Image
         source={{ uri: hotel.images[0]?.url }}
@@ -84,20 +84,20 @@ function HotelStripCard({ hotel, onPress }: { hotel: Hotel; onPress: () => void 
         transition={200}
       />
       <View className="gap-1 p-2.5">
-        <Text className="text-[13px] font-semibold text-white" numberOfLines={1}>
+        <Text className="text-[13px] font-semibold text-ink" numberOfLines={1}>
           {hotel.title}
         </Text>
         {hotel.location?.city ? (
           <View className="flex-row items-center gap-1">
-            <Ionicons name="location-outline" size={11} color="#94a3b8" />
-            <Text className="text-[11px] text-slate-400" numberOfLines={1}>
+            <Ionicons name="location-outline" size={11} color="#7c8a90" />
+            <Text className="text-[11px] text-muted" numberOfLines={1}>
               {hotel.location.city}
             </Text>
           </View>
         ) : null}
-        <Text className="text-[13px] font-bold text-yellow-400">
+        <Text className="text-[13px] font-bold text-accent-600">
           {formatMoney(hotel.price)}
-          <Text className="text-[10px] font-normal text-slate-400"> /night</Text>
+          <Text className="text-[10px] font-normal text-muted"> /night</Text>
         </Text>
       </View>
     </Pressable>
@@ -135,7 +135,7 @@ function GuideStripCard({ guide, onPress }: { guide: Guide; onPress: () => void 
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      className="w-[170px] items-center gap-2 rounded-2xl border border-white/10 bg-slate-800 p-3"
+      className="w-[170px] items-center gap-2 rounded-2xl border border-hairline bg-surface p-3 shadow-card"
     >
       {guide.imageUrl ? (
         <Image
@@ -145,22 +145,22 @@ function GuideStripCard({ guide, onPress }: { guide: Guide; onPress: () => void 
           transition={200}
         />
       ) : (
-        <View className="h-14 w-14 items-center justify-center rounded-full bg-white/10">
+        <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-50">
           <Ionicons name="person" size={26} color="#f39024" />
         </View>
       )}
-      <Text className="text-center text-[13px] font-semibold text-white" numberOfLines={1}>
+      <Text className="text-center text-[13px] font-semibold text-ink" numberOfLines={1}>
         {guide.name}
       </Text>
       {guide.city ? (
-        <Text className="text-[11px] text-slate-400" numberOfLines={1}>
+        <Text className="text-[11px] text-muted" numberOfLines={1}>
           {guide.city}
         </Text>
       ) : null}
       {guide.rating > 0 ? (
         <View className="flex-row items-center gap-1">
           <Ionicons name="star" size={11} color="#f39024" />
-          <Text className="text-[11px] text-slate-300">{formatRating(guide.rating)}</Text>
+          <Text className="text-[11px] text-muted">{formatRating(guide.rating)}</Text>
         </View>
       ) : null}
     </Pressable>
