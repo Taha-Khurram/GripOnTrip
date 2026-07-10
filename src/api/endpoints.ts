@@ -55,7 +55,12 @@ export const endpoints = {
     detail: (id: string) => `/bookings/${id}`,
   },
   tripPlanner: {
-    generate: '/trip-planner/generate',
+    // The web "AI Tour Planner" (/plan-tour) posts to `POST /api/plan-trip` with
+    // `{ destination, duration: "N Days", travelers, budget, interests }` and reads
+    // `{ itinerary: [{ day, title, timeline: [{ time, activity }] }] }`. When the AI
+    // backend errors the website degrades to a locally-built outline; the app mirrors
+    // that in `features/trip-planner/api.ts`. (There is no `/trip-planner/generate`.)
+    generate: '/plan-trip',
   },
   ai: {
     // The "GOT AI Assistant" chat. Same endpoint the website's floating chat

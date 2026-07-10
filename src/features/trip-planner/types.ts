@@ -1,7 +1,7 @@
 /**
  * Types for the AI Trip Planner — the mobile counterpart of the web planner that
- * collects a few trip preferences and calls `POST /trip-planner/generate` to
- * build a day-by-day itinerary.
+ * collects a few trip preferences and calls `POST /api/plan-trip` to build a
+ * day-by-day itinerary.
  *
  * The generate endpoint is AI-backed, so its response shape isn't perfectly
  * stable. `api.ts` normalizes whatever comes back into {@link TripItinerary},
@@ -14,7 +14,7 @@ export type TripBudget = 'budget' | 'moderate' | 'luxury';
 /** How densely to pack each day. */
 export type TripPace = 'relaxed' | 'balanced' | 'packed';
 
-/** Preferences collected from the form and sent to `POST /trip-planner/generate`. */
+/** Preferences collected from the form and sent to `POST /api/plan-trip`. */
 export interface TripPreferences {
   destination: string;
   /** ISO `YYYY-MM-DD`. */
