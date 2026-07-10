@@ -1,8 +1,9 @@
 /**
- * Bookings — reads are wired to Supabase (same project as the website); the
- * write flows remain local stubs until the booking submission endpoints are
- * finalized. "My bookings" surfaces hotel/stay reservations for the signed-in
- * user (including any made on the web under the same account).
+ * Bookings — reads and the hotel write flow are wired to Supabase (same project
+ * as the website). The rental/agency/guide write flows remain local stubs until
+ * their submission endpoints are finalized. "My bookings" surfaces hotel/stay
+ * reservations for the signed-in user (including any made on the web under the
+ * same account).
  */
 import { resolveImageUrl } from '@/api/media';
 import { supabase } from '@/lib/supabase';
@@ -14,8 +15,44 @@ import type {
   RentalBookingInput,
 } from './types';
 
-export async function createHotelBooking(_input: HotelBookingInput) {
-  return { id: 'local' };
+/**
+ * Create a hotel booking in Supabase. Attaches the signed-in user's id when
+ * available so it surfaces under "My bookings"; falls back to a guest booking
+ * (name + email satisfy the `chk_user_or_guest` constraint) when signed out.
+ * `room_id` is NOT NULL, so a room must have been selected upstream.
+ */
+export async function createHotelBooking(input: HotelBookingInput) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const guests = input.adults + input.children;
+
+  const { data, error } = await supabase
+    .from('bookings')
+    .insert({
+      hotel_id: input.hotelId,
+      room_id: input.roomId,
+      user_id: user?.id ?? null,
+      guest_name: input.guestName,
+      guest_email: input.guestEmail,
+      check_in_date: input.checkInDate,
+      check_out_date: input.checkOutDate,
+      number_of_guests: guests > 0 ? guests : 1,
+      adults: input.adults,
+      children: input.children,
+      total_price: input.totalPrice,
+      currency: input.currency,
+      status: 'pending',
+      payment_status: 'pending',
+      payment_method: input.paymentMethod ?? null,
+      special_requests: input.specialRequests ?? null,
+    })
+    .select('id')
+    .single();
+
+  if (error) throw new Error(error.message);
+  return { id: String(data.id) };
 }
 
 export async function createRentalBooking(_input: RentalBookingInput) {

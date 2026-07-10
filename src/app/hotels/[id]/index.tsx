@@ -1,11 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Badge, Button, DetailSkeleton, Gallery, PressableScale } from '@/components/ui';
 import { WishlistButton } from '@/components/WishlistButton';
-import { useHotel, useHotelReviews, useHotelRooms, type Room } from '@/features/hotels';
+import {
+  encodeSelection,
+  nightlySubtotal,
+  selectedRooms,
+  totalRoomCount,
+  useHotel,
+  useHotelReviews,
+  useHotelRooms,
+  type RoomQuantities,
+} from '@/features/hotels';
 import { RoomCard } from '@/features/hotels/components/RoomCard';
 import { ReviewsSection } from '@/features/reviews';
 import { AmenityGrid } from '@/utils/amenities';
@@ -20,6 +29,7 @@ export default function HotelDetailScreen() {
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
   const roomsY = useRef(0);
+  const [quantities, setQuantities] = useState<RoomQuantities>({});
 
   const { data: hotel, isLoading, isError } = useHotel(id);
   const { data: rooms = [] } = useHotelRooms(id);
@@ -45,10 +55,30 @@ export default function HotelDetailScreen() {
     );
   }
 
-  const openBooking = (room?: Room) =>
+  const currency = hotel.price.currency;
+  const chosen = selectedRooms(rooms, quantities);
+  const roomCount = totalRoomCount(quantities);
+  const subtotal = nightlySubtotal(rooms, quantities);
+
+  const setRoomQuantity = (roomId: string, quantity: number) =>
+    setQuantities((prev) => {
+      const next = { ...prev };
+      if (quantity <= 0) delete next[roomId];
+      else next[roomId] = quantity;
+      return next;
+    });
+
+  // Reserve carries the current room selection to the booking screen. Without an
+  // explicit selection (e.g. a hotel with no bookable rooms), fall back to a
+  // single room so the booking flow can still start.
+  const reserve = (roomId?: string) =>
     router.push({
       pathname: '/hotels/[id]/book',
-      params: { id: hotel.id, roomId: room?.id ?? '' },
+      params: {
+        id: hotel.id,
+        roomId: roomId ?? '',
+        selection: encodeSelection(quantities),
+      },
     });
 
   const scrollToRooms = () =>
@@ -197,7 +227,13 @@ export default function HotelDetailScreen() {
             <SectionTitle>Choose your room</SectionTitle>
             {rooms.length > 0 ? (
               rooms.map((room) => (
-                <RoomCard key={room.id} room={room} currency={hotel.price.currency} onSelect={openBooking} />
+                <RoomCard
+                  key={room.id}
+                  room={room}
+                  currency={currency}
+                  quantity={quantities[room.id] ?? 0}
+                  onQuantityChange={(q) => setRoomQuantity(room.id, q)}
+                />
               ))
             ) : (
               <Text className="text-sm text-muted">
@@ -205,6 +241,51 @@ export default function HotelDetailScreen() {
               </Text>
             )}
           </View>
+
+          {/* Reservation summary — appears once a room is selected, mirroring the website. */}
+          {chosen.length > 0 ? (
+            <View className="gap-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 dark:border-brand-900 dark:bg-brand-900/40">
+              <View className="flex-row items-center gap-2">
+                <Ionicons name="cart-outline" size={18} color="#156473" />
+                <Text className="font-display text-base text-ink">Your selection</Text>
+              </View>
+
+              <View className="gap-2">
+                {chosen.map(({ room, quantity }) => (
+                  <View key={room.id} className="flex-row items-start justify-between gap-3">
+                    <Text className="flex-1 text-sm text-ink">
+                      {quantity} × {room.roomType}
+                    </Text>
+                    <Text className="text-sm font-semibold text-ink">
+                      {formatMoney({ amount: room.pricePerNight * quantity, currency })}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+
+              <View className="h-px bg-brand-100 dark:bg-brand-900" />
+
+              <View className="flex-row items-baseline justify-between">
+                <View>
+                  <Text className="text-base font-bold text-ink">
+                    Total{' '}
+                    <Text className="text-xs font-normal text-muted-foreground">
+                      ({roomCount} room{roomCount === 1 ? '' : 's'} / night)
+                    </Text>
+                  </Text>
+                </View>
+                <Text className="font-display-x text-xl text-brand-600">
+                  {formatMoney({ amount: subtotal, currency })}
+                </Text>
+              </View>
+
+              <Text className="text-xs text-muted-foreground">
+                Final total depends on your dates — pick check-in &amp; check-out next.
+              </Text>
+
+              <Button label="Continue" icon="arrow-forward" fullWidth onPress={() => reserve()} />
+            </View>
+          ) : null}
 
           {/* Bank transfer info */}
           {hotel.bank?.accountNumber ? (
@@ -233,28 +314,33 @@ export default function HotelDetailScreen() {
         </View>
       </ScrollView>
 
-      {/* Sticky booking bar */}
+      {/* Sticky booking bar — reflects the live room selection. */}
       <View className="absolute bottom-0 w-full flex-row items-center justify-between border-t border-hairline bg-white px-5 pb-8 pt-3">
         <View>
           <Text className="font-display-x text-xl text-brand-600">
-            {formatMoney(
-              cheapestRoom
-                ? { amount: cheapestRoom.pricePerNight, currency: hotel.price.currency }
-                : hotel.price,
-            )}
+            {formatMoney({
+              amount: roomCount > 0 ? subtotal : cheapestRoom?.pricePerNight ?? hotel.price.amount,
+              currency,
+            })}
           </Text>
           <Text className="text-xs text-muted-foreground">
-            {rooms.length > 0 ? 'from / night' : '/ night'}
+            {roomCount > 0
+              ? `${roomCount} room${roomCount === 1 ? '' : 's'} / night`
+              : rooms.length > 0
+                ? 'from / night'
+                : '/ night'}
           </Text>
         </View>
         {hotel.externalBookingUrl ? (
           <Button label="Book on partner site" onPress={() => Linking.openURL(hotel.externalBookingUrl!)} />
+        ) : roomCount > 0 ? (
+          <Button label="Continue" icon="arrow-forward" onPress={() => reserve()} />
         ) : rooms.length > 0 ? (
           <Button label="Select room" onPress={scrollToRooms} />
         ) : hotel.phone ? (
           <Button label="Call to book" onPress={() => Linking.openURL(`tel:${hotel.phone}`)} />
         ) : (
-          <Button label="Request to book" onPress={() => openBooking()} />
+          <Button label="Request to book" onPress={() => reserve()} />
         )}
       </View>
     </View>

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/query-client';
 import { useAuthStore } from '@/store/auth.store';
@@ -11,7 +11,15 @@ import {
 } from './api';
 
 export function useCreateHotelBooking() {
-  return useMutation({ mutationFn: createHotelBooking });
+  const queryClient = useQueryClient();
+  const userId = useAuthStore((s) => s.user?.id);
+  return useMutation({
+    mutationFn: createHotelBooking,
+    // Refresh the dashboard so the new reservation shows up right away.
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.bookings.mine(userId) });
+    },
+  });
 }
 
 export function useCreateRentalBooking() {

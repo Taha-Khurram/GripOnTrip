@@ -1,19 +1,95 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
-import { Badge, Button, DateField, Input, Stepper } from '@/components/ui';
+import { Badge, Button, Card, DateField, Input, Stepper } from '@/components/ui';
 import { AUTH_GATING_ENABLED } from '@/features/auth';
 import { useCreateHotelBooking } from '@/features/bookings';
-import { useHotel, useHotelRooms } from '@/features/hotels';
+import {
+  nightlySubtotal,
+  parseSelection,
+  selectedRooms,
+  totalRoomCount,
+  useHotel,
+  useHotelRooms,
+  type RoomQuantities,
+} from '@/features/hotels';
 import { RoomCard } from '@/features/hotels/components/RoomCard';
 import { useAuthStore } from '@/store/auth.store';
 import { addDays, nightsBetween, parseAvailabilityRange, toISODate } from '@/utils/date';
 import { formatDate, formatMoney } from '@/utils/format';
 
+type PaymentMode = 'online' | 'property';
+
+function SectionTitle({ children }: { children: string }) {
+  return <Text className="font-display text-lg text-ink">{children}</Text>;
+}
+
+/** A selectable payment method tile (radio-style). */
+function PaymentOption({
+  active,
+  icon,
+  title,
+  subtitle,
+  onPress,
+}: {
+  active: boolean;
+  icon: keyof typeof Ionicons.glyphMap;
+  title: string;
+  subtitle: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      className={[
+        'flex-1 flex-row items-center gap-3 rounded-2xl border p-3.5',
+        active ? 'border-brand-500 bg-brand-50/60' : 'border-hairline bg-surface',
+      ].join(' ')}
+    >
+      <Ionicons
+        name={active ? 'radio-button-on' : 'radio-button-off'}
+        size={20}
+        color={active ? '#16a34a' : '#9aa7ac'}
+      />
+      <View className="flex-1">
+        <View className="flex-row items-center gap-1.5">
+          <Ionicons name={icon} size={16} color="#156473" />
+          <Text className="text-sm font-semibold text-ink">{title}</Text>
+        </View>
+        <Text className="text-xs text-muted-foreground">{subtitle}</Text>
+      </View>
+    </Pressable>
+  );
+}
+
+function PriceRow({
+  label,
+  value,
+  valueClassName = 'text-sm font-semibold text-ink',
+}: {
+  label: string;
+  value: string;
+  valueClassName?: string;
+}) {
+  return (
+    <View className="flex-row items-center justify-between">
+      <Text className="text-sm text-muted">{label}</Text>
+      <Text className={valueClassName}>{value}</Text>
+    </View>
+  );
+}
+
 export default function BookHotelScreen() {
-  const { id, roomId } = useLocalSearchParams<{ id: string; roomId?: string }>();
+  const { id, roomId, selection } = useLocalSearchParams<{
+    id: string;
+    roomId?: string;
+    selection?: string;
+  }>();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
 
@@ -21,10 +97,17 @@ export default function BookHotelScreen() {
   const { data: rooms = [], isLoading: roomsLoading } = useHotelRooms(id);
   const { mutateAsync, isPending } = useCreateHotelBooking();
 
-  // A room is required (bookings.room_id is NOT NULL). Start from the param, but
-  // let the user pick/switch here.
-  const [selectedRoomId, setSelectedRoomId] = useState<string | undefined>(roomId || undefined);
-  const room = useMemo(() => rooms.find((r) => r.id === selectedRoomId), [rooms, selectedRoomId]);
+  // Seed the selection from the params: prefer the multi-room `selection` string,
+  // then fall back to a single `roomId`. The user can still adjust it here.
+  const [quantities, setQuantities] = useState<RoomQuantities>(() => {
+    const parsed = parseSelection(selection);
+    if (Object.keys(parsed).length > 0) return parsed;
+    return roomId ? { [roomId]: 1 } : {};
+  });
+
+  const chosen = useMemo(() => selectedRooms(rooms, quantities), [rooms, quantities]);
+  const roomCount = totalRoomCount(quantities);
+  const primaryRoom = chosen[0]?.room;
   const availability = parseAvailabilityRange(hotel?.availabilityDates);
 
   const initialCheckIn = availability?.start ?? toISODate(new Date());
@@ -34,14 +117,25 @@ export default function BookHotelScreen() {
   const [children, setChildren] = useState(0);
   const [name, setName] = useState(user?.name ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
+  const [arrivalTime, setArrivalTime] = useState('');
   const [requests, setRequests] = useState('');
+  const [payment, setPayment] = useState<PaymentMode>('property');
+  const [showAmenities, setShowAmenities] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState<string | null>(null);
 
-  const nightlyRate = room?.pricePerNight ?? hotel?.price.amount ?? 0;
   const nights = nightsBetween(checkIn, checkOut);
   const currency = hotel?.price.currency ?? 'PKR';
+  const nightlyRate = chosen.length > 0 ? nightlySubtotal(rooms, quantities) : hotel?.price.amount ?? 0;
   const total = nightlyRate * nights;
+
+  const setRoomQuantity = (rId: string, quantity: number) =>
+    setQuantities((prev) => {
+      const next = { ...prev };
+      if (quantity <= 0) delete next[rId];
+      else next[rId] = quantity;
+      return next;
+    });
 
   if (isLoading || !hotel) {
     return (
@@ -66,7 +160,7 @@ export default function BookHotelScreen() {
   // Every hotel booking needs a room (bookings.room_id is NOT NULL). If the user
   // arrived without one, let them pick; if the hotel has no bookable rooms, guide
   // them to contact the property instead.
-  if (!room && !confirmed) {
+  if (chosen.length === 0 && !confirmed) {
     return (
       <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-3 p-5 pb-10">
         <Stack.Screen options={{ title: 'Choose a room' }} />
@@ -75,9 +169,15 @@ export default function BookHotelScreen() {
           <ActivityIndicator color="#1a7a8c" className="mt-8" />
         ) : rooms.length > 0 ? (
           <>
-            <Text className="text-sm text-muted">Select a room to continue.</Text>
+            <Text className="text-sm text-muted">Select one or more rooms to continue.</Text>
             {rooms.map((r) => (
-              <RoomCard key={r.id} room={r} currency={currency} onSelect={(sel) => setSelectedRoomId(sel.id)} />
+              <RoomCard
+                key={r.id}
+                room={r}
+                currency={currency}
+                quantity={quantities[r.id] ?? 0}
+                onQuantityChange={(q) => setRoomQuantity(r.id, q)}
+              />
             ))}
           </>
         ) : (
@@ -104,12 +204,12 @@ export default function BookHotelScreen() {
         <View className="h-20 w-20 items-center justify-center rounded-full bg-green-50">
           <Ionicons name="checkmark-circle" size={56} color="#16a34a" />
         </View>
-        <Text className="text-center text-xl font-display text-ink">
-          Booking requested!
-        </Text>
+        <Text className="text-center text-xl font-display text-ink">Booking requested!</Text>
         <Text className="text-center text-sm text-muted">
           Your request for {hotel.title} is pending confirmation from the host.
-          {hotel.paymentType ? ` Payment: ${hotel.paymentType}.` : ''}
+          {payment === 'property'
+            ? ' Pay the full amount when you arrive at the property.'
+            : ' The host will share payment details shortly.'}
         </Text>
         <View className="w-full gap-3 pt-2">
           <Button label="View my bookings" fullWidth onPress={() => router.replace('/my-bookings')} />
@@ -119,28 +219,46 @@ export default function BookHotelScreen() {
     );
   }
 
-  const canBook = Boolean(room) && nights > 0 && name.trim().length > 1 && /\S+@\S+\.\S+/.test(email);
+  // Signed-in users book with their account details; guests must supply name/email.
+  const needsGuestDetails = !user;
+  const canBook =
+    chosen.length > 0 &&
+    nights > 0 &&
+    (!needsGuestDetails || (name.trim().length > 1 && /\S+@\S+\.\S+/.test(email)));
+
+  const primaryMax =
+    primaryRoom?.inventory && primaryRoom.inventory > 0 ? primaryRoom.inventory : 10;
 
   const submit = async () => {
     setError(null);
-    if (!room) {
+    if (!primaryRoom) {
       setError('Please select a room first.');
       return;
     }
+    if (nights <= 0) {
+      setError('Please pick a check-out date after your check-in date.');
+      return;
+    }
+    const notes = [
+      arrivalTime.trim() ? `Estimated arrival: ${arrivalTime.trim()}` : '',
+      requests.trim(),
+    ]
+      .filter(Boolean)
+      .join('\n');
     try {
       await mutateAsync({
         hotelId: hotel.id,
-        roomId: room.id,
-        guestName: name.trim(),
-        guestEmail: email.trim(),
+        roomId: primaryRoom.id,
+        guestName: (user?.name ?? name).trim() || 'Guest',
+        guestEmail: (user?.email ?? email).trim(),
         checkInDate: checkIn,
         checkOutDate: checkOut,
         adults,
         children,
         totalPrice: total,
         currency,
-        paymentMethod: hotel.paymentType ?? undefined,
-        specialRequests: requests.trim() || undefined,
+        paymentMethod: payment === 'online' ? 'Pay Online' : 'Pay at Property',
+        specialRequests: notes || undefined,
       });
       setConfirmed('ok');
     } catch (e) {
@@ -148,104 +266,258 @@ export default function BookHotelScreen() {
     }
   };
 
+  const roomImage = primaryRoom?.images[0] ?? hotel.images[0]?.url;
+  const reviewAmenities = primaryRoom?.amenities.length ? primaryRoom.amenities : hotel.amenities;
+  const cancellation = hotel.freeCancellation ? 'Free cancellation' : 'Not Applicable';
+
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-5 p-5 pb-10" keyboardShouldPersistTaps="handled">
-      <Stack.Screen options={{ title: 'Book your stay' }} />
+    <ScrollView
+      className="flex-1 bg-background"
+      contentContainerClassName="gap-4 p-5 pb-12"
+      keyboardShouldPersistTaps="handled"
+    >
+      <Stack.Screen options={{ title: 'Confirm your booking' }} />
 
-      {/* Summary header */}
-      <View className="gap-1">
-        <Text className="text-xl font-display text-ink">{hotel.title}</Text>
-        {room ? (
-          <View className="flex-row items-center gap-2">
-            <Badge label={room.roomType} tone="brand" />
-            {room.bedType ? <Text className="text-sm text-muted">{room.bedType}</Text> : null}
-          </View>
+      {/* ── Card 1 · Your Stay ─────────────────────────────────────── */}
+      <Card className="gap-4">
+        <SectionTitle>Your Stay</SectionTitle>
+
+        <View className="flex-row gap-3">
+          <DateField
+            label="Check-in"
+            value={checkIn}
+            min={availability ? new Date(availability.start) : new Date()}
+            onChange={(iso) => {
+              setCheckIn(iso);
+              if (nightsBetween(iso, checkOut) <= 0) setCheckOut(addDays(iso, 1));
+            }}
+          />
+          <DateField
+            label="Check-out"
+            value={checkOut}
+            min={new Date(addDays(checkIn, 1))}
+            onChange={setCheckOut}
+          />
+        </View>
+        {availability ? (
+          <Text className="-mt-2 text-xs text-muted-foreground">
+            Available {formatDate(availability.start)} – {formatDate(availability.end)}
+          </Text>
         ) : null}
-        <Text className="text-sm text-muted">
-          {formatMoney({ amount: nightlyRate, currency })} / night
-        </Text>
-      </View>
 
-      {/* Dates */}
-      <View className="flex-row gap-3">
-        <DateField
-          label="Check-in"
-          value={checkIn}
-          min={availability ? new Date(availability.start) : new Date()}
-          onChange={(iso) => {
-            setCheckIn(iso);
-            if (nightsBetween(iso, checkOut) <= 0) setCheckOut(addDays(iso, 1));
-          }}
+        <View className="gap-1 rounded-2xl border border-hairline p-1">
+          {roomCount <= 1 && primaryRoom ? (
+            <Stepper
+              label="Rooms"
+              value={roomCount}
+              min={1}
+              max={primaryMax}
+              onChange={(v) => setRoomQuantity(primaryRoom.id, v)}
+            />
+          ) : (
+            <View className="flex-row items-center justify-between py-2">
+              <Text className="text-base text-ink">Rooms</Text>
+              <Text className="text-base font-semibold text-ink">{roomCount}</Text>
+            </View>
+          )}
+          <Stepper label="Adults" value={adults} onChange={setAdults} min={1} />
+          <Stepper label="Children" value={children} onChange={setChildren} />
+        </View>
+        {primaryRoom?.inventory && primaryRoom.inventory > 0 ? (
+          <Text className="-mt-2 text-xs text-muted-foreground">
+            Max {primaryRoom.inventory} available
+          </Text>
+        ) : null}
+
+        {/* Additional information */}
+        <View className="h-px bg-hairline" />
+        <View className="flex-row items-center gap-2">
+          <Ionicons name="information-circle-outline" size={18} color="#156473" />
+          <Text className="text-base font-semibold text-ink">Additional Information</Text>
+        </View>
+        <Text className="-mt-2 text-xs text-muted-foreground">Help the hotel prepare for your arrival.</Text>
+
+        <Input
+          label="Estimated Arrival Time"
+          placeholder="Select or type your arrival time (e.g. 10:30 AM)"
+          value={arrivalTime}
+          onChangeText={setArrivalTime}
         />
-        <DateField label="Check-out" value={checkOut} min={new Date(addDays(checkIn, 1))} onChange={setCheckOut} />
-      </View>
-      {availability ? (
-        <Text className="-mt-2 text-xs text-muted-foreground">
-          Available {formatDate(availability.start)} – {formatDate(availability.end)}
-        </Text>
-      ) : null}
 
-      {/* Guests */}
-      <View className="rounded-2xl border border-neutral-100 p-4 dark:border-neutral-800">
-        <Text className="mb-1 text-sm font-semibold text-ink">Guests</Text>
-        <Stepper label="Adults" value={adults} onChange={setAdults} min={1} />
-        <Stepper label="Children" value={children} onChange={setChildren} />
-        {room?.capacity ? (
-          <Text className="pt-1 text-xs text-muted-foreground">This room sleeps up to {room.capacity}.</Text>
-        ) : null}
-      </View>
-
-      {/* Guest details */}
-      <View className="gap-3">
-        <Input label="Full name" value={name} onChangeText={setName} />
-        <Input label="Email" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} />
         <View className="gap-1.5">
-          <Text className="text-sm font-medium text-ink">Special requests</Text>
+          <Text className="text-sm font-body-medium text-ink">Special Requests</Text>
           <TextInput
-            placeholder="Late check-in, extra bed…"
+            placeholder="e.g. Quiet room, late check-in, dietary requirements…"
             placeholderTextColor="#9aa7ac"
             multiline
             value={requests}
             onChangeText={setRequests}
-            className="min-h-16 rounded-xl border border-hairline bg-white px-4 py-3 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+            className="min-h-20 rounded-2xl border border-hairline bg-surface px-4 py-3 text-base text-ink"
           />
         </View>
-      </View>
 
-      {/* Price breakdown */}
-      <View className="gap-2 rounded-2xl bg-neutral-50 p-4 dark:bg-neutral-900">
-        <View className="flex-row justify-between">
-          <Text className="text-sm text-muted">
-            {formatMoney({ amount: nightlyRate, currency })} × {nights} night{nights === 1 ? '' : 's'}
-          </Text>
-          <Text className="text-sm text-ink">{formatMoney({ amount: total, currency })}</Text>
-        </View>
-        <View className="h-px bg-neutral-200 dark:bg-neutral-700" />
-        <View className="flex-row justify-between">
-          <Text className="text-base font-bold text-ink">Total</Text>
-          <Text className="text-base font-bold text-brand-600">{formatMoney({ amount: total, currency })}</Text>
-        </View>
-        {hotel.paymentType ? (
-          <Text className="text-xs text-muted">Payment: {hotel.paymentType}</Text>
+        {needsGuestDetails ? (
+          <View className="gap-3">
+            <View className="h-px bg-hairline" />
+            <Text className="text-base font-semibold text-ink">Your Details</Text>
+            <Input label="Full name" value={name} onChangeText={setName} />
+            <Input
+              label="Email"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
+          </View>
         ) : null}
-      </View>
+      </Card>
 
-      {error ? (
-        <View className="rounded-xl bg-red-50 px-4 py-3 dark:bg-red-950">
-          <Text className="text-sm text-danger">{error}</Text>
+      {/* ── Card 2 · Payment Method ────────────────────────────────── */}
+      <Card className="gap-4">
+        <SectionTitle>Payment Method</SectionTitle>
+        <View className="flex-row gap-3">
+          <PaymentOption
+            active={payment === 'online'}
+            icon="card-outline"
+            title="Pay Online"
+            subtitle="Secure immediate booking confirmation."
+            onPress={() => setPayment('online')}
+          />
+          <PaymentOption
+            active={payment === 'property'}
+            icon="business-outline"
+            title="Pay at Property"
+            subtitle="Pay when you arrive. Subject to setup."
+            onPress={() => setPayment('property')}
+          />
         </View>
-      ) : null}
+        <View className="rounded-2xl border border-dashed border-hairline bg-surface-sunk/50 p-4">
+          <Text className="text-center text-sm text-muted">
+            {payment === 'property' ? (
+              <>
+                No payment required now. You will pay the full amount of{' '}
+                <Text className="font-semibold text-ink">
+                  {formatMoney({ amount: total, currency })}
+                </Text>{' '}
+                when you arrive at the property.
+              </>
+            ) : (
+              <>
+                Pay{' '}
+                <Text className="font-semibold text-ink">
+                  {formatMoney({ amount: total, currency })}
+                </Text>{' '}
+                now to confirm your booking instantly. The host will share payment
+                details after you submit.
+              </>
+            )}
+          </Text>
+        </View>
+      </Card>
 
-      <Button
-        label={canBook ? `Confirm booking · ${formatMoney({ amount: total, currency })}` : 'Confirm booking'}
-        fullWidth
-        loading={isPending}
-        disabled={!canBook}
-        onPress={submit}
-      />
-      <Text className="text-center text-xs text-muted-foreground">
-        You won&apos;t be charged now — the host confirms your request first.
-      </Text>
+      {/* ── Card 3 · Review Property ───────────────────────────────── */}
+      <Card className="gap-3">
+        <SectionTitle>Review Property</SectionTitle>
+        <View className="overflow-hidden rounded-2xl bg-surface-sunk">
+          {roomImage ? (
+            <Image source={{ uri: roomImage }} style={{ width: '100%', height: 160 }} contentFit="cover" />
+          ) : (
+            <View className="h-40 items-center justify-center gap-2 bg-surface-sunk">
+              <Ionicons name="image-outline" size={30} color="#9aa7ac" />
+              <Text className="text-xs uppercase tracking-wide text-muted-foreground">
+                No image available
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <View className="gap-1">
+          <Text className="text-xs uppercase tracking-wide text-muted-foreground">{hotel.title}</Text>
+          <Text className="font-display text-xl text-ink">{primaryRoom?.roomType ?? 'Room'}</Text>
+          {hotel.location?.city || hotel.location?.address ? (
+            <View className="flex-row items-center gap-1">
+              <Ionicons name="location-outline" size={14} color="#9aa7ac" />
+              <Text className="text-sm text-muted">
+                {hotel.location?.city ?? hotel.location?.address}
+              </Text>
+            </View>
+          ) : null}
+        </View>
+
+        <View className="flex-row flex-wrap gap-2">
+          {primaryRoom?.bedType ? <Badge label={primaryRoom.bedType} tone="neutral" /> : null}
+          {primaryRoom?.capacity != null ? (
+            <Badge label={`Max ${primaryRoom.capacity}`} tone="success" />
+          ) : null}
+          {roomCount > 1 ? <Badge label={`${roomCount} rooms`} tone="brand" /> : null}
+        </View>
+
+        {reviewAmenities.length > 0 ? (
+          <>
+            <Pressable
+              className="flex-row items-center justify-between pt-1"
+              onPress={() => setShowAmenities((v) => !v)}
+            >
+              <Text className="text-sm font-semibold text-brand-600">View Amenities</Text>
+              <Ionicons
+                name={showAmenities ? 'chevron-down' : 'chevron-forward'}
+                size={18}
+                color="#1a7a8c"
+              />
+            </Pressable>
+            {showAmenities ? (
+              <View className="flex-row flex-wrap gap-2">
+                {reviewAmenities.map((a) => (
+                  <View key={a} className="rounded-full bg-brand-50 px-3 py-1.5">
+                    <Text className="text-xs font-medium text-brand-700">{a}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
+          </>
+        ) : null}
+      </Card>
+
+      {/* ── Card 4 · Price Details ─────────────────────────────────── */}
+      <Card className="gap-3">
+        <SectionTitle>Price Details</SectionTitle>
+        <PriceRow label="Cancellation Policy" value={cancellation} />
+        {chosen.map(({ room, quantity }) => (
+          <PriceRow
+            key={room.id}
+            label={`${nights} Night${nights === 1 ? '' : 's'} × ${quantity} ${room.roomType}`}
+            value={formatMoney({ amount: room.pricePerNight * quantity * nights, currency })}
+          />
+        ))}
+        <PriceRow label="Service Fee" value="Free" />
+        <PriceRow label="Taxes" value="Included" valueClassName="text-sm font-semibold text-green-600" />
+
+        <View className="h-px bg-hairline" />
+        <View className="flex-row items-baseline justify-between">
+          <Text className="text-base font-bold text-ink">Total</Text>
+          <Text className="font-display-x text-xl text-brand-600">
+            {formatMoney({ amount: total, currency })}
+          </Text>
+        </View>
+
+        {error ? (
+          <View className="rounded-xl bg-red-50 px-4 py-3">
+            <Text className="text-sm text-danger">{error}</Text>
+          </View>
+        ) : null}
+
+        <Button
+          label="Confirm & Pay"
+          icon="shield-checkmark-outline"
+          fullWidth
+          loading={isPending}
+          disabled={!canBook}
+          onPress={submit}
+        />
+        <Text className="text-center text-xs text-muted-foreground">
+          You won&apos;t be charged now — the host confirms your request first.
+        </Text>
+      </Card>
     </ScrollView>
   );
 }

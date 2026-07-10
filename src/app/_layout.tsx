@@ -55,6 +55,7 @@ const AppTheme = {
 export default function RootLayout() {
   const hydrate = useAuthStore((s) => s.hydrate);
   const isHydrating = useAuthStore((s) => s.isHydrating);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const [fontsLoaded] = useFonts({
     Figtree_400Regular,
@@ -77,7 +78,9 @@ export default function RootLayout() {
     }
   }, [isHydrating, fontsLoaded]);
 
-  if (!fontsLoaded) return null;
+  // Hold the splash until fonts AND the persisted session have resolved, so the
+  // auth guard below mounts with settled state (no sign-in → tabs flash).
+  if (!fontsLoaded || isHydrating) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -94,24 +97,33 @@ export default function RootLayout() {
                 headerTitleStyle: { fontFamily: 'Outfit_700Bold', color: '#0c2b36' },
               }}
             >
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="(auth)" options={{ presentation: 'modal' }} />
-              <Stack.Screen name="hotels/index" options={{ headerShown: true, title: 'Hotels & Stays' }} />
-              <Stack.Screen name="hotels/[id]/index" options={{ headerShown: true, title: 'Hotel' }} />
-              <Stack.Screen name="hotels/[id]/book" options={{ headerShown: true, title: 'Book', presentation: 'modal' }} />
-              <Stack.Screen name="rentals/[id]" options={{ headerShown: true, title: 'Rental' }} />
-              <Stack.Screen name="tours/[id]" options={{ headerShown: true, title: 'Tour' }} />
-              <Stack.Screen name="umrah/[id]" options={{ headerShown: true, title: 'Umrah Package' }} />
-              <Stack.Screen name="guides/[id]" options={{ headerShown: true, title: 'Guide' }} />
-              <Stack.Screen name="profile" options={{ headerShown: true, title: 'Profile' }} />
-              <Stack.Screen name="profile-settings" options={{ headerShown: true, title: 'Profile settings' }} />
-              <Stack.Screen name="wishlist" options={{ headerShown: true, title: 'My Wishlist' }} />
-              <Stack.Screen name="my-bookings" options={{ headerShown: true, title: 'My Bookings' }} />
-              <Stack.Screen name="my-rental-bookings" options={{ headerShown: true, title: 'My Rental Bookings' }} />
-              <Stack.Screen name="my-properties" options={{ headerShown: true, title: 'My Properties' }} />
-              <Stack.Screen name="manage-rental-properties" options={{ headerShown: true, title: 'Manage Rental Properties' }} />
+              {/* Launch-time auth gate: signed out, the only reachable group is
+                  (auth), so the app opens on the sign-in screen. Once signed in
+                  (including a restored session), the app screens take over and
+                  (auth) is removed from the navigator. */}
+              <Stack.Protected guard={!isAuthenticated}>
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              </Stack.Protected>
+
+              <Stack.Protected guard={isAuthenticated}>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="hotels/index" options={{ headerShown: true, title: 'Hotels & Stays' }} />
+                <Stack.Screen name="hotels/[id]" options={{ headerShown: false }} />
+                <Stack.Screen name="rentals/[id]" options={{ headerShown: true, title: 'Rental' }} />
+                <Stack.Screen name="tours/[id]" options={{ headerShown: true, title: 'Tour' }} />
+                <Stack.Screen name="umrah/[id]" options={{ headerShown: true, title: 'Umrah Package' }} />
+                <Stack.Screen name="guides/[id]" options={{ headerShown: true, title: 'Guide' }} />
+                <Stack.Screen name="profile" options={{ headerShown: true, title: 'Profile' }} />
+                <Stack.Screen name="profile-settings" options={{ headerShown: true, title: 'Profile settings' }} />
+                <Stack.Screen name="wishlist" options={{ headerShown: true, title: 'My Wishlist' }} />
+                <Stack.Screen name="my-bookings" options={{ headerShown: true, title: 'My Bookings' }} />
+                <Stack.Screen name="my-rental-bookings" options={{ headerShown: true, title: 'My Rental Bookings' }} />
+                <Stack.Screen name="my-properties" options={{ headerShown: true, title: 'My Properties' }} />
+                <Stack.Screen name="manage-rental-properties" options={{ headerShown: true, title: 'Manage Rental Properties' }} />
+              </Stack.Protected>
             </Stack>
-            <AssistantWidget />
+            {/* Keep the assistant out of the sign-in flow — only inside the app. */}
+            {isAuthenticated ? <AssistantWidget /> : null}
             <StatusBar style="auto" />
           </ThemeProvider>
         </QueryClientProvider>

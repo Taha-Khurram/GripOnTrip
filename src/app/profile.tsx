@@ -194,7 +194,8 @@ export default function ProfileScreen() {
             fullWidth
             onPress={async () => {
               await signOut();
-              router.replace('/(tabs)');
+              // The auth guard swaps to the sign-in screen once the session clears.
+              router.replace('/(auth)/sign-in');
             }}
           />
         </View>
