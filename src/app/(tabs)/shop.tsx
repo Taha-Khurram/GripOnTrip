@@ -47,7 +47,9 @@ export default function ShopScreen() {
 
   const renderItem = useCallback(
     ({ item, index }: { item: Product; index: number }) => (
-      <ProductCard product={item} index={index} />
+      <View className="px-5 pb-4">
+        <ProductCard product={item} index={index} />
+      </View>
     ),
     [],
   );
@@ -78,9 +80,7 @@ export default function ShopScreen() {
       data={products}
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
-      numColumns={2}
-      columnWrapperStyle={{ paddingHorizontal: 20, gap: 12 }}
-      contentContainerClassName="gap-3 pb-8"
+      contentContainerClassName="pb-8"
       refreshControl={
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#1a7a8c" />
       }

@@ -3,10 +3,19 @@ import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { Text, View } from 'react-native';
 
-import { Animated, Badge, Card, enterUp, PressableScale } from '@/components/ui';
+import { Animated, Card, enterUp, ImageBand, PressableScale } from '@/components/ui';
 import { formatMoney, formatRating } from '@/utils/format';
-import { icons8 } from '@/utils/icons8';
 import type { Guide } from '../types';
+
+/** Small brand-tinted spec pill (experience, languages). */
+function SpecChip({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
+  return (
+    <View className="flex-row items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1">
+      <Ionicons name={icon} size={12} color="#156473" />
+      <Text className="text-xs font-medium text-brand-700">{label}</Text>
+    </View>
+  );
+}
 
 /** Compact guide preview used in the listing. Links to the guide detail. */
 export function GuideCard({ guide, index = 0 }: { guide: Guide; index?: number }) {
@@ -17,96 +26,83 @@ export function GuideCard({ guide, index = 0 }: { guide: Guide; index?: number }
     <Animated.View entering={enterUp(index)}>
       <Link href={{ pathname: '/guides/[id]', params: { id: guide.id } }} asChild>
         <PressableScale accessibilityRole="button">
-          <Card className="gap-3">
-          {/* Guide header */}
-          <View className="flex-row items-center gap-3">
-            {image ? (
-              <Image
-                source={{ uri: image }}
-                style={{ width: 56, height: 56, borderRadius: 28 }}
-                contentFit="cover"
-                transition={200}
-              />
-            ) : (
-              <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-50">
+          <Card className="overflow-hidden p-0 shadow-soft">
+            <View>
+              {image ? (
                 <Image
-                  source={{ uri: icons8('map-marker') }}
-                  style={{ width: 34, height: 34 }}
-                  contentFit="contain"
+                  source={{ uri: image }}
+                  style={{ width: '100%', height: 190 }}
+                  contentFit="cover"
+                  transition={200}
                 />
-              </View>
-            )}
-            <View className="flex-1">
-              <View className="flex-row items-center gap-2">
-                <Text
-                  className="flex-1 text-base font-bold text-ink"
-                  numberOfLines={1}
-                >
+              ) : (
+                <ImageBand className="h-[190px] items-center justify-center">
+                  <Ionicons name="person-outline" size={40} color="rgba(255,255,255,0.85)" />
+                </ImageBand>
+              )}
+
+              {guide.isVerified ? (
+                <View className="absolute left-3 top-3 flex-row items-center gap-1 rounded-full bg-accent-500 px-3 py-1 shadow-glow">
+                  <Ionicons name="checkmark-circle" size={13} color="#fff" />
+                  <Text className="text-xs font-body-semibold text-white">Verified</Text>
+                </View>
+              ) : null}
+
+              {/* Floating rating pill */}
+              {guide.rating > 0 ? (
+                <View className="absolute right-3 top-3 flex-row items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 shadow-card">
+                  <Ionicons name="star" size={12} color="#f39024" />
+                  <Text className="text-xs font-bold text-ink">{formatRating(guide.rating)}</Text>
+                </View>
+              ) : null}
+            </View>
+
+            <View className="gap-2.5 p-4">
+              <View className="gap-1">
+                <Text className="text-[17px] font-display-semibold text-ink" numberOfLines={1}>
                   {guide.name}
                 </Text>
-                {guide.isVerified ? <Badge label="Verified" tone="success" /> : null}
-              </View>
-              <View className="mt-0.5 flex-row items-center gap-3">
                 {guide.city ? (
                   <View className="flex-row items-center gap-1">
-                    <Ionicons name="location-outline" size={13} color="#9aa7ac" />
-                    <Text className="text-xs text-muted" numberOfLines={1}>
+                    <Ionicons name="location-outline" size={14} color="#9aa7ac" />
+                    <Text className="text-sm text-muted" numberOfLines={1}>
                       {guide.city}
                     </Text>
                   </View>
                 ) : null}
-                {guide.reviewCount > 0 || guide.rating > 0 ? (
-                  <View className="flex-row items-center gap-1">
-                    <Ionicons name="star" size={12} color="#f39024" />
-                    <Text className="text-xs text-muted">
-                      {formatRating(guide.rating)} ({guide.reviewCount})
+              </View>
+
+              {/* Spec chips */}
+              {guide.experienceYears != null || languages.length > 0 ? (
+                <View className="flex-row flex-wrap gap-2">
+                  {guide.experienceYears != null ? (
+                    <SpecChip
+                      icon="ribbon-outline"
+                      label={`${guide.experienceYears} yr${guide.experienceYears === 1 ? '' : 's'} exp`}
+                    />
+                  ) : null}
+                  {languages.map((lang) => (
+                    <SpecChip key={lang} icon="language-outline" label={lang} />
+                  ))}
+                </View>
+              ) : null}
+
+              {/* Price row */}
+              <View className="mt-0.5 flex-row items-end justify-between">
+                {guide.dailyRate > 0 ? (
+                  <View className="flex-row items-baseline gap-1.5">
+                    <Text className="text-xs text-muted-foreground">from</Text>
+                    <Text className="text-xl font-display-x text-brand-600">
+                      {formatMoney(guide.price)}
                     </Text>
+                    <Text className="text-xs text-muted-foreground">/ day</Text>
                   </View>
-                ) : null}
+                ) : (
+                  <View />
+                )}
+                <Ionicons name="chevron-forward" size={20} color="#1a7a8c" />
               </View>
             </View>
-          </View>
-
-          {/* Experience + languages */}
-          {guide.experienceYears != null || languages.length > 0 ? (
-            <View className="flex-row flex-wrap items-center gap-2">
-              {guide.experienceYears != null ? (
-                <Badge
-                  label={`${guide.experienceYears} yr${guide.experienceYears === 1 ? '' : 's'} exp`}
-                  tone="brand"
-                />
-              ) : null}
-              {languages.map((lang) => (
-                <Badge key={lang} label={lang} tone="neutral" />
-              ))}
-            </View>
-          ) : null}
-
-          {guide.bio ? (
-            <Text
-              className="text-sm leading-5 text-muted"
-              numberOfLines={2}
-            >
-              {guide.bio}
-            </Text>
-          ) : null}
-
-          {/* Footer: daily rate */}
-          <View className="flex-row items-center justify-between">
-            {guide.dailyRate > 0 ? (
-              <Text className="text-base font-bold text-brand-600">
-                <Text className="text-xs font-normal text-muted-foreground">from </Text>
-                {formatMoney(guide.price)}
-                <Text className="text-xs font-normal text-muted-foreground"> /day</Text>
-              </Text>
-            ) : (
-              <View />
-            )}
-            <View className="flex-row items-center gap-1">
-              <Text className="text-sm font-medium text-brand-600">View profile</Text>
-              <Ionicons name="chevron-forward" size={14} color="#1a7a8c" />
-            </View>
-          </View>
           </Card>
         </PressableScale>
       </Link>
