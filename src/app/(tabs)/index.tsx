@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { Animated, enterUp, OceanHero, PressableScale, SunCTA } from '@/components/ui';
 import { APP_NAME, APP_TAGLINE, CATEGORIES, type CategoryMeta } from '@/constants/config';
@@ -81,7 +81,9 @@ export default function HomeScreen() {
             style={{ zIndex: 1, backgroundColor: '#ffffff' }}
             className="mt-3 flex-row items-center gap-3 rounded-full px-5 py-3 shadow-soft"
           >
-            <Ionicons name="search" size={20} color="#4a5c62" />
+            <Pressable onPress={submitSearch} hitSlop={8}>
+              <Ionicons name="search" size={20} color="#4a5c62" />
+            </Pressable>
             <TextInput
               value={query}
               onChangeText={setQuery}
@@ -92,6 +94,9 @@ export default function HomeScreen() {
               style={{ paddingVertical: 0 }}
               className="flex-1 text-[15px] font-medium text-ink"
             />
+            <Pressable onPress={submitSearch} hitSlop={8}>
+              <Ionicons name="arrow-forward-circle" size={24} color="#1a7a8c" />
+            </Pressable>
           </View>
         </OceanHero>
       </Animated.View>
