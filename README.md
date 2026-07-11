@@ -29,8 +29,10 @@ marketplace, with an AI Trip Planner and in-app assistant.
 
 - 🏨 **Six marketplace verticals** — Hotels & Stays, Vacation Rentals, Guided Tours, Umrah Packages,
   Verified Guides, and a travel-gear Marketplace, mirroring the website navigation.
-- 👤 **Full traveler account** — profile settings, wishlist, hotel bookings, rental bookings, and
-  host tools (owned properties + rental-listing management).
+- 👤 **Full traveler account** — profile settings, wishlist, hotel bookings, and rental bookings, all
+  on a shared `OceanHero` header with expandable, receipt-style booking cards.
+- 🏠 **Hosting** — **list, edit, and delete** your own rental properties end-to-end: a full listing
+  form (details, amenities, pricing, images) that writes to Supabase, with a confirmation flow.
 - 🔐 **Real authentication** — email/password **and** Google OAuth via Supabase, with row-level-security
   scoped data (the same backend the website uses).
 - ❤️ **Wishlist** — save any stay, rental, or tour with a tap; persisted per user on-device.
@@ -48,7 +50,7 @@ marketplace, with an AI Trip Planner and in-app assistant.
 | **Discover** (bottom tabs) | Home · Tours · Rentals · Umrah · Shop · Guides |
 | **Detail & booking** | Hotel detail + booking · Rental detail · Tour · Umrah · Guide · Product |
 | **Account** | Profile hub · Profile settings · Wishlist · My bookings · My rental bookings |
-| **Hosting** | My properties · Manage rental properties |
+| **Hosting** | My properties (your listings + edit/delete) · List a property · Manage rental properties |
 | **Auth** | Sign in · Sign up · Forgot password (Google OAuth + email) |
 | **Tools** | Search · AI Trip Planner · AI assistant |
 
@@ -173,7 +175,7 @@ src/
 │   ├── hotels/ · rentals/ · tours/ · umrah/ · guides/ · shop/   # detail + booking
 │   ├── profile.tsx         #   Account hub
 │   ├── profile-settings · wishlist · my-bookings · my-rental-bookings
-│   └── my-properties · manage-rental-properties
+│   └── my-properties · list-property · manage-rental-properties
 ├── api/                    # Axios client + centralized endpoints
 ├── components/
 │   ├── ui/                 #   Design-system primitives (Button, Card, Input, Badge, Gradient, motion…)
@@ -223,10 +225,13 @@ Both must pass before a change is considered done.
 
 ## 🗺️ Roadmap
 
-**Recently shipped:** the unified **"Ocean & Sun" design system** with a shared listing hero across
-every vertical, and the **AI Trip Planner** (preferences → generated itinerary).
+**Recently shipped:** a unified **account area** on the "Ocean & Sun" hero (settings, wishlist, and
+bookings sharing one visual language), the **rental-property hosting flow** — list / edit / delete your
+own listings, written to Supabase — and the **AI Trip Planner** (preferences → generated itinerary).
 
-- [ ] Booking & review **writes** to Supabase (reads are wired; submission is stubbed)
+- [x] Hotel-booking + rental-listing (create / edit / delete) **writes** to Supabase
+- [ ] Review writes and the remaining booking-submission flows to Supabase
+- [ ] Native photo upload for listings (currently image URLs)
 - [ ] Payments integration (provider TBD)
 - [ ] Push notifications for booking status changes
 - [ ] Bring Tours / Umrah / Guides / Shop to full hotel-level depth (filters, detail parity)
