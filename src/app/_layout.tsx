@@ -109,6 +109,10 @@ export default function RootLayout() {
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="hotels/index" options={{ headerShown: true, title: 'Hotels & Stays' }} />
                 <Stack.Screen name="hotels/[id]" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="hotels/book"
+                  options={{ headerShown: true, title: 'Book', presentation: 'modal' }}
+                />
                 <Stack.Screen name="rentals/[id]" options={{ headerShown: true, title: 'Rental' }} />
                 <Stack.Screen name="tours/[id]" options={{ headerShown: true, title: 'Tour' }} />
                 <Stack.Screen name="umrah/[id]" options={{ headerShown: true, title: 'Umrah Package' }} />
@@ -119,6 +123,7 @@ export default function RootLayout() {
                 <Stack.Screen name="my-bookings" options={{ headerShown: true, title: 'My Bookings' }} />
                 <Stack.Screen name="my-rental-bookings" options={{ headerShown: true, title: 'My Rental Bookings' }} />
                 <Stack.Screen name="my-properties" options={{ headerShown: true, title: 'My Properties' }} />
+                <Stack.Screen name="list-property" options={{ headerShown: true, title: 'List Your Property' }} />
                 <Stack.Screen name="manage-rental-properties" options={{ headerShown: true, title: 'Manage Rental Properties' }} />
               </Stack.Protected>
             </Stack>

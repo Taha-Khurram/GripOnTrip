@@ -47,6 +47,33 @@ export interface MyProperty {
   propertyType?: string;
 }
 
+/** Payload for listing a new vacation rental (the "List your property" form). */
+export interface RentalPropertyInput {
+  title: string;
+  description?: string;
+  propertyType: string;
+  ownerPhone?: string;
+  city: string;
+  address: string;
+  pricePerMonth: number;
+  pricePerDay?: number;
+  bedrooms: number;
+  bathrooms: number;
+  areaSqft?: number;
+  maxGuests: number;
+  amenities: string[];
+  images: string[];
+  available: boolean;
+  furnished: boolean;
+  parkingAvailable: boolean;
+  petsAllowed: boolean;
+}
+
+/** Full editable rental listing (for prefilling the edit form). */
+export interface RentalPropertyDetail extends RentalPropertyInput {
+  id: string;
+}
+
 /** A vacation-rental listing the user owns ("Manage rental properties"). */
 export interface MyRentalProperty {
   id: string;

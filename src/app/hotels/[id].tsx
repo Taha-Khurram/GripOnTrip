@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Badge, Button, DetailSkeleton, Gallery, PressableScale } from '@/components/ui';
+import { Badge, Button, DateField, DetailSkeleton, Gallery, PressableScale } from '@/components/ui';
 import { WishlistButton } from '@/components/WishlistButton';
 import {
   encodeSelection,
@@ -15,10 +15,12 @@ import {
   useHotelRooms,
   type RoomQuantities,
 } from '@/features/hotels';
+import { PaymentOption, type PaymentMode } from '@/features/hotels/components/PaymentOption';
 import { RoomCard } from '@/features/hotels/components/RoomCard';
 import { ReviewsSection } from '@/features/reviews';
 import { AmenityGrid } from '@/utils/amenities';
-import { formatMoney, formatRating } from '@/utils/format';
+import { addDays, nightsBetween, parseAvailabilityRange, toISODate } from '@/utils/date';
+import { formatDate, formatMoney, formatRating } from '@/utils/format';
 
 function SectionTitle({ children }: { children: string }) {
   return <Text className="font-display text-lg text-ink">{children}</Text>;
@@ -30,6 +32,11 @@ export default function HotelDetailScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const roomsY = useRef(0);
   const [quantities, setQuantities] = useState<RoomQuantities>({});
+  // Dates default to the hotel's availability window (derived below), until the
+  // guest picks their own — tracked by `datesTouched` so we don't need an effect.
+  const [pickedCheckIn, setPickedCheckIn] = useState<string | null>(null);
+  const [pickedCheckOut, setPickedCheckOut] = useState<string | null>(null);
+  const [payment, setPayment] = useState<PaymentMode>('property');
 
   const { data: hotel, isLoading, isError } = useHotel(id);
   const { data: rooms = [] } = useHotelRooms(id);
@@ -57,6 +64,12 @@ export default function HotelDetailScreen() {
   const chosen = selectedRooms(rooms, quantities);
   const roomCount = totalRoomCount(quantities);
   const subtotal = nightlySubtotal(rooms, quantities);
+  const availability = parseAvailabilityRange(hotel.availabilityDates);
+  // Effective stay dates: the guest's pick, else the availability start / today.
+  const checkIn = pickedCheckIn ?? availability?.start ?? toISODate(new Date());
+  const checkOut = pickedCheckOut ?? addDays(checkIn, 1);
+  const nights = nightsBetween(checkIn, checkOut);
+  const stayTotal = subtotal * Math.max(nights, 1);
 
   const setRoomQuantity = (roomId: string, quantity: number) =>
     setQuantities((prev) => {
@@ -66,16 +79,19 @@ export default function HotelDetailScreen() {
       return next;
     });
 
-  // Reserve carries the current room selection to the booking screen. Without an
-  // explicit selection (e.g. a hotel with no bookable rooms), fall back to a
-  // single room so the booking flow can still start.
+  // Reserve carries the current room selection + stay + payment choice to the
+  // booking screen so it opens pre-filled. Without an explicit selection (e.g. a
+  // hotel with no bookable rooms), fall back to a single room so the flow can start.
   const reserve = (roomId?: string) =>
     router.push({
-      pathname: '/hotels/[id]/book',
+      pathname: '/hotels/book',
       params: {
         id: hotel.id,
         roomId: roomId ?? '',
         selection: encodeSelection(quantities),
+        checkIn,
+        checkOut,
+        payment,
       },
     });
 
@@ -164,30 +180,6 @@ export default function HotelDetailScreen() {
             ) : null}
           </View>
 
-          {/* Check-in / out */}
-          {hotel.checkInTime || hotel.checkOutTime ? (
-            <View className="flex-row gap-3">
-              {hotel.checkInTime ? (
-                <View className="flex-1 flex-row items-center gap-2.5 rounded-2xl border border-hairline bg-surface-sunk/50 p-3.5">
-                  <Ionicons name="log-in-outline" size={20} color="#156473" />
-                  <View>
-                    <Text className="text-xs uppercase tracking-wide text-muted-foreground">Check-in</Text>
-                    <Text className="text-sm font-semibold text-ink">{hotel.checkInTime}</Text>
-                  </View>
-                </View>
-              ) : null}
-              {hotel.checkOutTime ? (
-                <View className="flex-1 flex-row items-center gap-2.5 rounded-2xl border border-hairline bg-surface-sunk/50 p-3.5">
-                  <Ionicons name="log-out-outline" size={20} color="#156473" />
-                  <View>
-                    <Text className="text-xs uppercase tracking-wide text-muted-foreground">Check-out</Text>
-                    <Text className="text-sm font-semibold text-ink">{hotel.checkOutTime}</Text>
-                  </View>
-                </View>
-              ) : null}
-            </View>
-          ) : null}
-
           {/* Amenities */}
           {hotel.amenities.length > 0 ? (
             <View className="gap-2">
@@ -241,7 +233,7 @@ export default function HotelDetailScreen() {
 
           {/* Reservation summary — appears once a room is selected, mirroring the website. */}
           {chosen.length > 0 ? (
-            <View className="gap-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 dark:border-brand-900 dark:bg-brand-900/40">
+            <View className="gap-4 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 dark:border-brand-900 dark:bg-brand-900/40">
               <View className="flex-row items-center gap-2">
                 <Ionicons name="cart-outline" size={18} color="#156473" />
                 <Text className="font-display text-base text-ink">Your selection</Text>
@@ -262,37 +254,87 @@ export default function HotelDetailScreen() {
 
               <View className="h-px bg-brand-100 dark:bg-brand-900" />
 
-              <View className="flex-row items-baseline justify-between">
-                <View>
-                  <Text className="text-base font-bold text-ink">
-                    Total{' '}
-                    <Text className="text-xs font-normal text-muted-foreground">
-                      ({roomCount} room{roomCount === 1 ? '' : 's'} / night)
-                    </Text>
-                  </Text>
+              {/* Dates */}
+              <View className="gap-1.5">
+                <Text className="text-sm font-body-semibold text-ink">Your stay</Text>
+                <View className="flex-row gap-3">
+                  <DateField
+                    label="Check-in"
+                    value={checkIn}
+                    min={availability ? new Date(availability.start) : new Date()}
+                    onChange={(iso) => {
+                      setPickedCheckIn(iso);
+                      if (nightsBetween(iso, checkOut) <= 0) setPickedCheckOut(addDays(iso, 1));
+                    }}
+                  />
+                  <DateField
+                    label="Check-out"
+                    value={checkOut}
+                    min={new Date(addDays(checkIn, 1))}
+                    onChange={setPickedCheckOut}
+                  />
                 </View>
-                <Text className="font-display-x text-xl text-brand-600">
-                  {formatMoney({ amount: subtotal, currency })}
+                <Text className="text-xs text-muted-foreground">
+                  {nights} night{nights === 1 ? '' : 's'} · {formatDate(checkIn)} → {formatDate(checkOut)}
+                  {availability
+                    ? `  ·  Available ${formatDate(availability.start)} – ${formatDate(availability.end)}`
+                    : ''}
                 </Text>
               </View>
 
-              <Text className="text-xs text-muted-foreground">
-                Final total depends on your dates — pick check-in &amp; check-out next.
-              </Text>
+              <View className="h-px bg-brand-100 dark:bg-brand-900" />
 
-              <Button label="Continue" icon="arrow-forward" fullWidth onPress={() => reserve()} />
-            </View>
-          ) : null}
+              {/* Payment method */}
+              <View className="gap-2">
+                <Text className="text-sm font-body-semibold text-ink">Payment method</Text>
+                <View className="flex-row gap-3">
+                  <PaymentOption
+                    active={payment === 'online'}
+                    icon="card-outline"
+                    title="Pay Online"
+                    subtitle="Instant confirmation."
+                    onPress={() => setPayment('online')}
+                  />
+                  <PaymentOption
+                    active={payment === 'property'}
+                    icon="business-outline"
+                    title="Pay at Property"
+                    subtitle="Pay on arrival."
+                    onPress={() => setPayment('property')}
+                  />
+                </View>
+              </View>
 
-          {/* Bank transfer info */}
-          {hotel.bank?.accountNumber ? (
-            <View className="gap-1 rounded-2xl border border-hairline bg-surface-sunk/50 p-4">
-              <SectionTitle>Bank transfer</SectionTitle>
-              {hotel.bank.name ? <Text className="text-sm text-muted">{hotel.bank.name}</Text> : null}
-              {hotel.bank.accountTitle ? (
-                <Text className="text-sm text-muted">{hotel.bank.accountTitle}</Text>
-              ) : null}
-              <Text className="text-sm font-semibold text-ink">{hotel.bank.accountNumber}</Text>
+              <View className="h-px bg-brand-100 dark:bg-brand-900" />
+
+              {/* Total */}
+              <View className="flex-row items-baseline justify-between">
+                <Text className="text-base font-bold text-ink">
+                  Total{' '}
+                  <Text className="text-xs font-normal text-muted-foreground">
+                    ({roomCount} room{roomCount === 1 ? '' : 's'} · {nights} night{nights === 1 ? '' : 's'})
+                  </Text>
+                </Text>
+                <Text className="font-display-x text-xl text-brand-600">
+                  {formatMoney({ amount: stayTotal, currency })}
+                </Text>
+              </View>
+
+              {/* Continue CTA — solid blue, centered white label. Background is set
+                  via inline style (not a `bg-*` class) so it renders reliably on the
+                  reanimated/NativeWind pressable. */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Continue to book"
+                onPress={() => reserve()}
+                style={{ backgroundColor: '#156473' }}
+                className="w-full flex-row items-center justify-center gap-2 rounded-2xl py-4 active:opacity-90"
+              >
+                <Text className="text-center font-body-semibold text-base text-white">
+                  Continue to book
+                </Text>
+                <Ionicons name="arrow-forward" size={18} color="#ffffff" />
+              </Pressable>
             </View>
           ) : null}
 
@@ -316,13 +358,13 @@ export default function HotelDetailScreen() {
         <View>
           <Text className="font-display-x text-xl text-brand-600">
             {formatMoney({
-              amount: roomCount > 0 ? subtotal : cheapestRoom?.pricePerNight ?? hotel.price.amount,
+              amount: roomCount > 0 ? stayTotal : cheapestRoom?.pricePerNight ?? hotel.price.amount,
               currency,
             })}
           </Text>
           <Text className="text-xs text-muted-foreground">
             {roomCount > 0
-              ? `${roomCount} room${roomCount === 1 ? '' : 's'} / night`
+              ? `${roomCount} room${roomCount === 1 ? '' : 's'} · ${nights} night${nights === 1 ? '' : 's'}`
               : rooms.length > 0
                 ? 'from / night'
                 : '/ night'}

@@ -13,6 +13,8 @@ import type {
   MyRentalProperty,
   Profile,
   ProfileUpdateInput,
+  RentalPropertyDetail,
+  RentalPropertyInput,
 } from './types';
 
 const DEFAULT_CURRENCY = 'PKR';
@@ -208,5 +210,108 @@ export async function fetchMyRentalProperties(userId: string): Promise<MyRentalP
 
 export async function deleteRentalProperty(id: string): Promise<void> {
   const { error } = await supabase.from('rental_properties').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * List a new vacation rental. Inserts into `rental_properties` scoped to the
+ * owner and marks it `pending` for review (matching the website's flow). Column
+ * names mirror the verified table schema (snake_case).
+ */
+export async function createRentalProperty(
+  userId: string,
+  input: RentalPropertyInput,
+): Promise<{ id: string }> {
+  const { data, error } = await supabase
+    .from('rental_properties')
+    .insert({
+      owner_id: userId,
+      title: input.title,
+      description: input.description || null,
+      property_type: input.propertyType,
+      owner_phone: input.ownerPhone || null,
+      city: input.city,
+      address: input.address,
+      price_per_month: input.pricePerMonth,
+      price_per_day: input.pricePerDay ?? null,
+      bedrooms: input.bedrooms,
+      bathrooms: input.bathrooms,
+      area_sqft: input.areaSqft ?? null,
+      max_guests: input.maxGuests,
+      amenities: input.amenities,
+      images_url: input.images,
+      available: input.available,
+      furnished: input.furnished,
+      parking_available: input.parkingAvailable,
+      pets_allowed: input.petsAllowed,
+      status: 'pending',
+    })
+    .select('id')
+    .single();
+  if (error) throw new Error(error.message);
+  return { id: String(data.id) };
+}
+
+/** Full rental listing for the edit form (all writable fields). */
+export async function fetchRentalProperty(id: string): Promise<RentalPropertyDetail> {
+  const { data, error } = await supabase
+    .from('rental_properties')
+    .select(
+      'id, title, description, property_type, owner_phone, city, address, price_per_month, price_per_day, bedrooms, bathrooms, area_sqft, max_guests, amenities, images_url, available, furnished, parking_available, pets_allowed',
+    )
+    .eq('id', id)
+    .single();
+  if (error) throw new Error(error.message);
+  return {
+    id: String(data.id),
+    title: data.title ?? '',
+    description: data.description ?? '',
+    propertyType: data.property_type ?? 'House',
+    ownerPhone: data.owner_phone ?? '',
+    city: data.city ?? '',
+    address: data.address ?? '',
+    pricePerMonth: data.price_per_month ?? 0,
+    pricePerDay: data.price_per_day ?? undefined,
+    bedrooms: data.bedrooms ?? 0,
+    bathrooms: data.bathrooms ?? 0,
+    areaSqft: data.area_sqft ?? undefined,
+    maxGuests: data.max_guests ?? 1,
+    amenities: data.amenities ?? [],
+    images: data.images_url ?? [],
+    available: data.available ?? true,
+    furnished: data.furnished ?? false,
+    parkingAvailable: data.parking_available ?? false,
+    petsAllowed: data.pets_allowed ?? false,
+  };
+}
+
+/** Update an existing rental listing (owner only, enforced by RLS). */
+export async function updateRentalProperty(
+  id: string,
+  input: RentalPropertyInput,
+): Promise<void> {
+  const { error } = await supabase
+    .from('rental_properties')
+    .update({
+      title: input.title,
+      description: input.description || null,
+      property_type: input.propertyType,
+      owner_phone: input.ownerPhone || null,
+      city: input.city,
+      address: input.address,
+      price_per_month: input.pricePerMonth,
+      price_per_day: input.pricePerDay ?? null,
+      bedrooms: input.bedrooms,
+      bathrooms: input.bathrooms,
+      area_sqft: input.areaSqft ?? null,
+      max_guests: input.maxGuests,
+      amenities: input.amenities,
+      images_url: input.images,
+      available: input.available,
+      furnished: input.furnished,
+      parking_available: input.parkingAvailable,
+      pets_allowed: input.petsAllowed,
+    })
+    .eq('id', id);
   if (error) throw new Error(error.message);
 }

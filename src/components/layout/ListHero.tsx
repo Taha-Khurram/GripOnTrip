@@ -17,6 +17,8 @@ interface ListHeroProps {
   query: string;
   onChangeQuery: (value: string) => void;
   placeholder: string;
+  /** Autofocus the search field on mount (used by the search screen). */
+  autoFocus?: boolean;
   /**
    * When set, renders a back button and adds top padding — for standalone stack
    * screens (e.g. Hotels) that hide the native header. Tab screens omit it.
@@ -40,6 +42,7 @@ export function ListHero({
   query,
   onChangeQuery,
   placeholder,
+  autoFocus,
   onBack,
 }: ListHeroProps) {
   const sun = variant === 'sun';
@@ -82,6 +85,7 @@ export function ListHero({
             placeholder={placeholder}
             placeholderTextColor="#4a5c62"
             returnKeyType="search"
+            autoFocus={autoFocus}
             style={{ paddingVertical: 0 }}
             className="flex-1 text-[15px] font-medium text-ink"
           />

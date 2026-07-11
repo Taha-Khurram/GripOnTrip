@@ -31,10 +31,14 @@ export function RoomCard({
     <View
       className={[
         'overflow-hidden rounded-2xl border bg-white dark:bg-neutral-900',
-        selected
-          ? 'border-brand-500 shadow-glow-ocean'
-          : 'border-neutral-100 dark:border-neutral-800',
+        selected ? 'border-brand-500' : 'border-neutral-100 dark:border-neutral-800',
       ].join(' ')}
+      // NOTE: the "glow" shadow is applied as an inline style, NOT a conditional
+      // `shadow-*` className. Toggling a NativeWind `shadow-*` class inside Expo
+      // Router crashes on native with "Couldn't find a navigation context"
+      // (NativeWind runtime shadow parsing races with the nav context). See
+      // github.com/nativewind/nativewind/issues/1557.
+      style={selected ? { boxShadow: '0px 12px 32px rgba(26, 122, 140, 0.35)' } : undefined}
     >
       {room.images[0] ? (
         <Image source={{ uri: room.images[0] }} style={{ width: '100%', height: 140 }} contentFit="cover" />

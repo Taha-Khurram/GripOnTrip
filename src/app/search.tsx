@@ -1,10 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Animated, enterUp, ListSkeleton, OceanHero, PressableScale } from '@/components/ui';
+import { ListHero } from '@/components/layout/ListHero';
+import { ListSkeleton } from '@/components/ui';
 import { GuideCard, useGuides, type Guide } from '@/features/guides';
 import { HotelCard, useHotels, type Hotel } from '@/features/hotels';
 import { ProductCard, useProducts, type Product } from '@/features/shop';
@@ -36,7 +36,6 @@ function hit(q: string, fields: (string | number | null | undefined)[]): boolean
  */
 export default function SearchScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ q?: string }>();
   const [query, setQuery] = useState(params.q ?? '');
   const [filter, setFilter] = useState<FilterKey>('all');
@@ -138,39 +137,19 @@ export default function SearchScreen() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <View className="flex-1 bg-background">
-        {/* Search hero */}
-        <Animated.View entering={enterUp(0)}>
-          <OceanHero className="rounded-b-[28px] px-4 pb-4" style={{ paddingTop: insets.top + 6 }}>
-            <View className="flex-row items-center gap-3">
-              <PressableScale
-                onPress={() => router.back()}
-                activeScale={0.9}
-                className="h-10 w-10 items-center justify-center rounded-full bg-white/20"
-              >
-                <Ionicons name="chevron-back" size={22} color="#fff" />
-              </PressableScale>
-
-              <View className="flex-1 flex-row items-center gap-2.5 rounded-full bg-white px-4 py-2.5 shadow-soft">
-                <Ionicons name="search" size={18} color="#4a5c62" />
-                <TextInput
-                  value={query}
-                  onChangeText={setQuery}
-                  placeholder="Search hotels, tours, guides…"
-                  placeholderTextColor="#4a5c62"
-                  returnKeyType="search"
-                  autoFocus={!params.q}
-                  style={{ paddingVertical: 0 }}
-                  className="flex-1 text-[15px] font-medium text-ink"
-                />
-                {query ? (
-                  <Pressable onPress={() => setQuery('')} hitSlop={8}>
-                    <Ionicons name="close-circle" size={18} color="#9aa7ac" />
-                  </Pressable>
-                ) : null}
-              </View>
-            </View>
-          </OceanHero>
-        </Animated.View>
+        {/* Search hero — same ListHero used by the vertical listing pages */}
+        <ListHero
+          variant="ocean"
+          icon="compass-outline"
+          eyebrow="Search"
+          title="Search Everything"
+          subtitle="Explore hotels, rentals, tours, guides & more — all in one place."
+          query={query}
+          onChangeQuery={setQuery}
+          placeholder="Search hotels, tours, guides…"
+          autoFocus={!params.q}
+          onBack={() => router.back()}
+        />
 
         {/* Vertical filter chips */}
         <View>

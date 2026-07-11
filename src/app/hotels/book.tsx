@@ -17,54 +17,13 @@ import {
   type RoomQuantities,
 } from '@/features/hotels';
 import { RoomCard } from '@/features/hotels/components/RoomCard';
+import { PaymentOption, type PaymentMode } from '@/features/hotels/components/PaymentOption';
 import { useAuthStore } from '@/store/auth.store';
 import { addDays, nightsBetween, parseAvailabilityRange, toISODate } from '@/utils/date';
 import { formatDate, formatMoney } from '@/utils/format';
 
-type PaymentMode = 'online' | 'property';
-
 function SectionTitle({ children }: { children: string }) {
   return <Text className="font-display text-lg text-ink">{children}</Text>;
-}
-
-/** A selectable payment method tile (radio-style). */
-function PaymentOption({
-  active,
-  icon,
-  title,
-  subtitle,
-  onPress,
-}: {
-  active: boolean;
-  icon: keyof typeof Ionicons.glyphMap;
-  title: string;
-  subtitle: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="radio"
-      accessibilityState={{ selected: active }}
-      onPress={onPress}
-      className={[
-        'flex-1 flex-row items-center gap-3 rounded-2xl border p-3.5',
-        active ? 'border-brand-500 bg-brand-50/60' : 'border-hairline bg-surface',
-      ].join(' ')}
-    >
-      <Ionicons
-        name={active ? 'radio-button-on' : 'radio-button-off'}
-        size={20}
-        color={active ? '#16a34a' : '#9aa7ac'}
-      />
-      <View className="flex-1">
-        <View className="flex-row items-center gap-1.5">
-          <Ionicons name={icon} size={16} color="#156473" />
-          <Text className="text-sm font-semibold text-ink">{title}</Text>
-        </View>
-        <Text className="text-xs text-muted-foreground">{subtitle}</Text>
-      </View>
-    </Pressable>
-  );
 }
 
 function PriceRow({
@@ -84,11 +43,43 @@ function PriceRow({
   );
 }
 
+function SummaryRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  value: string;
+}) {
+  return (
+    <View className="flex-row items-center justify-between gap-3">
+      <View className="flex-row items-center gap-2">
+        <Ionicons name={icon} size={16} color="#9aa7ac" />
+        <Text className="text-sm text-muted">{label}</Text>
+      </View>
+      <Text className="flex-1 text-right text-sm font-semibold text-ink" numberOfLines={1}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 export default function BookHotelScreen() {
-  const { id, roomId, selection } = useLocalSearchParams<{
+  const {
+    id,
+    roomId,
+    selection,
+    checkIn: checkInParam,
+    checkOut: checkOutParam,
+    payment: paymentParam,
+  } = useLocalSearchParams<{
     id: string;
     roomId?: string;
     selection?: string;
+    checkIn?: string;
+    checkOut?: string;
+    payment?: string;
   }>();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
@@ -110,16 +101,18 @@ export default function BookHotelScreen() {
   const primaryRoom = chosen[0]?.room;
   const availability = parseAvailabilityRange(hotel?.availabilityDates);
 
-  const initialCheckIn = availability?.start ?? toISODate(new Date());
+  // Seed the stay/payment from the detail page when provided, otherwise fall back
+  // to the availability window / today.
+  const initialCheckIn = checkInParam || availability?.start || toISODate(new Date());
   const [checkIn, setCheckIn] = useState(initialCheckIn);
-  const [checkOut, setCheckOut] = useState(addDays(initialCheckIn, 1));
+  const [checkOut, setCheckOut] = useState(checkOutParam || addDays(initialCheckIn, 1));
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [name, setName] = useState(user?.name ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [arrivalTime, setArrivalTime] = useState('');
   const [requests, setRequests] = useState('');
-  const [payment, setPayment] = useState<PaymentMode>('property');
+  const [payment, setPayment] = useState<PaymentMode>(paymentParam === 'online' ? 'online' : 'property');
   const [showAmenities, setShowAmenities] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState<string | null>(null);
@@ -198,24 +191,95 @@ export default function BookHotelScreen() {
   }
 
   if (confirmed) {
+    const guestSummary = `${adults} adult${adults === 1 ? '' : 's'}${
+      children > 0 ? `, ${children} child${children === 1 ? '' : 'ren'}` : ''
+    }`;
     return (
-      <View className="flex-1 items-center justify-center gap-4 bg-background px-8">
+      <ScrollView
+        className="flex-1 bg-background"
+        contentContainerClassName="flex-grow justify-center gap-6 p-6 pb-10"
+      >
         <Stack.Screen options={{ title: 'Booking confirmed' }} />
-        <View className="h-20 w-20 items-center justify-center rounded-full bg-green-50">
-          <Ionicons name="checkmark-circle" size={56} color="#16a34a" />
+
+        {/* Success header */}
+        <View className="items-center gap-4">
+          <View className="h-24 w-24 items-center justify-center rounded-full bg-green-50">
+            <Ionicons name="checkmark-circle" size={64} color="#16a34a" />
+          </View>
+          <View className="items-center gap-1.5">
+            <Text className="text-center font-display-x text-2xl text-ink">Booking Requested!</Text>
+            <Text className="text-center text-sm text-muted">
+              Your request for {hotel.title} is pending confirmation from the host.
+            </Text>
+          </View>
         </View>
-        <Text className="text-center text-xl font-display text-ink">Booking requested!</Text>
-        <Text className="text-center text-sm text-muted">
-          Your request for {hotel.title} is pending confirmation from the host.
-          {payment === 'property'
-            ? ' Pay the full amount when you arrive at the property.'
-            : ' The host will share payment details shortly.'}
-        </Text>
-        <View className="w-full gap-3 pt-2">
-          <Button label="View my bookings" fullWidth onPress={() => router.replace('/my-bookings')} />
-          <Button label="Back to hotel" variant="outline" fullWidth onPress={() => router.back()} />
+
+        {/* Booking summary */}
+        <Card className="gap-3">
+          <View className="flex-row items-center gap-2">
+            <Ionicons name="receipt-outline" size={18} color="#156473" />
+            <Text className="text-base font-semibold text-ink">Booking Summary</Text>
+          </View>
+          <View className="h-px bg-hairline" />
+          <SummaryRow icon="business-outline" label="Property" value={hotel.title} />
+          {primaryRoom ? (
+            <SummaryRow icon="bed-outline" label="Room" value={primaryRoom.roomType} />
+          ) : null}
+          {roomCount > 1 ? (
+            <SummaryRow icon="albums-outline" label="Rooms" value={`${roomCount} rooms`} />
+          ) : null}
+          <SummaryRow icon="calendar-outline" label="Check-in" value={formatDate(checkIn)} />
+          <SummaryRow icon="calendar-clear-outline" label="Check-out" value={formatDate(checkOut)} />
+          <SummaryRow icon="moon-outline" label="Nights" value={`${nights} night${nights === 1 ? '' : 's'}`} />
+          <SummaryRow icon="people-outline" label="Guests" value={guestSummary} />
+          <SummaryRow
+            icon="card-outline"
+            label="Payment"
+            value={payment === 'online' ? 'Pay Online' : 'Pay at Property'}
+          />
+          <View className="h-px bg-hairline" />
+          <View className="flex-row items-center justify-between">
+            <Text className="text-base font-bold text-ink">Total</Text>
+            <Text className="font-display-x text-xl text-brand-600">
+              {formatMoney({ amount: total, currency })}
+            </Text>
+          </View>
+        </Card>
+
+        {/* Next-step note */}
+        <View className="flex-row items-start gap-2 rounded-2xl bg-brand-50 px-4 py-3">
+          <Ionicons name="information-circle-outline" size={18} color="#156473" />
+          <Text className="flex-1 text-sm text-brand-700">
+            {payment === 'property'
+              ? 'Pay the full amount when you arrive at the property.'
+              : 'The host will share payment details with you shortly.'}
+          </Text>
         </View>
-      </View>
+
+        {/* CTAs — same pure-className Pressable pattern as the Confirm & Pay button.
+            Backgrounds/borders come from `bg-*`/`border-*` classes (never inline
+            `style`), so they paint reliably on native. */}
+        <View className="gap-3">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="View my bookings"
+            onPress={() => router.replace('/my-bookings')}
+            className="w-full flex-row items-center justify-center gap-2 rounded-2xl bg-brand-500 py-4"
+          >
+            <Ionicons name="albums-outline" size={18} color="#ffffff" />
+            <Text className="font-body-semibold text-base text-white">View My Bookings</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Back to hotel"
+            onPress={() => router.back()}
+            className="w-full flex-row items-center justify-center gap-2 rounded-2xl border border-brand-500 bg-transparent py-4"
+          >
+            <Ionicons name="arrow-back-outline" size={18} color="#1a7a8c" />
+            <Text className="font-body-semibold text-base text-brand-500">Back to Hotel</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
     );
   }
 
@@ -506,14 +570,31 @@ export default function BookHotelScreen() {
           </View>
         ) : null}
 
-        <Button
-          label="Confirm & Pay"
-          icon="shield-checkmark-outline"
-          fullWidth
-          loading={isPending}
-          disabled={!canBook}
+        {/* Confirm CTA — solid brand-blue background via a `bg-*` className (NOT an
+            inline `style`). This matches the proven PaymentOption/Button pattern; the
+            background paints reliably. Do NOT add a `style` function here — mixing a
+            style function with className makes NativeWind drop one of them and the
+            button renders invisible. */}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Confirm & Pay"
+          accessibilityState={{ disabled: !canBook || isPending, busy: isPending }}
+          disabled={!canBook || isPending}
           onPress={submit}
-        />
+          className={[
+            'w-full flex-row items-center justify-center gap-2 rounded-2xl bg-brand-500 py-4',
+            !canBook || isPending ? 'opacity-50' : '',
+          ].join(' ')}
+        >
+          {isPending ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <>
+              <Ionicons name="shield-checkmark-outline" size={18} color="#ffffff" />
+              <Text className="text-center font-body-semibold text-base text-white">Confirm &amp; Pay</Text>
+            </>
+          )}
+        </Pressable>
         <Text className="text-center text-xs text-muted-foreground">
           You won&apos;t be charged now — the host confirms your request first.
         </Text>
