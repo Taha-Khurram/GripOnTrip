@@ -52,6 +52,43 @@ export interface UmrahFilters {
   sort?: 'recommended' | 'price-asc' | 'price-desc' | 'rating-desc';
 }
 
+export type Gender = 'Male' | 'Female';
+
+/**
+ * One pilgrim/passenger on an Umrah booking. Mirrors the fields the web
+ * "Pilgrim & Passenger Information" form collects (passport identity + optional
+ * visa-assistance and document uploads).
+ */
+export interface Pilgrim {
+  /** Local, stable id for list rendering. */
+  id: string;
+  fullName: string;
+  passportNumber: string;
+  /** ISO `YYYY-MM-DD` (or free text while editing). */
+  passportExpiry: string;
+  dateOfBirth: string;
+  gender: Gender;
+  visaAssistance: boolean;
+  /** Local upload flags — the app only tracks that a document was attached. */
+  passportUploaded?: boolean;
+  photoUploaded?: boolean;
+}
+
+/**
+ * A self-assembled ("Bespoke") Umrah package. Drives {@link computeCustomPrice}
+ * and the customizer card. `hotelTier` / `transport` / `meals` are the `value`
+ * keys of the option lists in `pricing.ts`.
+ */
+export interface CustomUmrahConfig {
+  makkahNights: number;
+  madinahNights: number;
+  hotelTier: string;
+  transport: string;
+  meals: string;
+  visaAssistance: boolean;
+  ziyarat: boolean;
+}
+
 /** Payload the web sends to `POST /agencies/{id}/bookings` for an Umrah enquiry. */
 export interface UmrahBookingInput {
   agencyId: string;

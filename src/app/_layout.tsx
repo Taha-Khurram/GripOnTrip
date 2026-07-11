@@ -128,6 +128,7 @@ export default function RootLayout() {
                   options={{ headerShown: true, title: 'Book Package', presentation: 'modal' }}
                 />
                 <Stack.Screen name="umrah/[id]" options={{ headerShown: true, title: 'Umrah Package' }} />
+                <Stack.Screen name="umrah/book" options={{ headerShown: true, title: 'Book Umrah' }} />
                 <Stack.Screen name="guides/[id]" options={{ headerShown: true, title: 'Guide' }} />
                 <Stack.Screen name="profile" options={{ headerShown: true, title: 'Profile' }} />
                 <Stack.Screen name="profile-settings" options={{ headerShown: true, title: 'Profile settings' }} />
