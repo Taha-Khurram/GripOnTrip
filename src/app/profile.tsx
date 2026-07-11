@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { Link, Stack, useRouter } from 'expo-router';
 import { ScrollView, Text, View } from 'react-native';
 
-import { Animated, Button, DeepPanel, PressableScale, enterUp } from '@/components/ui';
+import { Animated, DeepPanel, PressableScale, enterUp } from '@/components/ui';
 import { Screen } from '@/components/layout/Screen';
 import { useAuthStore } from '@/store/auth.store';
 
@@ -186,18 +186,23 @@ export default function ProfileScreen() {
           <Row icon="sparkles-outline" label="AI Trip Planner" href="/trip-planner" tone="accent" last />
         </Group>
 
-        {/* Sign out */}
+        {/* Sign out — styled with pure className (no Button component). Chrome
+            lives on an inner View so NativeWind's className→style interop stays
+            reliable on the reanimated PressableScale. */}
         <View className="px-5 pt-10">
-          <Button
-            label="Sign out"
-            variant="outline"
-            fullWidth
+          <PressableScale
+            accessibilityRole="button"
             onPress={async () => {
               await signOut();
               // The auth guard swaps to the sign-in screen once the session clears.
               router.replace('/(auth)/sign-in');
             }}
-          />
+          >
+            <View className="flex-row items-center justify-center gap-2 rounded-2xl border border-danger/30 bg-danger/5 py-4">
+              <Ionicons name="log-out-outline" size={18} color="#dc2626" />
+              <Text className="text-base font-body-semibold text-danger">Sign out</Text>
+            </View>
+          </PressableScale>
         </View>
       </ScrollView>
     </Screen>

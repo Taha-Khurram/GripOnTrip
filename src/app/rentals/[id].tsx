@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Badge, Button, DetailSkeleton, Gallery, PressableScale } from '@/components/ui';
+import { Badge, Button, DetailSkeleton, PressableScale, SunCTA } from '@/components/ui';
 import { WishlistButton } from '@/components/WishlistButton';
 import { useRequireAuth } from '@/features/auth';
 import { useRental } from '@/features/rentals';
@@ -11,6 +13,32 @@ import { formatMoney, formatRating } from '@/utils/format';
 
 function SectionTitle({ children }: { children: string }) {
   return <Text className="font-display text-lg text-ink">{children}</Text>;
+}
+
+/**
+ * Property photo as a circular avatar on the warm hero band — mirrors the Umrah
+ * package hero. Falls back to a home glyph when there's no image or it fails.
+ */
+function HeroImage({ uri }: { uri?: string }) {
+  const [failed, setFailed] = useState(false);
+  const showImage = Boolean(uri) && !failed;
+  return (
+    <View className="h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white/70 bg-white shadow-card">
+      {showImage ? (
+        <Image
+          source={{ uri }}
+          style={{ width: '100%', height: '100%' }}
+          contentFit="cover"
+          transition={200}
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <View className="h-full w-full items-center justify-center bg-brand-50">
+          <Ionicons name="home" size={44} color="#156473" />
+        </View>
+      )}
+    </View>
+  );
 }
 
 /** A single spec stat (bedrooms / bathrooms / guests). */
@@ -63,9 +91,17 @@ export default function RentalDetailScreen() {
     <View className="flex-1 bg-white">
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView contentContainerClassName="pb-32" showsVerticalScrollIndicator={false}>
-        {/* Gallery with floating back button */}
+        {/* Warm hero band with the property avatar + floating buttons */}
         <View>
-          <Gallery images={rental.images.map((i) => i.url)} />
+          <SunCTA className="h-64 items-center justify-center gap-3 px-6 pb-8">
+            <HeroImage uri={rental.images[0]?.url} />
+            <View className="flex-row items-center gap-1.5 rounded-full bg-white/20 px-3 py-1">
+              <Ionicons name="checkmark-circle" size={13} color="#ffffff" />
+              <Text className="text-xs font-body-semibold uppercase tracking-wide text-white">
+                Verified Rental
+              </Text>
+            </View>
+          </SunCTA>
           <PressableScale
             onPress={() => router.back()}
             activeScale={0.9}
@@ -73,6 +109,20 @@ export default function RentalDetailScreen() {
           >
             <Ionicons name="chevron-back" size={22} color="#fff" />
           </PressableScale>
+          <View className="absolute right-4 top-12">
+            <WishlistButton
+              chip
+              item={{
+                id: rental.id,
+                category: 'rentals',
+                title: rental.title,
+                imageUrl: rental.images[0]?.url,
+                subtitle: rental.location?.city,
+                price: rental.price.amount,
+                currency: rental.price.currency,
+              }}
+            />
+          </View>
         </View>
 
         {/* Content sheet — overlaps the gallery with a rounded top */}
@@ -83,20 +133,7 @@ export default function RentalDetailScreen() {
               <Text className="flex-1 font-display-x text-2xl leading-8 text-ink">
                 {rental.title}
               </Text>
-              <View className="flex-row items-center gap-3">
-                <WishlistButton
-                  item={{
-                    id: rental.id,
-                    category: 'rentals',
-                    title: rental.title,
-                    imageUrl: rental.images[0]?.url,
-                    subtitle: rental.location?.city,
-                    price: rental.price.amount,
-                    currency: rental.price.currency,
-                  }}
-                />
-                <Badge label={rental.propertyType} tone="neutral" />
-              </View>
+              <Badge label={rental.propertyType} tone="neutral" />
             </View>
             <View className="flex-row flex-wrap items-center gap-x-2">
               {rental.rating != null ? (
