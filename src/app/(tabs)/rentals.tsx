@@ -7,7 +7,7 @@ import { Button, ListSkeleton } from '@/components/ui';
 import { RentalCard, useRentals, type Rental } from '@/features/rentals';
 
 /**
- * Vacation Rentals listing.
+ * BNB listing (vacation rentals — renamed "BNB" to match the website's tab).
  *
  * Reads from `GET /rentals` via `useRentals()` — the same API the web site uses.
  * Anything posted from the web dashboard shows up here; React Query refetches on
@@ -52,7 +52,7 @@ export default function RentalsScreen() {
       <View className="flex-1 items-center justify-center gap-4 bg-background px-8">
         <Ionicons name="cloud-offline-outline" size={40} color="#9aa7ac" />
         <Text className="text-center text-muted">
-          Couldn&apos;t load vacation rentals. Check your connection and try again.
+          Couldn&apos;t load BNB properties. Check your connection and try again.
         </Text>
         <Button label="Retry" variant="outline" onPress={() => refetch()} />
       </View>
@@ -76,16 +76,16 @@ export default function RentalsScreen() {
             variant="sun"
             icon="home-outline"
             eyebrow="Stay"
-            title="Vacation Rentals"
+            title="BNB"
             subtitle="Villas, apartments and unique properties."
             query={query}
             onChangeQuery={setQuery}
-            placeholder="Search rentals, cities or types"
+            placeholder="Search BNBs, cities or types"
           />
 
           <View className="px-5 pb-3 pt-4">
             <Text className="text-sm text-muted">
-              {rentals.length} rental{rentals.length === 1 ? '' : 's'} available
+              {rentals.length} propert{rentals.length === 1 ? 'y' : 'ies'} available
             </Text>
           </View>
         </>
@@ -96,10 +96,10 @@ export default function RentalsScreen() {
             <Ionicons name="home-outline" size={28} color="#1a7a8c" />
           </View>
           <Text className="text-lg font-display text-ink">
-            No rentals posted yet
+            No BNBs posted yet
           </Text>
           <Text className="text-center text-sm text-muted">
-            New vacation rentals posted from the dashboard will appear here. Pull down to refresh.
+            New BNB properties posted from the dashboard will appear here. Pull down to refresh.
           </Text>
         </View>
       }

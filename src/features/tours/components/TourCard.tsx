@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
+import { useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { IMAGE_REQUEST_HEADERS } from '@/api/media';
 import { Animated, Card, enterUp, ImageBand, PressableScale } from '@/components/ui';
 import { formatMoney, formatRating } from '@/utils/format';
 import type { Tour } from '../types';
@@ -18,7 +20,8 @@ function SpecChip({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label
 }
 
 export function TourCard({ tour, index = 0 }: { tour: Tour; index?: number }) {
-  const image = tour.images[0]?.url;
+  const [imageFailed, setImageFailed] = useState(false);
+  const image = imageFailed ? undefined : tour.images[0]?.url;
   const packageCount = tour.packages.length;
   // Shortest package length, when any package advertises nights.
   const nights = tour.packages
@@ -35,10 +38,11 @@ export function TourCard({ tour, index = 0 }: { tour: Tour; index?: number }) {
             <View>
               {image ? (
                 <Image
-                  source={{ uri: image }}
+                  source={{ uri: image, headers: IMAGE_REQUEST_HEADERS }}
                   style={{ width: '100%', height: 190 }}
                   contentFit="cover"
                   transition={200}
+                  onError={() => setImageFailed(true)}
                 />
               ) : (
                 <ImageBand className="h-[190px] items-center justify-center">

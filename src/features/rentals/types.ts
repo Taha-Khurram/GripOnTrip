@@ -10,6 +10,8 @@ export interface Rental extends BaseListing {
   amenities: string[];
   /** Rentals are priced per month; `price` holds the monthly rate. */
   priceUnit: 'month';
+  /** Optional nightly rate, used for the "Days" rental-duration option. */
+  pricePerDay?: number;
   originalPrice?: Money;
   discountPercent?: number;
   externalBookingUrl?: string;

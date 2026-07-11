@@ -1,46 +1,43 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { Linking, ScrollView, Text, TextInput, View } from 'react-native';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Badge, Button, DateField, DetailSkeleton, Gallery } from '@/components/ui';
+import { Badge, Button, DetailSkeleton, Gallery, PressableScale } from '@/components/ui';
 import { WishlistButton } from '@/components/WishlistButton';
 import { useRequireAuth } from '@/features/auth';
-import { useCreateRentalBooking } from '@/features/bookings';
 import { useRental } from '@/features/rentals';
-import { useAuthStore } from '@/store/auth.store';
 import { AmenityGrid } from '@/utils/amenities';
-import { addDays, toISODate } from '@/utils/date';
 import { formatMoney, formatRating } from '@/utils/format';
 
+function SectionTitle({ children }: { children: string }) {
+  return <Text className="font-display text-lg text-ink">{children}</Text>;
+}
+
+/** A single spec stat (bedrooms / bathrooms / guests). */
 function Spec({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
-    <View className="items-center gap-1">
-      <Ionicons name={icon} size={20} color="#1a7a8c" />
-      <Text className="text-sm text-muted">{label}</Text>
+    <View className="flex-1 items-center gap-1 rounded-2xl bg-brand-50 py-3">
+      <Ionicons name={icon} size={20} color="#156473" />
+      <Text className="text-sm font-body-semibold text-brand-700">{label}</Text>
     </View>
   );
 }
 
+/**
+ * BNB detail page. Shows the gallery, specs, amenities and description, then a
+ * sticky "Book this property" bar that opens the request-to-book flow
+ * (`/rentals/book`). External listings link out to the partner site instead.
+ */
 export default function RentalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { requireAuth, isAuthenticated } = useRequireAuth();
-  const user = useAuthStore((s) => s.user);
+  const router = useRouter();
+  const { requireAuth } = useRequireAuth();
   const { data: rental, isLoading, isError } = useRental(id);
-  const { mutateAsync, isPending } = useCreateRentalBooking();
-
-  const today = toISODate(new Date());
-  const [open, setOpen] = useState(false);
-  const [start, setStart] = useState(today);
-  const [end, setEnd] = useState(addDays(today, 30));
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-background">
-        <Stack.Screen options={{ title: 'Rental' }} />
+      <View className="flex-1 bg-white">
+        <Stack.Screen options={{ headerShown: false }} />
         <DetailSkeleton />
       </View>
     );
@@ -48,128 +45,161 @@ export default function RentalDetailScreen() {
 
   if (isError || !rental) {
     return (
-      <View className="flex-1 items-center justify-center bg-background px-8">
+      <View className="flex-1 items-center justify-center bg-white px-8">
+        <Stack.Screen options={{ headerShown: false }} />
         <Text className="text-center text-muted">
-          Couldn&apos;t load this rental. Pull back and try again.
+          Couldn&apos;t load this property. Pull back and try again.
         </Text>
       </View>
     );
   }
 
-  const submit = async () => {
-    setError(null);
-    try {
-      await mutateAsync({
-        propertyId: rental.id,
-        startDate: start,
-        endDate: end,
-        totalPrice: rental.price.amount,
-        message: message.trim() || `Booking request from ${user?.name ?? 'a guest'}`,
-      });
-      setDone(true);
-      setOpen(false);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not send your request.');
-    }
-  };
+  const book = () =>
+    requireAuth(() =>
+      router.push({ pathname: '/rentals/book', params: { id: rental.id } }),
+    );
 
   return (
-    <View className="flex-1 bg-background">
-      <Stack.Screen options={{ title: rental.title }} />
-      <ScrollView contentContainerClassName="pb-32">
-        <Gallery images={rental.images.map((i) => i.url)} />
-        <View className="gap-4 p-5">
-          <View className="flex-row items-start justify-between gap-3">
-            <Text className="flex-1 text-2xl font-display text-ink">{rental.title}</Text>
-            <View className="flex-row items-center gap-3">
-              <WishlistButton
-                item={{
-                  id: rental.id,
-                  category: 'rentals',
-                  title: rental.title,
-                  imageUrl: rental.images[0]?.url,
-                  subtitle: rental.location?.city,
-                  price: rental.price.amount,
-                  currency: rental.price.currency,
-                }}
-              />
-              <Badge label={rental.propertyType} tone="neutral" />
+    <View className="flex-1 bg-white">
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScrollView contentContainerClassName="pb-32" showsVerticalScrollIndicator={false}>
+        {/* Gallery with floating back button */}
+        <View>
+          <Gallery images={rental.images.map((i) => i.url)} />
+          <PressableScale
+            onPress={() => router.back()}
+            activeScale={0.9}
+            className="absolute left-4 top-12 h-10 w-10 items-center justify-center rounded-full bg-black/40"
+          >
+            <Ionicons name="chevron-back" size={22} color="#fff" />
+          </PressableScale>
+        </View>
+
+        {/* Content sheet — overlaps the gallery with a rounded top */}
+        <View className="-mt-6 gap-5 rounded-t-[28px] bg-white p-5 pt-6">
+          {/* Title + meta */}
+          <View className="gap-1.5">
+            <View className="flex-row items-start justify-between gap-3">
+              <Text className="flex-1 font-display-x text-2xl leading-8 text-ink">
+                {rental.title}
+              </Text>
+              <View className="flex-row items-center gap-3">
+                <WishlistButton
+                  item={{
+                    id: rental.id,
+                    category: 'rentals',
+                    title: rental.title,
+                    imageUrl: rental.images[0]?.url,
+                    subtitle: rental.location?.city,
+                    price: rental.price.amount,
+                    currency: rental.price.currency,
+                  }}
+                />
+                <Badge label={rental.propertyType} tone="neutral" />
+              </View>
+            </View>
+            <View className="flex-row flex-wrap items-center gap-x-2">
+              {rental.rating != null ? (
+                <View className="flex-row items-center gap-1">
+                  <Ionicons name="star" size={14} color="#f39024" />
+                  <Text className="text-sm font-semibold text-ink">
+                    {formatRating(rental.rating)}
+                  </Text>
+                </View>
+              ) : null}
+              {rental.location?.city ? (
+                <View className="flex-row items-center gap-1">
+                  <Ionicons name="location-outline" size={14} color="#9aa7ac" />
+                  <Text className="text-sm text-muted">{rental.location.city}</Text>
+                </View>
+              ) : null}
             </View>
           </View>
 
-          <Text className="text-muted">
-            {rental.location?.city}
-            {rental.rating != null ? ` · ★ ${formatRating(rental.rating)}` : ''}
-          </Text>
+          {/* Price */}
+          <View className="flex-row items-baseline gap-2">
+            <Text className="font-display-x text-2xl text-brand-600">
+              {formatMoney(rental.price)}
+            </Text>
+            <Text className="text-sm text-muted-foreground">/ month</Text>
+            {rental.originalPrice ? (
+              <Text className="text-sm text-muted-foreground line-through">
+                {formatMoney(rental.originalPrice)}
+              </Text>
+            ) : null}
+            {rental.discountPercent ? (
+              <Text className="text-sm font-semibold text-danger">
+                Save {rental.discountPercent}%
+              </Text>
+            ) : null}
+          </View>
 
+          {/* Specs */}
           {rental.bedrooms != null || rental.bathrooms != null || rental.maxGuests != null ? (
-            <View className="flex-row gap-8">
-              {rental.bedrooms != null ? <Spec icon="bed-outline" label={`${rental.bedrooms} bed`} /> : null}
-              {rental.bathrooms != null ? <Spec icon="water-outline" label={`${rental.bathrooms} bath`} /> : null}
-              {rental.maxGuests != null ? <Spec icon="people-outline" label={`${rental.maxGuests} guests`} /> : null}
+            <View className="flex-row gap-3">
+              {rental.bedrooms != null ? (
+                <Spec icon="bed-outline" label={`${rental.bedrooms} bed`} />
+              ) : null}
+              {rental.bathrooms != null ? (
+                <Spec icon="water-outline" label={`${rental.bathrooms} bath`} />
+              ) : null}
+              {rental.maxGuests != null ? (
+                <Spec icon="people-outline" label={`${rental.maxGuests} guests`} />
+              ) : null}
             </View>
           ) : null}
 
+          {/* Amenities */}
           {rental.amenities.length > 0 ? (
             <View className="gap-2">
-              <Text className="text-lg font-display text-ink">Amenities</Text>
+              <SectionTitle>Amenities</SectionTitle>
               <AmenityGrid amenities={rental.amenities} />
             </View>
           ) : null}
 
+          {/* Description */}
           {rental.description ? (
-            <Text className="leading-6 text-muted">{rental.description}</Text>
-          ) : null}
-
-          {/* Request-to-book form */}
-          {open && isAuthenticated ? (
-            <View className="gap-3 rounded-2xl border border-neutral-100 p-4 dark:border-neutral-800">
-              <Text className="text-base font-bold text-ink">Request dates</Text>
-              <View className="flex-row gap-3">
-                <DateField label="Move-in" value={start} min={new Date()} onChange={setStart} />
-                <DateField label="Move-out" value={end} min={new Date(addDays(start, 1))} onChange={setEnd} />
-              </View>
-              <TextInput
-                placeholder="Message to the owner (optional)"
-                placeholderTextColor="#9aa7ac"
-                multiline
-                value={message}
-                onChangeText={setMessage}
-                className="min-h-16 rounded-xl border border-hairline bg-white px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
-              />
-              {error ? <Text className="text-xs text-danger">{error}</Text> : null}
-              <Button label="Send request" loading={isPending} onPress={submit} fullWidth />
+            <View className="gap-2">
+              <SectionTitle>About this property</SectionTitle>
+              <Text className="leading-6 text-muted">{rental.description}</Text>
             </View>
           ) : null}
 
-          {done ? (
-            <View className="flex-row items-center gap-2 rounded-xl bg-green-50 px-4 py-3 dark:bg-green-950">
-              <Ionicons name="checkmark-circle" size={20} color="#16a34a" />
-              <Text className="flex-1 text-sm text-success">
-                Request sent! The owner will reply about availability.
-              </Text>
+          {rental.location?.address ? (
+            <View className="gap-2">
+              <SectionTitle>Location</SectionTitle>
+              <View className="flex-row items-start gap-1.5">
+                <Ionicons name="location-outline" size={16} color="#9aa7ac" />
+                <Text className="flex-1 text-sm text-muted">{rental.location.address}</Text>
+              </View>
             </View>
           ) : null}
         </View>
       </ScrollView>
 
-      {/* Sticky action bar */}
-      <View className="absolute bottom-0 w-full flex-row items-center justify-between border-t border-neutral-100 bg-white px-5 py-3 dark:border-neutral-800 dark:bg-neutral-950">
-        <View className="flex-row items-baseline gap-2">
-          <Text className="text-lg font-display text-brand-600">
+      {/* Sticky booking bar */}
+      <View className="absolute bottom-0 w-full flex-row items-center justify-between border-t border-hairline bg-white px-5 pb-8 pt-3">
+        <View>
+          <Text className="font-display-x text-xl text-brand-600">
             {formatMoney(rental.price)}
-            <Text className="text-xs font-normal text-muted-foreground"> / month</Text>
           </Text>
-          {rental.originalPrice ? (
-            <Text className="text-xs text-muted-foreground line-through">{formatMoney(rental.originalPrice)}</Text>
-          ) : null}
+          <Text className="text-xs text-muted-foreground">/ month</Text>
         </View>
         {rental.externalBookingUrl ? (
-          <Button label="Enquire" onPress={() => Linking.openURL(rental.externalBookingUrl!)} />
-        ) : done ? (
-          <Button label="Requested" disabled onPress={() => {}} />
+          <Button
+            label="Book on partner site"
+            onPress={() => Linking.openURL(rental.externalBookingUrl!)}
+          />
         ) : (
-          <Button label="Request to book" onPress={() => requireAuth(() => setOpen(true))} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Book this property"
+            onPress={book}
+            className="flex-row items-center justify-center gap-2 rounded-2xl bg-brand-500 px-6 py-4"
+          >
+            <Ionicons name="calendar-outline" size={18} color="#ffffff" />
+            <Text className="font-body-semibold text-base text-white">Book this property</Text>
+          </Pressable>
         )}
       </View>
     </View>

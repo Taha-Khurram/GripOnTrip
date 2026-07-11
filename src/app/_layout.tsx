@@ -113,8 +113,20 @@ export default function RootLayout() {
                   name="hotels/book"
                   options={{ headerShown: true, title: 'Book', presentation: 'modal' }}
                 />
-                <Stack.Screen name="rentals/[id]" options={{ headerShown: true, title: 'Rental' }} />
-                <Stack.Screen name="tours/[id]" options={{ headerShown: true, title: 'Tour' }} />
+                <Stack.Screen name="rentals/[id]" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="rentals/book"
+                  options={{ headerShown: true, title: 'Request to Book', presentation: 'modal' }}
+                />
+                <Stack.Screen name="tours/[id]" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="tours/enquiry"
+                  options={{ headerShown: true, title: 'Request an Inquiry', presentation: 'modal' }}
+                />
+                <Stack.Screen
+                  name="tours/book"
+                  options={{ headerShown: true, title: 'Book Package', presentation: 'modal' }}
+                />
                 <Stack.Screen name="umrah/[id]" options={{ headerShown: true, title: 'Umrah Package' }} />
                 <Stack.Screen name="guides/[id]" options={{ headerShown: true, title: 'Guide' }} />
                 <Stack.Screen name="profile" options={{ headerShown: true, title: 'Profile' }} />

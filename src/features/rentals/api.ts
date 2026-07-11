@@ -15,6 +15,7 @@ interface RawRental {
   title: string;
   images_url?: string[] | null;
   price_per_month?: number | null;
+  price_per_day?: number | null;
   discounted_price?: number | null;
   actual_price?: number | null;
   address?: string | null;
@@ -59,6 +60,7 @@ function mapRental(raw: RawRental): Rental {
     discountPercent: hasDiscount ? Math.round((1 - monthly / original!) * 100) : undefined,
     externalBookingUrl: raw.external_booking_url ?? undefined,
     priceUnit: 'month',
+    pricePerDay: raw.price_per_day ?? undefined,
     rating,
     location:
       raw.city || raw.address || raw.latitude != null
@@ -91,7 +93,14 @@ export async function fetchRentals(
   };
 }
 
+/**
+ * A single rental. The REST API has no working GET-by-id route (it 404/405s, and
+ * `/api` is read-only) — so, like the shop products flow, we resolve the item
+ * from the full `/rentals` list by id.
+ */
 export async function fetchRental(id: string): Promise<Rental> {
-  const res = await apiGet<ApiEnvelope<RawRental>>(endpoints.rentals.detail(id));
-  return mapRental(res.data);
+  const { data } = await fetchRentals();
+  const rental = data.find((r) => r.id === id);
+  if (!rental) throw new Error('Rental not found');
+  return rental;
 }

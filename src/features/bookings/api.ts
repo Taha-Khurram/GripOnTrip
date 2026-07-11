@@ -55,8 +55,37 @@ export async function createHotelBooking(input: HotelBookingInput) {
   return { id: String(data.id) };
 }
 
-export async function createRentalBooking(_input: RentalBookingInput) {
-  return { id: 'local' };
+/**
+ * Create a BNB (rental) booking in Supabase. `rental_bookings` RLS requires an
+ * authenticated session, so we attach the signed-in user's id. Column names
+ * mirror the verified table schema (snake_case).
+ */
+export async function createRentalBooking(input: RentalBookingInput) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data, error } = await supabase
+    .from('rental_bookings')
+    .insert({
+      property_id: input.propertyId,
+      user_id: user?.id ?? null,
+      start_date: input.startDate,
+      end_date: input.endDate,
+      duration_type: input.durationType,
+      duration_value: input.durationValue,
+      customer_name: input.customerName,
+      customer_email: input.customerEmail,
+      customer_phone: input.customerPhone ?? null,
+      total_price: input.totalPrice,
+      status: 'pending',
+      message: input.message ?? null,
+    })
+    .select('id')
+    .single();
+
+  if (error) throw new Error(error.message);
+  return { id: String(data.id) };
 }
 
 export async function createAgencyBooking(_input: AgencyBookingInput) {

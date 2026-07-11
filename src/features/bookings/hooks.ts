@@ -23,7 +23,17 @@ export function useCreateHotelBooking() {
 }
 
 export function useCreateRentalBooking() {
-  return useMutation({ mutationFn: createRentalBooking });
+  const queryClient = useQueryClient();
+  const userId = useAuthStore((s) => s.user?.id);
+  return useMutation({
+    mutationFn: createRentalBooking,
+    // Surface the new reservation under "My Rental Bookings" right away.
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.profile.rentalBookings(userId),
+      });
+    },
+  });
 }
 
 export function useCreateAgencyBooking() {

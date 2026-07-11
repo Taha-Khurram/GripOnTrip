@@ -157,7 +157,26 @@ export async function fetchTours(
   };
 }
 
+/**
+ * Find an operator in the approved-agencies feed. The feed is requested with
+ * `include_packages=true`, so the record it returns embeds `agency_packages` —
+ * which the by-id route ({@link endpoints.tours.detail}) does NOT return.
+ */
+async function fetchTourFromList(id: string): Promise<Tour | undefined> {
+  const res = await apiGet<ApiEnvelope<RawAgency[]>>(endpoints.tours.list, LIST_PARAMS);
+  const raw = (res.data ?? []).find((a) => String(a.id) === id);
+  return raw ? mapTour(raw) : undefined;
+}
+
 export async function fetchTour(id: string): Promise<Tour> {
-  const res = await apiGet<ApiEnvelope<RawAgency>>(endpoints.tours.detail(id));
+  // Resolve from the approved-agencies feed first — it's the only response that
+  // reliably embeds the operator's packages (via include_packages). Fall back to
+  // the by-id endpoint (still asking for packages) if the operator isn't listed.
+  const fromList = await fetchTourFromList(id);
+  if (fromList) return fromList;
+
+  const res = await apiGet<ApiEnvelope<RawAgency>>(endpoints.tours.detail(id), {
+    include_packages: true,
+  });
   return mapTour(res.data);
 }

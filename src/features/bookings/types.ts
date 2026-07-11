@@ -20,6 +20,15 @@ export interface RentalBookingInput {
   startDate: string;
   endDate: string;
   totalPrice: number;
+  /** Rental duration unit — `rental_bookings.duration_type` is NOT NULL. */
+  durationType: 'days' | 'months' | 'yearly';
+  /** Number of duration units — `rental_bookings.duration_value` is NOT NULL. */
+  durationValue: number;
+  /** Guest name — `rental_bookings.customer_name` is NOT NULL. */
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  /** Optional free-text note to the host. */
   message?: string;
 }
 
