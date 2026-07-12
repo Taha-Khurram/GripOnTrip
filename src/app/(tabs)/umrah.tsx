@@ -1,52 +1,65 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
+import {
+  FlatList,
+  Keyboard,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
-import { ListHero } from '@/components/layout/ListHero';
-import { Button, ListSkeleton } from '@/components/ui';
-import { UmrahPackageCard, useUmrahPackages, type UmrahFilters, type UmrahPackage } from '@/features/umrah';
+import { NewsletterCTA } from '@/components/NewsletterCTA';
+import { Animated, Button, enterUp, ListSkeleton, OceanHero, PressableScale } from '@/components/ui';
+import { APP_NAME } from '@/constants/config';
+import {
+  UmrahPackageCard,
+  UmrahPerks,
+  useUmrahPackages,
+  type UmrahFilters,
+  type UmrahPackage,
+} from '@/features/umrah';
+
+// App brand mark (same asset the home hero + tours/BNB pages use).
+const logo = require('../../../assets/images/icon.png');
 
 type SortKey = NonNullable<UmrahFilters['sort']>;
-const SORTS: { key: SortKey; label: string }[] = [
-  { key: 'recommended', label: 'Recommended' },
-  { key: 'price-asc', label: 'Price ↑' },
-  { key: 'price-desc', label: 'Price ↓' },
-  { key: 'rating-desc', label: 'Top rated' },
+const SORTS: { key: SortKey; label: string; icon: string }[] = [
+  { key: 'recommended', label: 'Recommended', icon: 'sparkles-outline' },
+  { key: 'price-asc', label: 'Price: Low', icon: 'arrow-up-outline' },
+  { key: 'price-desc', label: 'Price: High', icon: 'arrow-down-outline' },
+  { key: 'rating-desc', label: 'Top Rated', icon: 'star-outline' },
 ];
 
-function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+/** All-caps, letter-spaced field label used inside the search card (mirrors home). */
+function FieldLabel({ children }: { children: string }) {
   return (
-    <Pressable
-      onPress={onPress}
-      className={[
-        'rounded-full border px-3 py-1.5',
-        active
-          ? 'border-accent-500 bg-accent-500'
-          : 'border-hairline bg-white dark:border-neutral-700 dark:bg-neutral-900',
-      ].join(' ')}
-    >
-      <Text className={['text-xs font-semibold', active ? 'text-white' : 'text-muted'].join(' ')}>
-        {label}
-      </Text>
-    </Pressable>
+    <Text className="text-[11px] font-body-semibold uppercase tracking-[1.5px] text-muted-foreground">
+      {children}
+    </Text>
   );
 }
 
 /**
  * Umrah Packages listing.
  *
- * Reads the SAME approved-agencies feed as the web `/umrah` page
- * (`GET /agencies?status=Approved&include_packages=true`) and shows the packages
- * whose name is prefixed "[UMRAH]". Search / sort run on the client; React Query
- * refetches on focus and on pull-to-refresh.
+ * Reads the SAME approved-agencies feed as the web `/umrah` page and shows the
+ * packages whose name is prefixed "[UMRAH]". The screen mirrors the marketing
+ * site's Umrah page rebuilt in the app's visual language (the tours/BNB
+ * treatment): a navy hero with a floating search card + sort pills, immersive
+ * package cards, a value-prop grid and the newsletter CTA.
  */
 export default function UmrahScreen() {
   const { data, isLoading, isError, isRefetching, refetch } = useUmrahPackages();
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SortKey>('recommended');
 
+  const allPackages = useMemo(() => data ?? [], [data]);
+
   const packages = useMemo(() => {
-    let list = data ?? [];
+    let list = allPackages;
     const q = query.trim().toLowerCase();
     if (q) {
       list = list.filter(
@@ -62,7 +75,7 @@ export default function UmrahScreen() {
     else if (sort === 'price-desc') sorted.sort((a, b) => b.pricePerPerson - a.pricePerPerson);
     else if (sort === 'rating-desc') sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     return sorted;
-  }, [data, query, sort]);
+  }, [allPackages, query, sort]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: UmrahPackage; index: number }) => (
@@ -101,43 +114,175 @@ export default function UmrahScreen() {
       renderItem={renderItem}
       contentContainerClassName="pb-8"
       keyboardShouldPersistTaps="handled"
-      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f5a623" />}
+      refreshControl={
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f5a623" />
+      }
       ListHeaderComponent={
         <>
-          <ListHero
-            variant="sun"
-            icon="moon-outline"
-            eyebrow="Pilgrimage"
-            title="Umrah Packages"
-            subtitle="Verified partner agencies — visa, hotels & transport handled."
-            query={query}
-            onChangeQuery={setQuery}
-            placeholder="Search operator, package or city"
-          />
+          {/* Hero — deep navy, mirroring the tours/BNB pages */}
+          <Animated.View entering={enterUp(0)}>
+            <OceanHero className="rounded-b-[36px] px-5 pb-16 pt-6">
+              <View className="flex-row items-center gap-2.5">
+                <Image
+                  source={logo}
+                  style={{ width: 36, height: 36, borderRadius: 18 }}
+                  contentFit="contain"
+                />
+                <Text className="font-display text-base text-white">{APP_NAME}</Text>
+              </View>
 
-          <View className="gap-3 px-5 pb-3 pt-4">
-            <View className="flex-row flex-wrap gap-2">
-              {SORTS.map((s) => (
-                <Chip key={s.key} label={s.label} active={sort === s.key} onPress={() => setSort(s.key)} />
-              ))}
+              {/* Service eyebrow badge */}
+              <View className="mt-5 flex-row">
+                <View className="flex-row items-center gap-1.5 rounded-full border border-accent-500/50 bg-accent-500/10 px-3 py-1.5">
+                  <Ionicons name="moon" size={12} color="#f5a623" />
+                  <Text className="text-[11px] font-body-semibold uppercase tracking-[1.5px] text-accent-400">
+                    Premium Umrah Booking
+                  </Text>
+                </View>
+              </View>
+
+              <Text className="mt-3 font-display-x text-[30px] leading-9 text-white">
+                Begin Your Sacred Journey{'\n'}
+                <Text className="text-accent-500">With Absolute Peace of Mind</Text>
+              </Text>
+              <View className="mt-2.5 h-1 w-16 rounded-full bg-accent-500" />
+
+              <Text className="mt-3 text-[15px] leading-5 text-white/85">
+                Embark on a customized, Shariah-compliant spiritual retreat — we manage your visa,
+                luxury Haram-front hotel stays, and VIP logistics.
+              </Text>
+            </OceanHero>
+          </Animated.View>
+
+          {/* Floating search card — overlaps the hero (home "booking card" pattern) */}
+          <Animated.View entering={enterUp(1)} className="mx-5 -mt-12">
+            <View className="gap-4 rounded-[28px] border border-hairline bg-surface p-5 shadow-soft">
+              <View className="flex-row items-center gap-3">
+                <View className="h-11 w-11 items-center justify-center rounded-2xl bg-teal-50">
+                  <Ionicons name="moon" size={22} color="#00a165" />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-display-semibold text-[17px] leading-5 text-ink">
+                    Find your package
+                  </Text>
+                  <Text className="text-[12px] text-muted">
+                    {allPackages.length} verified package{allPackages.length === 1 ? '' : 's'}
+                  </Text>
+                </View>
+                <View className="flex-row items-center gap-1 rounded-full bg-accent-50 px-2.5 py-1">
+                  <Ionicons name="shield-checkmark" size={11} color="#b8710c" />
+                  <Text className="text-[11px] font-body-semibold text-accent-700">Verified</Text>
+                </View>
+              </View>
+
+              {/* SEARCH — operator / package / city */}
+              <View className="gap-2.5">
+                <FieldLabel>Search</FieldLabel>
+                <View className="flex-row items-center gap-3">
+                  <View className="flex-1 flex-row items-center gap-2.5 rounded-2xl border border-hairline bg-surface-sunk px-4 py-3.5">
+                    <Ionicons name="search" size={19} color="#00a165" />
+                    <TextInput
+                      value={query}
+                      onChangeText={setQuery}
+                      onSubmitEditing={() => Keyboard.dismiss()}
+                      placeholder="Operator, package or city…"
+                      placeholderTextColor="#7c8a99"
+                      returnKeyType="search"
+                      className="flex-1 py-0 text-[16px] font-body-medium text-ink"
+                    />
+                    {query ? (
+                      <PressableScale onPress={() => setQuery('')} activeScale={0.85} hitSlop={8}>
+                        <Ionicons name="close-circle" size={18} color="#7c8a99" />
+                      </PressableScale>
+                    ) : null}
+                  </View>
+                  <PressableScale
+                    accessibilityRole="button"
+                    accessibilityLabel="Search"
+                    onPress={() => Keyboard.dismiss()}
+                    activeScale={0.92}
+                  >
+                    <View className="h-14 w-14 items-center justify-center rounded-2xl bg-accent-500 shadow-glow">
+                      <Ionicons name="search" size={22} color="#fff" />
+                    </View>
+                  </PressableScale>
+                </View>
+              </View>
+
+              {/* SORT — order pills */}
+              <View className="gap-2.5">
+                <FieldLabel>Sort By</FieldLabel>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerClassName="gap-2 pr-4"
+                >
+                  {SORTS.map((s) => {
+                    const active = sort === s.key;
+                    return (
+                      <PressableScale
+                        key={s.key}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: active }}
+                        activeScale={0.94}
+                        onPress={() => setSort(s.key)}
+                      >
+                        <View
+                          className={[
+                            'flex-row items-center gap-1.5 rounded-full px-4 py-2.5',
+                            active ? 'bg-brand-800' : 'border border-hairline bg-surface-sunk',
+                          ].join(' ')}
+                        >
+                          <Ionicons
+                            name={s.icon as never}
+                            size={15}
+                            color={active ? '#f5a623' : '#00a165'}
+                          />
+                          <Text
+                            className={[
+                              'text-[13px] font-body-semibold',
+                              active ? 'text-white' : 'text-ink',
+                            ].join(' ')}
+                          >
+                            {s.label}
+                          </Text>
+                        </View>
+                      </PressableScale>
+                    );
+                  })}
+                </ScrollView>
+              </View>
             </View>
+          </Animated.View>
 
-            <Text className="text-sm text-muted">
-              {packages.length} package{packages.length === 1 ? '' : 's'} available
+          {/* Available Packages — section header */}
+          <Animated.View entering={enterUp(2)} className="gap-1 px-5 pb-4 pt-7">
+            <Text className="font-display-x text-[22px] leading-7 text-ink">Available Packages</Text>
+            <Text className="text-[13px] leading-5 text-muted">
+              {packages.length} Umrah package{packages.length === 1 ? '' : 's'} ready for you
             </Text>
-          </View>
+          </Animated.View>
         </>
       }
       ListEmptyComponent={
-        <View className="mt-24 items-center justify-center gap-3 px-8">
+        <View className="mt-8 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-accent-50">
             <Ionicons name="moon-outline" size={28} color="#f5a623" />
           </View>
-          <Text className="text-lg font-display text-ink">No Umrah packages yet</Text>
+          <Text className="text-lg font-display text-ink">No Umrah packages found</Text>
           <Text className="text-center text-sm text-muted">
-            Verified partner agencies haven&apos;t published any pre-built Umrah packages yet. Pull
-            down to refresh.
+            {query
+              ? 'Try a different search.'
+              : 'Verified partner agencies haven’t published any Umrah packages yet. Pull down to refresh.'}
           </Text>
+        </View>
+      }
+      ListFooterComponent={
+        <View className="gap-12 pt-4">
+          <UmrahPerks />
+          <View className="px-5">
+            <NewsletterCTA />
+          </View>
         </View>
       }
     />

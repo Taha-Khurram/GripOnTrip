@@ -9,6 +9,23 @@ export function formatMoney(money: Money, locale = 'en-US'): string {
   }).format(money.amount);
 }
 
+/**
+ * Compact money for tight spaces, e.g. 28000 PKR → "Rs.28k", 1500000 → "Rs.1.5M".
+ * Falls back to the full {@link formatMoney} for currencies without a short symbol.
+ */
+export function formatCompactMoney(money: Money): string {
+  const { amount, currency } = money;
+  const symbol = currency === 'PKR' ? 'Rs.' : null;
+  if (!symbol) return formatMoney(money);
+  const abbrev = (div: number, suffix: string) => {
+    const v = amount / div;
+    return `${symbol}${Number.isInteger(v) ? v : v.toFixed(1)}${suffix}`;
+  };
+  if (amount >= 1_000_000) return abbrev(1_000_000, 'M');
+  if (amount >= 1_000) return abbrev(1_000, 'k');
+  return `${symbol}${amount}`;
+}
+
 /** Short, human-friendly date, e.g. "Jul 4, 2026". */
 export function formatDate(iso: string, locale = 'en-US'): string {
   return new Date(iso).toLocaleDateString(locale, {
