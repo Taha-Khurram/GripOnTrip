@@ -58,7 +58,7 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled || loading;
-  const tint = variant === 'outline' || variant === 'ghost' ? '#1a7a8c' : '#fff';
+  const tint = variant === 'outline' || variant === 'ghost' ? '#1e3a5f' : '#fff';
   return (
     <PressableScale
       accessibilityRole="button"

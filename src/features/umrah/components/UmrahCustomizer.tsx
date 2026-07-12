@@ -44,7 +44,7 @@ export function UmrahCustomizer({
     <Card className="gap-4">
       <View className="flex-row items-center gap-2">
         <View className="h-9 w-9 items-center justify-center rounded-xl bg-brand-50">
-          <Ionicons name="compass" size={20} color="#156473" />
+          <Ionicons name="compass" size={20} color="#037a4e" />
         </View>
         <Text className="flex-1 text-lg font-display text-ink">Package Customizer</Text>
       </View>
@@ -109,7 +109,7 @@ export function UmrahCustomizer({
 
       {/* Info */}
       <View className="flex-row items-start gap-2.5 rounded-2xl bg-brand-50 px-4 py-3">
-        <Ionicons name="information-circle" size={18} color="#156473" />
+        <Ionicons name="information-circle" size={18} color="#037a4e" />
         <Text className="flex-1 text-sm leading-5 text-brand-700">
           You have selected customized stays. Makkah hotel choice will be in the closest front row
           for 5-star, and within 300m for 4-star properties. Flights are added at final checkout if

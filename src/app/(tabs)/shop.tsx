@@ -82,7 +82,7 @@ export default function ShopScreen() {
       renderItem={renderItem}
       contentContainerClassName="pb-8"
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#1a7a8c" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#00a165" />
       }
       keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
@@ -141,7 +141,7 @@ export default function ShopScreen() {
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="bag-handle-outline" size={28} color="#1a7a8c" />
+            <Ionicons name="bag-handle-outline" size={28} color="#00a165" />
           </View>
           <Text className="text-lg font-display text-ink">
             {query || category ? 'No matching products' : 'No products yet'}

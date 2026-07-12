@@ -55,7 +55,7 @@ function RentalPropertyCard({ property, index }: { property: MyRentalProperty; i
             <Image source={{ uri: property.imageUrl }} style={{ width: 104, height: 104 }} contentFit="cover" />
           ) : (
             <View className="h-[104px] w-[104px] items-center justify-center bg-brand-50 dark:bg-brand-500/15">
-              <Ionicons name="home-outline" size={26} color="#1a7a8c" />
+              <Ionicons name="home-outline" size={26} color="#00a165" />
             </View>
           )}
           <View className="flex-1 gap-1 py-2.5 pr-3">
@@ -105,7 +105,7 @@ function RentalPropertiesList() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator color="#1a7a8c" />
+        <ActivityIndicator color="#00a165" />
       </View>
     );
   }
@@ -124,7 +124,7 @@ function RentalPropertiesList() {
       keyExtractor={(p) => p.id}
       contentContainerClassName="gap-3 p-5"
       renderItem={({ item, index }) => <RentalPropertyCard property={item} index={index} />}
-      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#1a7a8c" />}
+      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#00a165" />}
       ListEmptyComponent={
         <View className="mt-24">
           <EmptyState

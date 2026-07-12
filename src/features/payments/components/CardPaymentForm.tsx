@@ -129,7 +129,7 @@ export function CardPaymentForm({
           onPress={() => setOpen(true)}
           className="flex-row items-center gap-2 rounded-2xl border border-brand-500 bg-transparent px-5 py-3"
         >
-          <Ionicons name="lock-closed-outline" size={16} color="#156473" />
+          <Ionicons name="lock-closed-outline" size={16} color="#037a4e" />
           <Text className="font-body-semibold text-sm text-brand-700">
             Initialize Card Payment Form
           </Text>
@@ -180,7 +180,7 @@ export function CardPaymentForm({
           />
           {values.number.length >= 2 ? (
             <View className="absolute right-3 flex-row items-center gap-1 rounded-lg bg-brand-50 px-2 py-1">
-              <Ionicons name="card" size={14} color="#156473" />
+              <Ionicons name="card" size={14} color="#037a4e" />
               <Text className="text-xs font-body-semibold text-brand-700">
                 {brand === 'unknown' ? 'Card' : brandLabel(brand)}
               </Text>
@@ -239,7 +239,7 @@ export function CardPaymentForm({
 
       {/* Trust note — mirrors the reassurance copy the old mock forms showed. */}
       <View className="flex-row items-start gap-2.5 rounded-2xl bg-brand-50 px-4 py-3">
-        <Ionicons name="lock-closed" size={16} color="#156473" />
+        <Ionicons name="lock-closed" size={16} color="#037a4e" />
         <Text className="flex-1 text-xs text-brand-700">
           Your card is encrypted and sent directly to Stripe. We never see or store your full card
           number.

@@ -14,7 +14,7 @@ export function ComingSoon({ title, icon, note }: { title: string; icon: string;
         entering={enterUp(0)}
         className="h-16 w-16 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-500/15"
       >
-        <Ionicons name={icon as never} size={28} color="#1a7a8c" />
+        <Ionicons name={icon as never} size={28} color="#00a165" />
       </Animated.View>
       <Animated.Text
         entering={enterUp(1)}

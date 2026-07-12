@@ -39,7 +39,7 @@ export function HotelCard({ hotel, index = 0 }: { hotel: Hotel; index?: number }
               {/* Floating rating pill */}
               {hotel.rating != null ? (
                 <View className="absolute right-3 top-3 flex-row items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 shadow-card">
-                  <Ionicons name="star" size={12} color="#f39024" />
+                  <Ionicons name="star" size={12} color="#f5a623" />
                   <Text className="text-xs font-bold text-ink">{formatRating(hotel.rating)}</Text>
                 </View>
               ) : null}
@@ -65,13 +65,13 @@ export function HotelCard({ hotel, index = 0 }: { hotel: Hotel; index?: number }
                 <View className="flex-row flex-wrap gap-2">
                   {hotel.breakfastIncluded ? (
                     <View className="flex-row items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1">
-                      <Ionicons name="cafe-outline" size={12} color="#156473" />
+                      <Ionicons name="cafe-outline" size={12} color="#037a4e" />
                       <Text className="text-xs font-medium text-brand-700">Breakfast</Text>
                     </View>
                   ) : null}
                   {hotel.freeCancellation ? (
                     <View className="flex-row items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1">
-                      <Ionicons name="checkmark-circle-outline" size={12} color="#156473" />
+                      <Ionicons name="checkmark-circle-outline" size={12} color="#037a4e" />
                       <Text className="text-xs font-medium text-brand-700">Free cancellation</Text>
                     </View>
                   ) : null}
@@ -91,7 +91,7 @@ export function HotelCard({ hotel, index = 0 }: { hotel: Hotel; index?: number }
                   ) : null}
                   <Text className="text-xs text-muted-foreground">/ night</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={20} color="#1a7a8c" />
+                <Ionicons name="chevron-forward" size={20} color="#00a165" />
               </View>
             </View>
           </Card>

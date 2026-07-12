@@ -33,8 +33,8 @@ function Group({ children, index = 0 }: { children: React.ReactNode; index?: num
 }
 
 const ICON_TINT: Record<string, string> = {
-  brand: '#1a7a8c',
-  accent: '#f39024',
+  brand: '#00a165',
+  accent: '#f5a623',
 };
 
 function Row({

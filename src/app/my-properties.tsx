@@ -30,7 +30,7 @@ const titleCase = (s?: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : 
 function SpecChip({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <View className="flex-row items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1">
-      <Ionicons name={icon} size={12} color="#156473" />
+      <Ionicons name={icon} size={12} color="#037a4e" />
       <Text className="text-xs font-medium text-brand-700">{label}</Text>
     </View>
   );
@@ -126,7 +126,7 @@ function PropertyCard({ property, index }: { property: MyRentalProperty; index: 
             className="flex-1"
           >
             <View className="w-full flex-row items-center justify-center gap-1.5 rounded-xl border border-brand-500 py-3">
-              <Ionicons name="create-outline" size={16} color="#1a7a8c" />
+              <Ionicons name="create-outline" size={16} color="#00a165" />
               <Text numberOfLines={1} className="font-body-semibold text-sm text-brand-600">
                 Edit
               </Text>
@@ -189,7 +189,7 @@ function PropertiesHero({ count }: { count?: number }) {
           className="mt-5"
         >
           <View className="w-full flex-row items-center justify-center gap-2 rounded-2xl bg-white py-3.5">
-            <Ionicons name="add-circle-outline" size={20} color="#156473" />
+            <Ionicons name="add-circle-outline" size={20} color="#037a4e" />
             <Text numberOfLines={1} className="font-body-semibold text-base text-brand-600">
               List Your Property
             </Text>
@@ -216,7 +216,7 @@ function PropertiesList() {
         </View>
       )}
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#1a7a8c" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#00a165" />
       }
       ListHeaderComponent={
         <>
@@ -234,7 +234,7 @@ function PropertiesList() {
       ListEmptyComponent={
         isLoading ? (
           <View className="items-center justify-center py-24">
-            <ActivityIndicator color="#1a7a8c" />
+            <ActivityIndicator color="#00a165" />
           </View>
         ) : isError ? (
           <View className="items-center gap-4 px-8 py-16">

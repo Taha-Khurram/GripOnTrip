@@ -46,7 +46,7 @@ function HeroImage({ uri }: { uri?: string }) {
         />
       ) : (
         <View className="h-full w-full items-center justify-center bg-brand-50">
-          <Ionicons name="bed" size={44} color="#156473" />
+          <Ionicons name="bed" size={44} color="#037a4e" />
         </View>
       )}
     </View>
@@ -177,7 +177,7 @@ export default function HotelDetailScreen() {
             <View className="flex-row flex-wrap items-center gap-x-2">
               {hotel.rating != null ? (
                 <View className="flex-row items-center gap-1">
-                  <Ionicons name="star" size={14} color="#f39024" />
+                  <Ionicons name="star" size={14} color="#f5a623" />
                   <Text className="text-sm font-semibold text-ink">{formatRating(hotel.rating)}</Text>
                   <Text className="text-sm text-muted">({reviews.length} reviews)</Text>
                 </View>
@@ -234,7 +234,7 @@ export default function HotelDetailScreen() {
                     key={a}
                     className="flex-row items-center gap-1 rounded-full bg-brand-50 px-3 py-1.5"
                   >
-                    <Ionicons name="pin-outline" size={13} color="#1a7a8c" />
+                    <Ionicons name="pin-outline" size={13} color="#00a165" />
                     <Text className="text-xs font-medium text-brand-700">{a}</Text>
                   </View>
                 ))}
@@ -271,7 +271,7 @@ export default function HotelDetailScreen() {
           {chosen.length > 0 ? (
             <View className="gap-4 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 dark:border-brand-900 dark:bg-brand-900/40">
               <View className="flex-row items-center gap-2">
-                <Ionicons name="cart-outline" size={18} color="#156473" />
+                <Ionicons name="cart-outline" size={18} color="#037a4e" />
                 <Text className="font-display text-base text-ink">Your selection</Text>
               </View>
 
@@ -363,7 +363,7 @@ export default function HotelDetailScreen() {
                 accessibilityRole="button"
                 accessibilityLabel="Continue to book"
                 onPress={() => reserve()}
-                style={{ backgroundColor: '#156473' }}
+                style={{ backgroundColor: '#037a4e' }}
                 className="w-full flex-row items-center justify-center gap-2 rounded-2xl py-4 active:opacity-90"
               >
                 <Text className="text-center font-body-semibold text-base text-white">
@@ -382,7 +382,7 @@ export default function HotelDetailScreen() {
               className="flex-row items-center justify-center gap-2 py-2"
               onPress={() => Linking.openURL(`tel:${hotel.phone}`)}
             >
-              <Ionicons name="call-outline" size={16} color="#1a7a8c" />
+              <Ionicons name="call-outline" size={16} color="#00a165" />
               <Text className="text-sm font-semibold text-brand-600">Call the property</Text>
             </Pressable>
           ) : null}

@@ -85,7 +85,7 @@ export function PilgrimForm({
       <View className="flex-row items-center justify-between gap-3">
         <View className="flex-1 flex-row items-center gap-2">
           <View className="h-9 w-9 items-center justify-center rounded-xl bg-brand-50">
-            <Ionicons name="people" size={18} color="#156473" />
+            <Ionicons name="people" size={18} color="#037a4e" />
           </View>
           <Text className="flex-1 text-lg font-display text-ink" numberOfLines={1}>
             Pilgrim &amp; Passenger Info

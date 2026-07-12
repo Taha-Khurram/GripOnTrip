@@ -138,7 +138,7 @@ export default function BookHotelScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <Stack.Screen options={{ title: 'Book' }} />
-        <ActivityIndicator color="#1a7a8c" />
+        <ActivityIndicator color="#00a165" />
       </View>
     );
   }
@@ -163,7 +163,7 @@ export default function BookHotelScreen() {
         <Stack.Screen options={{ title: 'Choose a room' }} />
         <Text className="text-xl font-display text-ink">{hotel.title}</Text>
         {roomsLoading ? (
-          <ActivityIndicator color="#1a7a8c" className="mt-8" />
+          <ActivityIndicator color="#00a165" className="mt-8" />
         ) : rooms.length > 0 ? (
           <>
             <Text className="text-sm text-muted">Select one or more rooms to continue.</Text>
@@ -221,7 +221,7 @@ export default function BookHotelScreen() {
         {/* Booking summary */}
         <Card className="gap-3">
           <View className="flex-row items-center gap-2">
-            <Ionicons name="receipt-outline" size={18} color="#156473" />
+            <Ionicons name="receipt-outline" size={18} color="#037a4e" />
             <Text className="text-base font-semibold text-ink">Booking Summary</Text>
           </View>
           <View className="h-px bg-hairline" />
@@ -252,7 +252,7 @@ export default function BookHotelScreen() {
 
         {/* Next-step note */}
         <View className="flex-row items-start gap-2 rounded-2xl bg-brand-50 px-4 py-3">
-          <Ionicons name="information-circle-outline" size={18} color="#156473" />
+          <Ionicons name="information-circle-outline" size={18} color="#037a4e" />
           <Text className="flex-1 text-sm text-brand-700">
             {payment === 'property'
               ? 'Pay the full amount when you arrive at the property.'
@@ -279,7 +279,7 @@ export default function BookHotelScreen() {
             onPress={() => router.back()}
             className="w-full flex-row items-center justify-center gap-2 rounded-2xl border border-brand-500 bg-transparent py-4"
           >
-            <Ionicons name="arrow-back-outline" size={18} color="#1a7a8c" />
+            <Ionicons name="arrow-back-outline" size={18} color="#00a165" />
             <Text className="font-body-semibold text-base text-brand-500">Back to Hotel</Text>
           </Pressable>
         </View>
@@ -423,7 +423,7 @@ export default function BookHotelScreen() {
         {/* Additional information */}
         <View className="h-px bg-hairline" />
         <View className="flex-row items-center gap-2">
-          <Ionicons name="information-circle-outline" size={18} color="#156473" />
+          <Ionicons name="information-circle-outline" size={18} color="#037a4e" />
           <Text className="text-base font-semibold text-ink">Additional Information</Text>
         </View>
         <Text className="-mt-2 text-xs text-muted-foreground">Help the hotel prepare for your arrival.</Text>
@@ -553,7 +553,7 @@ export default function BookHotelScreen() {
               <Ionicons
                 name={showAmenities ? 'chevron-down' : 'chevron-forward'}
                 size={18}
-                color="#1a7a8c"
+                color="#00a165"
               />
             </Pressable>
             {showAmenities ? (

@@ -100,7 +100,7 @@ export default function TourEnquiryScreen() {
             within 24 hours.
           </Text>
         </View>
-        <ActivityIndicator color="#1a7a8c" />
+        <ActivityIndicator color="#00a165" />
         <Text className="text-xs text-muted-foreground">Returning to the tour…</Text>
       </View>
     );

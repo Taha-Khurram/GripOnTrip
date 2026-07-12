@@ -18,7 +18,7 @@ function Row({ label, value }: { label: string; value: string }) {
 function Assurance({ label }: { label: string }) {
   return (
     <View className="flex-row items-center gap-2">
-      <Ionicons name="shield-checkmark" size={15} color="#156473" />
+      <Ionicons name="shield-checkmark" size={15} color="#037a4e" />
       <Text className="flex-1 text-xs text-brand-700">{label}</Text>
     </View>
   );

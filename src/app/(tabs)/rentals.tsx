@@ -67,7 +67,7 @@ export default function RentalsScreen() {
       renderItem={renderItem}
       contentContainerClassName="pb-8"
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f39024" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f5a623" />
       }
       keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
@@ -93,7 +93,7 @@ export default function RentalsScreen() {
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-            <Ionicons name="home-outline" size={28} color="#1a7a8c" />
+            <Ionicons name="home-outline" size={28} color="#00a165" />
           </View>
           <Text className="text-lg font-display text-ink">
             No BNBs posted yet

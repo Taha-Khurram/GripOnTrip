@@ -101,7 +101,7 @@ export default function UmrahScreen() {
       renderItem={renderItem}
       contentContainerClassName="pb-8"
       keyboardShouldPersistTaps="handled"
-      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f39024" />}
+      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f5a623" />}
       ListHeaderComponent={
         <>
           <ListHero
@@ -131,7 +131,7 @@ export default function UmrahScreen() {
       ListEmptyComponent={
         <View className="mt-24 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-accent-50">
-            <Ionicons name="moon-outline" size={28} color="#f39024" />
+            <Ionicons name="moon-outline" size={28} color="#f5a623" />
           </View>
           <Text className="text-lg font-display text-ink">No Umrah packages yet</Text>
           <Text className="text-center text-sm text-muted">

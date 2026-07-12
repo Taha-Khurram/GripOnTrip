@@ -34,7 +34,7 @@ function OperatorLogo({ uri }: { uri?: string }) {
         />
       ) : (
         <View className="h-full w-full items-center justify-center bg-brand-50">
-          <Ionicons name="business" size={44} color="#1a7a8c" />
+          <Ionicons name="business" size={44} color="#00a165" />
         </View>
       )}
     </View>
@@ -49,7 +49,7 @@ function SectionTitle({ children }: { children: string }) {
 function Spec({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <View className="flex-1 items-center gap-1 rounded-2xl bg-brand-50 py-3">
-      <Ionicons name={icon} size={20} color="#156473" />
+      <Ionicons name={icon} size={20} color="#037a4e" />
       <Text className="text-sm font-body-semibold text-brand-700">{label}</Text>
     </View>
   );
@@ -68,7 +68,7 @@ function DetailRow({
   return (
     <View className="flex-row items-start gap-3">
       <View className="h-9 w-9 items-center justify-center rounded-xl bg-brand-50">
-        <Ionicons name={icon} size={18} color="#156473" />
+        <Ionicons name={icon} size={18} color="#037a4e" />
       </View>
       <View className="flex-1 gap-0.5">
         <Text className="text-[11px] font-body-semibold uppercase tracking-wide text-muted-foreground">
@@ -326,7 +326,7 @@ export default function TourDetailScreen() {
             <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
               {tour.rating != null ? (
                 <View className="flex-row items-center gap-1">
-                  <Ionicons name="star" size={14} color="#f39024" />
+                  <Ionicons name="star" size={14} color="#f5a623" />
                   <Text className="text-sm font-semibold text-ink">{formatRating(tour.rating)}</Text>
                 </View>
               ) : null}
@@ -424,7 +424,7 @@ export default function TourDetailScreen() {
               onPress={() => Linking.openURL(contactUrl)}
               className="flex-row items-center gap-2"
             >
-              <Ionicons name="call-outline" size={16} color="#1a7a8c" />
+              <Ionicons name="call-outline" size={16} color="#00a165" />
               <Text className="text-sm font-body-semibold text-brand-600">
                 Contact operator directly
               </Text>

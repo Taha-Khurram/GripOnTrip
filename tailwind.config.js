@@ -1,62 +1,80 @@
 /** @type {import('tailwindcss').Config} */
 // NativeWind v4 uses Tailwind CSS v3 under the hood.
 //
-// Design system: "Ocean & Sun" (see docs/Design.md)
-//   primary ocean teal     #1a7a8c   (brand-500)
-//   primary deep teal      #0c3b4a   (brand-800)
-//   sun warm orange        #f39024   (accent-500)
-//   background sandy cream #f5efe4   (bg-background)
-//   foreground deep navy   #0c2b36   (text-ink / text-foreground)
+// Design system: "Navy & Gold" — the Grip On Trip brand.
+//   primary deep navy       #0a1a2f   (brand-800 — hero / dark sections)
+//   primary mid navy        #1e3a5f   (brand-500 — buttons / primary UI)
+//   accent warm gold        #f5a623   (accent-500 — CTAs, highlights, active tab)
+//   secondary ocean teal    #1a7a8c   (teal-500 — small info icons / badges)
+//   background cool off-white #eef2f7 (bg-background — light functional canvas)
+//   foreground deep navy    #0a1a2f   (text-ink / text-foreground)
 //
-// The app consumes the `brand-*` (ocean ramp) and `accent-*` (sun ramp)
-// tokens, plus the semantic aliases (`background`, `ink`, `sun`, `primary`…)
-// for one-off, intention-revealing usage. The app is light-only.
+// The app consumes the `brand-*` (navy ramp) and `accent-*` (gold ramp) tokens,
+// the `teal-*` secondary ramp, plus the semantic aliases (`background`, `ink`,
+// `sun`, `primary`, `secondary`…) for one-off, intention-revealing usage.
+// Premium dark hero visuals contrasted with clean white cards; gold used
+// sparingly to draw the eye to key actions and value props. Light-only.
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
       colors: {
-        // Primary cool ramp — ocean teal (500) → deep teal (800).
+        // Primary cool ramp — mid navy (500) → deep navy-black (800).
         brand: {
-          50: '#eef6f8',
-          100: '#d5e9ed',
-          200: '#b0d5dc',
-          300: '#7fbcc7',
-          400: '#47a0af',
-          500: '#1a7a8c', // ocean teal — primary
-          600: '#156473',
-          700: '#114f5b',
-          800: '#0c3b4a', // deep teal
-          900: '#082a35',
+          50: '#e8edf3',
+          100: '#ccd8e6',
+          200: '#a3b8d0',
+          300: '#6d8cb0',
+          400: '#3f5f8a',
+          500: '#1e3a5f', // mid navy — primary UI
+          600: '#173050',
+          700: '#10243d', // hero panels
+          800: '#0a1a2f', // deep navy-black — hero base
+          900: '#06101f',
         },
-        // Warm ramp — sun orange (500).
+        // Warm ramp — sun gold (500).
         accent: {
-          50: '#fef2e2',
-          100: '#fce0bd',
-          200: '#f9c98a',
-          300: '#f6b160',
-          400: '#f59f3f',
-          500: '#f39024', // sun — primary accent
-          600: '#db7a13',
-          700: '#b5620f',
-          800: '#8f4c0d',
-          900: '#6b3809',
+          50: '#fef4e2',
+          100: '#fde4b8',
+          200: '#fbd08a',
+          300: '#f9bd5c',
+          400: '#f7ae3d',
+          500: '#f5a623', // gold — primary accent / CTA
+          600: '#e08d0e',
+          700: '#b8710c',
+          800: '#90580c',
+          900: '#6b410a',
+        },
+        // Secondary ramp — Medium Spring Green, for small info icons and badges.
+        // Bright at 500 for pops on dark panels; deeper shades stay legible on light.
+        teal: {
+          50: '#e9fff7',
+          100: '#c6ffe9',
+          200: '#8dffd4',
+          300: '#4dfcbb',
+          400: '#14f2a4',
+          500: '#00fa9a', // Medium Spring Green — secondary accent
+          600: '#00cc7e',
+          700: '#00a165',
+          800: '#037a4e',
+          900: '#06583b',
         },
 
         // Semantic aliases (intention-revealing; map onto the ramps above).
-        primary: '#1a7a8c',
-        'primary-deep': '#0c3b4a',
-        sun: '#f39024',
-        background: '#f5efe4', // sandy cream — app canvas
+        primary: '#1e3a5f', // mid navy
+        'primary-deep': '#0a1a2f', // deep navy-black
+        secondary: '#00fa9a', // Medium Spring Green
+        sun: '#f5a623', // gold accent
+        background: '#eef2f7', // cool off-white — app canvas
         surface: '#ffffff', // cards / sheets
-        'surface-sunk': '#efe7d6', // recessed wells on cream
-        foreground: '#0c2b36', // deep navy ink — primary text
-        ink: '#0c2b36',
-        muted: '#5f7178', // secondary text on cream/white
-        'muted-foreground': '#7c8a90',
-        hairline: '#e6dcc8', // border on cream
-        'hairline-strong': '#d9ccb2',
+        'surface-sunk': '#e7edf4', // recessed wells on the canvas
+        foreground: '#0a1a2f', // deep navy ink — primary text
+        ink: '#0a1a2f',
+        muted: '#54606f', // secondary text on light
+        'muted-foreground': '#7c8a99',
+        hairline: '#dbe3ec', // border on light
+        'hairline-strong': '#c5d1de',
 
         success: '#1f9d55',
         warning: '#f0a020',
@@ -80,11 +98,11 @@ module.exports = {
       },
       boxShadow: {
         // Soft ambient depth for cards and floating panels.
-        soft: '0px 10px 30px rgba(12, 59, 74, 0.12)',
-        card: '0px 4px 16px rgba(12, 59, 74, 0.07)',
-        // Warm colored glow for the sun CTA.
-        glow: '0px 12px 32px rgba(243, 144, 36, 0.4)',
-        'glow-ocean': '0px 12px 32px rgba(26, 122, 140, 0.35)',
+        soft: '0px 10px 30px rgba(10, 26, 47, 0.14)',
+        card: '0px 4px 16px rgba(10, 26, 47, 0.08)',
+        // Warm colored glow for the gold CTA.
+        glow: '0px 12px 32px rgba(245, 166, 35, 0.4)',
+        'glow-ocean': '0px 12px 32px rgba(30, 58, 95, 0.35)',
       },
     },
   },

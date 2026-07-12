@@ -11,7 +11,7 @@ import type { Product } from '../types';
 function SpecChip({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <View className="flex-row items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1">
-      <Ionicons name={icon} size={12} color="#156473" />
+      <Ionicons name={icon} size={12} color="#037a4e" />
       <Text className="text-xs font-medium text-brand-700" numberOfLines={1}>
         {label}
       </Text>
@@ -52,7 +52,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
               {/* Floating rating pill */}
               {product.rating != null && product.rating > 0 ? (
                 <View className="absolute right-3 top-3 flex-row items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 shadow-card">
-                  <Ionicons name="star" size={12} color="#f39024" />
+                  <Ionicons name="star" size={12} color="#f5a623" />
                   <Text className="text-xs font-bold text-ink">{formatRating(product.rating)}</Text>
                 </View>
               ) : null}
@@ -108,7 +108,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
                     </Text>
                   ) : null}
                 </View>
-                <Ionicons name="chevron-forward" size={20} color="#1a7a8c" />
+                <Ionicons name="chevron-forward" size={20} color="#00a165" />
               </View>
             </View>
           </Card>

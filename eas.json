@@ -12,7 +12,8 @@
         "EXPO_PUBLIC_API_URL": "https://www.gripontrip.com/api",
         "EXPO_PUBLIC_WEB_URL": "https://www.gripontrip.com",
         "EXPO_PUBLIC_SUPABASE_URL": "https://ivkorsriknpkrdnmmgwg.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2a29yc3Jpa25wa3Jkbm1tZ3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4NTk5NTUsImV4cCI6MjA1MjQzNTk1NX0.NQQr9a97XmCSBN3JXoqboKbFJ2tD10mr_cv66DEjHGU"
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2a29yc3Jpa25wa3Jkbm1tZ3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4NTk5NTUsImV4cCI6MjA1MjQzNTk1NX0.NQQr9a97XmCSBN3JXoqboKbFJ2tD10mr_cv66DEjHGU",
+        "EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY": "pk_test_51SejOaIDh1TvfCdbHY2NSRBBT6sW8H6zi6zb37YNECIDwXADvg25VHDQcUI0TdDFMsopZwSru65USGsYGnDeOaXM00P3JW04FA"
       }
     },
     "preview": {
@@ -25,7 +26,8 @@
         "EXPO_PUBLIC_API_URL": "https://www.gripontrip.com/api",
         "EXPO_PUBLIC_WEB_URL": "https://www.gripontrip.com",
         "EXPO_PUBLIC_SUPABASE_URL": "https://ivkorsriknpkrdnmmgwg.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2a29yc3Jpa25wa3Jkbm1tZ3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4NTk5NTUsImV4cCI6MjA1MjQzNTk1NX0.NQQr9a97XmCSBN3JXoqboKbFJ2tD10mr_cv66DEjHGU"
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2a29yc3Jpa25wa3Jkbm1tZ3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4NTk5NTUsImV4cCI6MjA1MjQzNTk1NX0.NQQr9a97XmCSBN3JXoqboKbFJ2tD10mr_cv66DEjHGU",
+        "EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY": "pk_test_51SejOaIDh1TvfCdbHY2NSRBBT6sW8H6zi6zb37YNECIDwXADvg25VHDQcUI0TdDFMsopZwSru65USGsYGnDeOaXM00P3JW04FA"
       }
     },
     "production": {
@@ -35,7 +37,8 @@
         "EXPO_PUBLIC_API_URL": "https://www.gripontrip.com/api",
         "EXPO_PUBLIC_WEB_URL": "https://www.gripontrip.com",
         "EXPO_PUBLIC_SUPABASE_URL": "https://ivkorsriknpkrdnmmgwg.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2a29yc3Jpa25wa3Jkbm1tZ3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4NTk5NTUsImV4cCI6MjA1MjQzNTk1NX0.NQQr9a97XmCSBN3JXoqboKbFJ2tD10mr_cv66DEjHGU"
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2a29yc3Jpa25wa3Jkbm1tZ3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4NTk5NTUsImV4cCI6MjA1MjQzNTk1NX0.NQQr9a97XmCSBN3JXoqboKbFJ2tD10mr_cv66DEjHGU",
+        "EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY": "pk_test_51SejOaIDh1TvfCdbHY2NSRBBT6sW8H6zi6zb37YNECIDwXADvg25VHDQcUI0TdDFMsopZwSru65USGsYGnDeOaXM00P3JW04FA"
       }
     }
   },

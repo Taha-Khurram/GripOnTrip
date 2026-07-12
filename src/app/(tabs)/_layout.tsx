@@ -2,14 +2,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
-const TINT = '#1a7a8c';
+// Gold = active/accent (brand spec); navy = primary UI ink.
+const ACTIVE_TINT = '#f5a623';
+const NAVY = '#1e3a5f';
 
 function ProfileButton() {
   return (
     <Link href="/profile" asChild>
       <Pressable accessibilityLabel="Profile" hitSlop={8} style={{ marginRight: 16 }}>
         <View className="h-9 w-9 items-center justify-center rounded-full bg-brand-50 border border-hairline">
-          <Ionicons name="person-outline" size={18} color={TINT} />
+          <Ionicons name="person-outline" size={18} color={NAVY} />
         </View>
       </Pressable>
     </Link>
@@ -20,15 +22,15 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: TINT,
+        tabBarActiveTintColor: ACTIVE_TINT,
         tabBarInactiveTintColor: '#9aa7ac',
         headerShown: true,
-        headerStyle: { backgroundColor: '#f5efe4' },
+        headerStyle: { backgroundColor: '#eef2f7' },
         headerShadowVisible: false,
-        headerTitleStyle: { fontFamily: 'Outfit_700Bold', fontSize: 20, color: '#0c2b36' },
+        headerTitleStyle: { fontFamily: 'Outfit_700Bold', fontSize: 20, color: '#0a1a2f' },
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          borderTopColor: '#e6dcc8',
+          borderTopColor: '#dbe3ec',
           height: 62,
           paddingTop: 6,
           paddingBottom: 8,

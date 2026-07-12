@@ -34,7 +34,7 @@ function HeroImage({ uri }: { uri?: string }) {
         />
       ) : (
         <View className="h-full w-full items-center justify-center bg-brand-50">
-          <Ionicons name="home" size={44} color="#156473" />
+          <Ionicons name="home" size={44} color="#037a4e" />
         </View>
       )}
     </View>
@@ -45,7 +45,7 @@ function HeroImage({ uri }: { uri?: string }) {
 function Spec({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <View className="flex-1 items-center gap-1 rounded-2xl bg-brand-50 py-3">
-      <Ionicons name={icon} size={20} color="#156473" />
+      <Ionicons name={icon} size={20} color="#037a4e" />
       <Text className="text-sm font-body-semibold text-brand-700">{label}</Text>
     </View>
   );
@@ -138,7 +138,7 @@ export default function RentalDetailScreen() {
             <View className="flex-row flex-wrap items-center gap-x-2">
               {rental.rating != null ? (
                 <View className="flex-row items-center gap-1">
-                  <Ionicons name="star" size={14} color="#f39024" />
+                  <Ionicons name="star" size={14} color="#f5a623" />
                   <Text className="text-sm font-semibold text-ink">
                     {formatRating(rental.rating)}
                   </Text>

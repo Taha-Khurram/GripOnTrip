@@ -44,11 +44,11 @@ const AppTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: '#f5efe4',
-    card: '#f5efe4',
-    text: '#0c2b36',
-    primary: '#1a7a8c',
-    border: '#e6dcc8',
+    background: '#eef2f7',
+    card: '#eef2f7',
+    text: '#0a1a2f',
+    primary: '#00a165',
+    border: '#dbe3ec',
   },
 };
 
@@ -90,11 +90,11 @@ export default function RootLayout() {
             <Stack
               screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: '#f5efe4' },
-                headerStyle: { backgroundColor: '#f5efe4' },
+                contentStyle: { backgroundColor: '#eef2f7' },
+                headerStyle: { backgroundColor: '#eef2f7' },
                 headerShadowVisible: false,
-                headerTintColor: '#1a7a8c',
-                headerTitleStyle: { fontFamily: 'Outfit_700Bold', color: '#0c2b36' },
+                headerTintColor: '#00a165',
+                headerTitleStyle: { fontFamily: 'Outfit_700Bold', color: '#0a1a2f' },
               }}
             >
               {/* Launch-time auth gate: signed out, the only reachable group is

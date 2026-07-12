@@ -162,7 +162,7 @@ function ChatPanel({ visible, onClose }: { visible: boolean; onClose: () => void
                     onPress={() => submit(s.label)}
                     className="flex-row items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-2 active:bg-brand-100"
                   >
-                    <Ionicons name={s.icon} size={13} color="#156473" />
+                    <Ionicons name={s.icon} size={13} color="#037a4e" />
                     <Text className="text-[13px] font-body-medium text-brand-700">{s.label}</Text>
                   </Pressable>
                 ))}

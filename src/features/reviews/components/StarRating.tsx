@@ -15,7 +15,7 @@ export function StarRating({
     <View className="flex-row">
       {[1, 2, 3, 4, 5].map((star) => {
         const name = value >= star ? 'star' : value >= star - 0.5 ? 'star-half' : 'star-outline';
-        const icon = <Ionicons name={name} size={size} color="#f39024" />;
+        const icon = <Ionicons name={name} size={size} color="#f5a623" />;
         return onChange ? (
           <Pressable key={star} hitSlop={4} onPress={() => onChange(star)} className="px-0.5">
             {icon}

@@ -79,7 +79,7 @@ const DESC_MAX = 1000;
 function SectionTitle({ icon, children }: { icon: keyof typeof Ionicons.glyphMap; children: string }) {
   return (
     <View className="flex-row items-center gap-2">
-      <Ionicons name={icon} size={18} color="#156473" />
+      <Ionicons name={icon} size={18} color="#037a4e" />
       <Text className="font-display text-lg text-ink">{children}</Text>
     </View>
   );
@@ -150,7 +150,7 @@ function MultiChipSelect({
               active ? 'border-brand-500 bg-brand-50' : 'border-hairline bg-surface',
             ].join(' ')}
           >
-            {active ? <Ionicons name="checkmark" size={12} color="#156473" /> : null}
+            {active ? <Ionicons name="checkmark" size={12} color="#037a4e" /> : null}
             <Text className={['text-xs font-medium', active ? 'text-brand-700' : 'text-muted'].join(' ')}>
               {opt}
             </Text>
@@ -175,13 +175,13 @@ function ToggleRow({
   return (
     <View className="flex-row items-center justify-between">
       <View className="flex-row items-center gap-2">
-        <Ionicons name={icon} size={18} color={value ? '#156473' : '#9aa7ac'} />
+        <Ionicons name={icon} size={18} color={value ? '#037a4e' : '#9aa7ac'} />
         <Text className="text-base text-ink">{label}</Text>
       </View>
       <Switch
         value={value}
         onValueChange={onChange}
-        trackColor={{ true: '#156473', false: '#d1d5db' }}
+        trackColor={{ true: '#037a4e', false: '#d1d5db' }}
         thumbColor="#ffffff"
       />
     </View>
@@ -356,7 +356,7 @@ function ListPropertyForm({
             onPress={() => router.replace('/(tabs)')}
           >
             <View className="w-full flex-row items-center justify-center gap-2 rounded-2xl border border-brand-500 bg-transparent py-4">
-              <Ionicons name="home-outline" size={18} color="#1a7a8c" />
+              <Ionicons name="home-outline" size={18} color="#00a165" />
               <Text numberOfLines={1} className="font-body-semibold text-base text-brand-500">
                 Back to Home
               </Text>
@@ -410,7 +410,7 @@ function ListPropertyForm({
           <View className="gap-1.5">
             <FieldLabel>Support Team Contact</FieldLabel>
             <View className="flex-row items-center gap-2 rounded-2xl border border-hairline bg-surface-sunk/50 px-4 py-3">
-              <Ionicons name="call-outline" size={16} color="#156473" />
+              <Ionicons name="call-outline" size={16} color="#037a4e" />
               <Text className="text-sm font-medium text-ink">{SUPPORT_CONTACT}</Text>
             </View>
             <Text className="text-xs text-muted-foreground">
@@ -553,7 +553,7 @@ function ListPropertyForm({
                   key={url}
                   className="flex-row items-center gap-2 rounded-xl border border-hairline bg-surface px-3 py-2"
                 >
-                  <Ionicons name="image-outline" size={16} color="#156473" />
+                  <Ionicons name="image-outline" size={16} color="#037a4e" />
                   <Text className="flex-1 text-xs text-ink" numberOfLines={1}>
                     {url}
                   </Text>
@@ -618,7 +618,7 @@ function ListPropertyGate() {
   if (id && isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator color="#1a7a8c" />
+        <ActivityIndicator color="#00a165" />
       </View>
     );
   }

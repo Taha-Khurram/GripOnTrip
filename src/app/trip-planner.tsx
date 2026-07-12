@@ -34,7 +34,7 @@ function ComingSoon({ onExplore }: { onExplore: () => void }) {
   return (
     <Animated.View entering={enterUp(1)} className="items-center gap-5 py-8">
       <View className="h-20 w-20 items-center justify-center rounded-3xl bg-accent-50">
-        <Ionicons name="sparkles" size={36} color="#f39024" />
+        <Ionicons name="sparkles" size={36} color="#f5a623" />
       </View>
 
       <View className="items-center gap-2">

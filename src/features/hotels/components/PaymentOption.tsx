@@ -34,7 +34,7 @@ export function PaymentOption({
       ].join(' ')}
     >
       <View className="flex-row items-center gap-1.5">
-        <Ionicons name={icon} size={18} color={active ? '#156473' : '#9aa7ac'} />
+        <Ionicons name={icon} size={18} color={active ? '#037a4e' : '#9aa7ac'} />
         {/* `flex-1` lets the title wrap instead of overflowing the half-width card. */}
         <Text
           className={[

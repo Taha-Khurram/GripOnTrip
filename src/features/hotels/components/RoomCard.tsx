@@ -84,7 +84,7 @@ export function RoomCard({
           ) : selected ? (
             <View className="flex-row items-center gap-4 rounded-full border border-brand-100 bg-brand-50 px-3 py-1.5 dark:border-brand-900 dark:bg-brand-900">
               <Pressable hitSlop={8} onPress={() => onQuantityChange(quantity - 1)}>
-                <Ionicons name="remove-circle" size={28} color="#1a7a8c" />
+                <Ionicons name="remove-circle" size={28} color="#00a165" />
               </Pressable>
               <Text className="w-5 text-center text-base font-bold text-ink">{quantity}</Text>
               <Pressable
@@ -93,7 +93,7 @@ export function RoomCard({
                 onPress={() => onQuantityChange(quantity + 1)}
                 className={quantity >= max ? 'opacity-30' : ''}
               >
-                <Ionicons name="add-circle" size={28} color="#1a7a8c" />
+                <Ionicons name="add-circle" size={28} color="#00a165" />
               </Pressable>
             </View>
           ) : (
@@ -102,7 +102,7 @@ export function RoomCard({
               onPress={() => onQuantityChange(1)}
               className="flex-row items-center gap-1.5 rounded-full border border-brand-500 px-4 py-2"
             >
-              <Ionicons name="add" size={16} color="#1a7a8c" />
+              <Ionicons name="add" size={16} color="#00a165" />
               <Text className="font-body-semibold text-sm text-brand-500">Add room</Text>
             </PressableScale>
           )}

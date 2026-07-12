@@ -115,7 +115,7 @@ function SettingsForm() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator color="#1a7a8c" />
+        <ActivityIndicator color="#00a165" />
       </View>
     );
   }

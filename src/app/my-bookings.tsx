@@ -38,7 +38,7 @@ const titleCase = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s
 function Chip({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <View className="flex-row items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1">
-      <Ionicons name={icon} size={12} color="#156473" />
+      <Ionicons name={icon} size={12} color="#037a4e" />
       <Text className="text-xs font-medium text-brand-700" numberOfLines={1}>
         {label}
       </Text>
@@ -159,7 +159,7 @@ function BookingCard({ booking, index }: { booking: MyBooking; index: number }) 
                 <Text className="text-xs text-muted-foreground">total</Text>
               </View>
               <Animated.View style={chevronStyle}>
-                <Ionicons name="chevron-down" size={20} color="#1a7a8c" />
+                <Ionicons name="chevron-down" size={20} color="#00a165" />
               </Animated.View>
             </View>
           </View>
@@ -248,7 +248,7 @@ function BookingsList() {
         </View>
       )}
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#1a7a8c" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#00a165" />
       }
       ListHeaderComponent={
         <>
@@ -266,7 +266,7 @@ function BookingsList() {
       ListEmptyComponent={
         isLoading ? (
           <View className="items-center justify-center py-24">
-            <ActivityIndicator color="#1a7a8c" />
+            <ActivityIndicator color="#00a165" />
           </View>
         ) : isError ? (
           <View className="items-center gap-4 px-8 py-16">

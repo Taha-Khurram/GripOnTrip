@@ -47,7 +47,7 @@ export function ListHero({
 }: ListHeroProps) {
   const sun = variant === 'sun';
   const Gradient = sun ? SunCTA : OceanHero;
-  const tagColor = sun ? '#ffe9cf' : '#cfe6ea';
+  const tagColor = sun ? '#ffe9cf' : '#a9c2dd';
 
   return (
     <Animated.View entering={enterUp(0)}>

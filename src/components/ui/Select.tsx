@@ -42,7 +42,7 @@ export function Select<T extends string | number = string>({
         onPress={() => setOpen(true)}
         className="flex-row items-center gap-2 rounded-2xl border border-hairline bg-surface px-4 py-3.5"
       >
-        {icon ? <Ionicons name={icon} size={16} color="#1a7a8c" /> : null}
+        {icon ? <Ionicons name={icon} size={16} color="#00a165" /> : null}
         <Text
           className={['flex-1 text-base', selected ? 'text-ink' : 'text-muted-foreground'].join(' ')}
           numberOfLines={1}
@@ -85,7 +85,7 @@ export function Select<T extends string | number = string>({
                     >
                       {item.label}
                     </Text>
-                    {active ? <Ionicons name="checkmark" size={18} color="#1a7a8c" /> : null}
+                    {active ? <Ionicons name="checkmark" size={18} color="#00a165" /> : null}
                   </Pressable>
                 );
               }}

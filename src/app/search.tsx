@@ -36,9 +36,11 @@ function hit(q: string, fields: (string | number | null | undefined)[]): boolean
  */
 export default function SearchScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ q?: string }>();
+  const params = useLocalSearchParams<{ q?: string; category?: string }>();
   const [query, setQuery] = useState(params.q ?? '');
-  const [filter, setFilter] = useState<FilterKey>('all');
+  const [filter, setFilter] = useState<FilterKey>(
+    FILTERS.some((f) => f.key === params.category) ? (params.category as FilterKey) : 'all',
+  );
 
   const hotels = useHotels();
   const rentals = useRentals();
@@ -323,7 +325,7 @@ function Section<T>({ label, icon, count, cap, onViewAll, items, keyFor, renderI
     <View className="pt-3">
       <View className="flex-row items-center justify-between px-5 pb-3">
         <View className="flex-row items-center gap-2">
-          <Ionicons name={icon} size={16} color="#1a7a8c" />
+          <Ionicons name={icon} size={16} color="#00a165" />
           <Text className="font-display text-lg text-ink">{label}</Text>
           <View className="rounded-full bg-brand-50 px-2 py-0.5">
             <Text className="text-xs font-semibold text-brand-700">{count}</Text>
@@ -332,7 +334,7 @@ function Section<T>({ label, icon, count, cap, onViewAll, items, keyFor, renderI
         {more > 0 ? (
           <Pressable onPress={onViewAll} hitSlop={8} className="flex-row items-center gap-0.5">
             <Text className="text-sm font-medium text-brand-600">View all</Text>
-            <Ionicons name="chevron-forward" size={14} color="#1a7a8c" />
+            <Ionicons name="chevron-forward" size={14} color="#00a165" />
           </Pressable>
         ) : null}
       </View>
@@ -359,7 +361,7 @@ function EmptyPrompt() {
   return (
     <View className="mt-24 items-center justify-center gap-3 px-10">
       <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-        <Ionicons name="search" size={28} color="#1a7a8c" />
+        <Ionicons name="search" size={28} color="#00a165" />
       </View>
       <Text className="text-lg font-display text-ink">Search everything</Text>
       <Text className="text-center text-sm leading-6 text-muted">

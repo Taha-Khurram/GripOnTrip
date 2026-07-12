@@ -11,7 +11,7 @@ const OPTIONS: { value: ThemePreference; label: string; icon: keyof typeof Ionic
 
 // Explicit colors so the active state is always legible regardless of how
 // NativeWind resolves dynamically-toggled classes on an interop component.
-const BRAND = '#1a7a8c';
+const BRAND = '#00a165';
 const ACTIVE = '#ffffff';
 const INACTIVE = '#6b7280'; // neutral-500 — readable on both light & dark tracks
 

@@ -31,7 +31,7 @@ function OperatorLogo({ uri }: { uri?: string }) {
         />
       ) : (
         <View className="h-full w-full items-center justify-center bg-brand-50">
-          <Ionicons name="moon" size={44} color="#156473" />
+          <Ionicons name="moon" size={44} color="#037a4e" />
         </View>
       )}
     </View>
@@ -46,7 +46,7 @@ function SectionTitle({ children }: { children: string }) {
 function Spec({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <View className="flex-1 items-center gap-1 rounded-2xl bg-brand-50 py-3">
-      <Ionicons name={icon} size={20} color="#156473" />
+      <Ionicons name={icon} size={20} color="#037a4e" />
       <Text className="text-sm font-body-semibold text-brand-700">{label}</Text>
     </View>
   );
@@ -67,7 +67,7 @@ function StayCard({
   return (
     <View className="flex-1 gap-1 rounded-2xl border border-hairline bg-surface p-4">
       <View className="flex-row items-center gap-2">
-        <Ionicons name="business-outline" size={16} color="#156473" />
+        <Ionicons name="business-outline" size={16} color="#037a4e" />
         <Text className="text-sm font-body-semibold text-ink">{city}</Text>
       </View>
       <Text className="text-sm text-muted">{hotel}</Text>
@@ -92,7 +92,7 @@ function DetailRow({
   return (
     <View className="flex-row items-start gap-3">
       <View className="h-9 w-9 items-center justify-center rounded-xl bg-brand-50">
-        <Ionicons name={icon} size={18} color="#156473" />
+        <Ionicons name={icon} size={18} color="#037a4e" />
       </View>
       <View className="flex-1 gap-0.5">
         <Text className="text-[11px] font-body-semibold uppercase tracking-wide text-muted-foreground">
@@ -188,7 +188,7 @@ export default function UmrahDetailScreen() {
             <Text className="text-base text-muted">{pkg.packageName}</Text>
             <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
               <View className="flex-row items-center gap-1">
-                <Ionicons name="star" size={14} color="#f39024" />
+                <Ionicons name="star" size={14} color="#f5a623" />
                 <Text className="text-sm font-semibold text-ink">{formatRating(pkg.rating)}</Text>
                 <Text className="text-sm text-muted">({pkg.reviewCount} reviews)</Text>
               </View>
@@ -293,7 +293,7 @@ export default function UmrahDetailScreen() {
               onPress={() => Linking.openURL(contactUrl)}
               className="flex-row items-center gap-2"
             >
-              <Ionicons name="chatbubble-ellipses-outline" size={16} color="#156473" />
+              <Ionicons name="chatbubble-ellipses-outline" size={16} color="#037a4e" />
               <Text className="text-sm font-body-semibold text-brand-700">
                 Contact the operator directly
               </Text>

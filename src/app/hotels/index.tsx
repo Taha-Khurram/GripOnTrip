@@ -140,7 +140,7 @@ export default function HotelsListScreen() {
         contentContainerClassName="pb-8"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#1a7a8c" />}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#00a165" />}
         ListHeaderComponent={
           <View>
             {hero}
@@ -190,7 +190,7 @@ export default function HotelsListScreen() {
         ListEmptyComponent={
           <View className="mt-24 items-center justify-center gap-3 px-8">
             <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
-              <Ionicons name="bed-outline" size={28} color="#1a7a8c" />
+              <Ionicons name="bed-outline" size={28} color="#00a165" />
             </View>
             <Text className="text-lg font-display text-ink">No stays match</Text>
             <Text className="text-center text-sm text-muted">

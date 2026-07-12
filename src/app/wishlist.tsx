@@ -93,7 +93,7 @@ function WishlistCard({ item, index }: { item: WishlistItem; index: number }) {
 
             {/* Category pill */}
             <View className="absolute left-3 top-3 flex-row items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 shadow-card">
-              <Ionicons name={icon} size={12} color="#156473" />
+              <Ionicons name={icon} size={12} color="#037a4e" />
               <Text className="text-xs font-body-semibold text-ink">{label}</Text>
             </View>
           </View>
@@ -122,7 +122,7 @@ function WishlistCard({ item, index }: { item: WishlistItem; index: number }) {
               ) : (
                 <Text className="text-sm font-medium text-muted">View details</Text>
               )}
-              <Ionicons name="chevron-forward" size={20} color="#1a7a8c" />
+              <Ionicons name="chevron-forward" size={20} color="#00a165" />
             </View>
           </View>
         </PressableScale>

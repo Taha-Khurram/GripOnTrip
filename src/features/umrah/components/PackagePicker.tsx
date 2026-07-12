@@ -54,7 +54,7 @@ export function PackagePicker({
                 active ? 'bg-brand-500' : 'bg-brand-50',
               ].join(' ')}
             >
-              <Ionicons name="moon" size={18} color={active ? '#ffffff' : '#156473'} />
+              <Ionicons name="moon" size={18} color={active ? '#ffffff' : '#037a4e'} />
             </View>
             <View className="flex-1">
               <Text className="text-sm font-body-semibold text-ink" numberOfLines={1}>
@@ -72,9 +72,9 @@ export function PackagePicker({
               <Text className="text-xs text-muted-foreground">/ person</Text>
             </View>
             {active ? (
-              <Ionicons name="checkmark-circle" size={20} color="#1a7a8c" />
+              <Ionicons name="checkmark-circle" size={20} color="#00a165" />
             ) : (
-              <Ionicons name="ellipse-outline" size={20} color="#d9ccb2" />
+              <Ionicons name="ellipse-outline" size={20} color="#c5d1de" />
             )}
           </Pressable>
         );
@@ -96,7 +96,7 @@ export function PackagePicker({
             customActive ? 'bg-accent-500' : 'bg-accent-50',
           ].join(' ')}
         >
-          <Ionicons name="construct-outline" size={18} color={customActive ? '#ffffff' : '#f39024'} />
+          <Ionicons name="construct-outline" size={18} color={customActive ? '#ffffff' : '#f5a623'} />
         </View>
         <View className="flex-1">
           <Text className="text-sm font-body-semibold text-ink">Build a Custom Package</Text>

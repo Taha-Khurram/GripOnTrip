@@ -37,7 +37,7 @@ export function DateField({
         onPress={() => setOpen(true)}
         className="flex-row items-center gap-2 rounded-xl border border-hairline bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900"
       >
-        <Ionicons name="calendar-outline" size={16} color="#1a7a8c" />
+        <Ionicons name="calendar-outline" size={16} color="#00a165" />
         <Text className="text-base text-ink">{formatDate(value)}</Text>
       </Pressable>
 
@@ -75,7 +75,7 @@ export function DateField({
                     >
                       {formatDate(item)}
                     </Text>
-                    {active ? <Ionicons name="checkmark" size={18} color="#1a7a8c" /> : null}
+                    {active ? <Ionicons name="checkmark" size={18} color="#00a165" /> : null}
                   </Pressable>
                 );
               }}

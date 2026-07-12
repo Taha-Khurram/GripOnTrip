@@ -117,7 +117,7 @@ function ActivityRow({ activity, last }: { activity: ItineraryActivity; last: bo
       {/* Timeline rail */}
       <View className="items-center">
         <View className="mt-0.5 h-8 w-8 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-500/15">
-          <Ionicons name={activityIcon(activity.category) as never} size={16} color="#1a7a8c" />
+          <Ionicons name={activityIcon(activity.category) as never} size={16} color="#00a165" />
         </View>
         {!last ? <View className="mt-1 w-px flex-1 bg-neutral-200 dark:bg-neutral-700" /> : null}
       </View>

@@ -45,7 +45,7 @@ function newPilgrim(id: string): Pilgrim {
 function HeaderBack({ onPress }: { onPress: () => void }) {
   return (
     <Pressable accessibilityRole="button" accessibilityLabel="Back" hitSlop={8} onPress={onPress}>
-      <Ionicons name="chevron-back" size={26} color="#0c2b36" />
+      <Ionicons name="chevron-back" size={26} color="#0a1a2f" />
     </Pressable>
   );
 }
@@ -353,7 +353,7 @@ export default function UmrahBookScreen() {
 
           {payment === 'operator' ? (
             <View className="flex-row items-start gap-2.5 rounded-2xl bg-brand-50 px-4 py-3">
-              <Ionicons name="information-circle-outline" size={18} color="#156473" />
+              <Ionicons name="information-circle-outline" size={18} color="#037a4e" />
               <Text className="flex-1 text-sm text-brand-700">
                 No payment is required now. The operator confirms availability, then shares payment
                 details for the full amount of{' '}
@@ -503,7 +503,7 @@ function PaymentTile({
       ].join(' ')}
     >
       <View className="flex-row items-center gap-1.5">
-        <Ionicons name={icon} size={18} color={active ? '#156473' : '#9aa7ac'} />
+        <Ionicons name={icon} size={18} color={active ? '#037a4e' : '#9aa7ac'} />
         <Text className={['flex-1 text-sm font-semibold', active ? 'text-brand-700' : 'text-ink'].join(' ')}>
           {title}
         </Text>

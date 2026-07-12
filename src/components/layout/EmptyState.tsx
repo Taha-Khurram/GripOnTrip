@@ -20,7 +20,7 @@ export function EmptyState({ icon, title, message, actionLabel, onAction }: Empt
   return (
     <View className="items-center gap-3 px-8">
       <View className="h-20 w-20 items-center justify-center rounded-3xl bg-brand-50 dark:bg-brand-500/15">
-        <Ionicons name={icon} size={34} color="#1a7a8c" />
+        <Ionicons name={icon} size={34} color="#00a165" />
       </View>
       <Text className="text-center text-lg font-display text-ink">{title}</Text>
       {message ? (

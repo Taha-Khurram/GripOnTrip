@@ -75,7 +75,7 @@ export default function BookTourPackageScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <Stack.Screen options={{ title: 'Book Package' }} />
-        <ActivityIndicator color="#1a7a8c" />
+        <ActivityIndicator color="#00a165" />
       </View>
     );
   }
@@ -183,7 +183,7 @@ export default function BookTourPackageScreen() {
 
         <Card className="gap-3">
           <View className="flex-row items-center gap-2">
-            <Ionicons name="receipt-outline" size={18} color="#156473" />
+            <Ionicons name="receipt-outline" size={18} color="#037a4e" />
             <Text className="text-base font-semibold text-ink">Booking Summary</Text>
           </View>
           <View className="h-px bg-hairline" />
@@ -206,7 +206,7 @@ export default function BookTourPackageScreen() {
         </Card>
 
         <View className="flex-row items-start gap-2 rounded-2xl bg-brand-50 px-4 py-3">
-          <Ionicons name="information-circle-outline" size={18} color="#156473" />
+          <Ionicons name="information-circle-outline" size={18} color="#037a4e" />
           <Text className="flex-1 text-sm text-brand-700">
             The operator will confirm availability and share the next steps with you shortly.
           </Text>
@@ -228,7 +228,7 @@ export default function BookTourPackageScreen() {
             onPress={() => router.replace('/(tabs)/tours')}
             className="w-full flex-row items-center justify-center gap-2 rounded-2xl border border-brand-500 bg-transparent py-4"
           >
-            <Ionicons name="bus-outline" size={18} color="#1a7a8c" />
+            <Ionicons name="bus-outline" size={18} color="#00a165" />
             <Text className="font-body-semibold text-base text-brand-500">Browse more tours</Text>
           </Pressable>
         </View>
@@ -248,7 +248,7 @@ export default function BookTourPackageScreen() {
       {/* ── Package summary ───────────────────────────────────────────── */}
       <Card className="gap-2">
         <View className="flex-row items-center gap-1.5 self-start rounded-full bg-brand-50 px-3 py-1">
-          <Ionicons name="bus-outline" size={13} color="#156473" />
+          <Ionicons name="bus-outline" size={13} color="#037a4e" />
           <Text className="text-xs font-body-semibold uppercase tracking-wide text-brand-700">Tour</Text>
         </View>
         <Text className="text-xl font-display text-ink">{pkg.name}</Text>
@@ -336,7 +336,7 @@ export default function BookTourPackageScreen() {
 
         {payment === 'operator' ? (
           <View className="flex-row items-start gap-2.5 rounded-2xl bg-brand-50 px-4 py-3">
-            <Ionicons name="information-circle-outline" size={18} color="#156473" />
+            <Ionicons name="information-circle-outline" size={18} color="#037a4e" />
             <Text className="flex-1 text-sm text-brand-700">
               No payment is required now. The operator confirms availability, then shares payment
               details for the full amount of{' '}
@@ -450,7 +450,7 @@ function PaymentMethodTile({
       ].join(' ')}
     >
       <View className="flex-row items-center gap-1.5">
-        <Ionicons name={icon} size={18} color={active ? '#156473' : '#9aa7ac'} />
+        <Ionicons name={icon} size={18} color={active ? '#037a4e' : '#9aa7ac'} />
         <Text
           className={['flex-1 text-sm font-semibold', active ? 'text-brand-700' : 'text-ink'].join(
             ' ',
