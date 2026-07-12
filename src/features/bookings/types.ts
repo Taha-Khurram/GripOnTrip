@@ -12,6 +12,10 @@ export interface HotelBookingInput {
   totalPrice: number;
   currency: string;
   paymentMethod?: string;
+  /** 'paid' once a card charge succeeds; defaults to 'pending' otherwise. */
+  paymentStatus?: string;
+  /** Stripe PaymentIntent id (`pi_…`) when paid online, for reconciliation. */
+  paymentReference?: string;
   specialRequests?: string;
 }
 

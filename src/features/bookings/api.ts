@@ -28,6 +28,15 @@ export async function createHotelBooking(input: HotelBookingInput) {
 
   const guests = input.adults + input.children;
 
+  // When a card charge already succeeded upstream we record the Stripe
+  // reference alongside the guest's notes so it's reconcilable from the booking.
+  const notes = [
+    input.specialRequests?.trim(),
+    input.paymentReference ? `Payment ref: ${input.paymentReference}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+
   const { data, error } = await supabase
     .from('bookings')
     .insert({
@@ -44,9 +53,9 @@ export async function createHotelBooking(input: HotelBookingInput) {
       total_price: input.totalPrice,
       currency: input.currency,
       status: 'pending',
-      payment_status: 'pending',
+      payment_status: input.paymentStatus ?? 'pending',
       payment_method: input.paymentMethod ?? null,
-      special_requests: input.specialRequests ?? null,
+      special_requests: notes || null,
     })
     .select('id')
     .single();

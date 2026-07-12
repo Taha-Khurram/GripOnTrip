@@ -39,6 +39,13 @@ export const env = {
     'EXPO_PUBLIC_SUPABASE_ANON_KEY',
     process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
   ),
+  /**
+   * Stripe publishable key (`pk_test_…` / `pk_live_…`). Client-safe by design —
+   * it can only create tokens/PaymentIntents, never charge or read data. Read
+   * lazily (empty string when unset) so the app still boots without payments
+   * configured; the payments layer fails loudly at charge time if it's missing.
+   */
+  stripePublishableKey: process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() ?? '',
   /** Current release channel / environment. */
   env: ENVIRONMENT,
   /** App version pulled from app.json. */

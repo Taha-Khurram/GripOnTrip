@@ -6,6 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 
 import { Button, Card, DateField, Input } from '@/components/ui';
 import { AUTH_GATING_ENABLED } from '@/features/auth';
 import { useCreateRentalBooking } from '@/features/bookings';
+import { CardPaymentForm, usePayWithCard, type CardInput } from '@/features/payments';
 import { useRental } from '@/features/rentals';
 import { useAuthStore } from '@/store/auth.store';
 import { addDays, nightsBetween, toISODate } from '@/utils/date';
@@ -63,6 +64,7 @@ export default function BookRentalScreen() {
 
   const { data: rental, isLoading } = useRental(id);
   const { mutateAsync, isPending } = useCreateRentalBooking();
+  const { mutateAsync: payWithCard, isPending: isPaying } = usePayWithCard();
 
   const today = toISODate(new Date());
   const [duration, setDuration] = useState<DurationType>('days');
@@ -74,7 +76,8 @@ export default function BookRentalScreen() {
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [message, setMessage] = useState('');
   const [payment, setPayment] = useState<PaymentTab>('property');
-  const [cardReady, setCardReady] = useState(false);
+  const [card, setCard] = useState<CardInput | null>(null);
+  const [showCardErrors, setShowCardErrors] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
 
@@ -120,7 +123,8 @@ export default function BookRentalScreen() {
 
   const validEmail = /\S+@\S+\.\S+/.test(email);
   const detailsValid = name.trim().length > 1 && validEmail && nightsBetween(start, end) > 0;
-  const canSubmit = detailsValid && (payment === 'property' || cardReady);
+  const canSubmit = detailsValid && (payment === 'property' || card !== null);
+  const busy = isPending || isPaying;
 
   const submit = async () => {
     setError(null);
@@ -128,14 +132,32 @@ export default function BookRentalScreen() {
       setError('Please add your name, a valid email, and a valid date range.');
       return;
     }
-    const note = [
-      `Cancellation: ${policyLabel}`,
-      `Payment: ${paymentLabel}`,
-      message.trim(),
-    ]
-      .filter(Boolean)
-      .join('\n');
     try {
+      // Charge by card first (when chosen), so a decline never records a booking.
+      let paymentReference: string | undefined;
+      if (payment === 'card') {
+        if (!card) {
+          setShowCardErrors((n) => n + 1);
+          setError('Please enter valid card details to pay now.');
+          return;
+        }
+        const result = await payWithCard({
+          card,
+          amount: total,
+          currency,
+          description: `BNB booking · ${rental.title}`,
+          metadata: { propertyId: rental.id, customerEmail: email.trim() },
+        });
+        paymentReference = result.paymentIntentId;
+      }
+      const note = [
+        `Cancellation: ${policyLabel}`,
+        `Payment: ${paymentLabel}`,
+        paymentReference ? `Payment ref: ${paymentReference}` : '',
+        message.trim(),
+      ]
+        .filter(Boolean)
+        .join('\n');
       await mutateAsync({
         propertyId: rental.id,
         startDate: start,
@@ -380,56 +402,16 @@ export default function BookRentalScreen() {
               you arrive at the property.
             </Text>
           </View>
-        ) : !cardReady ? (
-          <View className="items-center gap-3 rounded-2xl border border-dashed border-hairline bg-surface-sunk/50 p-5">
-            <Text className="text-center text-sm text-muted">
-              Review pricing and dates, then initialize the secure card transaction form.
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Initialize card payment form"
-              onPress={() => setCardReady(true)}
-              className="flex-row items-center gap-2 rounded-2xl border border-brand-500 bg-transparent px-5 py-3"
-            >
-              <Ionicons name="lock-closed-outline" size={16} color="#1a7a8c" />
-              <Text className="font-body-semibold text-sm text-brand-600">
-                Initialize Card Payment Form
-              </Text>
-            </Pressable>
-          </View>
         ) : (
           <View className="gap-3">
-            <View className="gap-2.5 rounded-2xl border border-hairline bg-surface-sunk/40 p-4">
-              <View className="flex-row items-center gap-2">
-                <Ionicons name="card-outline" size={18} color="#156473" />
-                <Text className="text-sm font-body-semibold text-ink">Card Details</Text>
-              </View>
-              <TextInput
-                placeholder="Card number"
-                placeholderTextColor="#9aa7ac"
-                keyboardType="number-pad"
-                className="rounded-xl border border-hairline bg-surface px-3.5 py-3 text-base text-ink"
-              />
-              <View className="flex-row gap-3">
-                <TextInput
-                  placeholder="MM / YY"
-                  placeholderTextColor="#9aa7ac"
-                  className="flex-1 rounded-xl border border-hairline bg-surface px-3.5 py-3 text-base text-ink"
-                />
-                <TextInput
-                  placeholder="CVC"
-                  placeholderTextColor="#9aa7ac"
-                  keyboardType="number-pad"
-                  className="w-24 rounded-xl border border-hairline bg-surface px-3.5 py-3 text-base text-ink"
-                />
-              </View>
-            </View>
-            <View className="flex-row items-start gap-2.5 rounded-2xl bg-brand-50 px-4 py-3">
-              <Ionicons name="shield-checkmark-outline" size={18} color="#156473" />
-              <Text className="flex-1 text-xs text-brand-700">
-                Your payment information is encrypted and secure. We never store your card details.
-              </Text>
-            </View>
+            <Text className="text-sm text-muted">
+              Pay{' '}
+              <Text className="font-semibold text-ink">
+                {formatMoney({ amount: total, currency })}
+              </Text>{' '}
+              securely by card to request this property now.
+            </Text>
+            <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} />
           </View>
         )}
       </Card>
@@ -474,15 +456,15 @@ export default function BookRentalScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={payment === 'card' ? 'Book and pay' : 'Request to book'}
-          accessibilityState={{ disabled: !canSubmit || isPending, busy: isPending }}
-          disabled={!canSubmit || isPending}
+          accessibilityState={{ disabled: !canSubmit || busy, busy }}
+          disabled={!canSubmit || busy}
           onPress={submit}
           className={[
             'w-full flex-row items-center justify-center gap-2 rounded-2xl bg-brand-500 py-4',
-            !canSubmit || isPending ? 'opacity-50' : '',
+            !canSubmit || busy ? 'opacity-50' : '',
           ].join(' ')}
         >
-          {isPending ? (
+          {busy ? (
             <ActivityIndicator color="#ffffff" />
           ) : (
             <>
@@ -493,22 +475,18 @@ export default function BookRentalScreen() {
               />
               <Text className="font-body-semibold text-base text-white">
                 {payment === 'card'
-                  ? `Book & Pay ${formatMoney({ amount: total, currency })}`
+                  ? `Pay ${formatMoney({ amount: total, currency })}`
                   : 'Request to book'}
               </Text>
             </>
           )}
         </Pressable>
 
-        {payment === 'card' && !cardReady ? (
-          <Text className="text-center text-xs text-muted-foreground">
-            Initialize the card payment form above to confirm your booking.
-          </Text>
-        ) : (
-          <Text className="text-center text-xs text-muted-foreground">
-            You won&apos;t be charged now — the host confirms your request first.
-          </Text>
-        )}
+        <Text className="text-center text-xs text-muted-foreground">
+          {payment === 'card'
+            ? 'Your card is charged securely via Stripe to request this property.'
+            : "You won't be charged now — the host confirms your request first."}
+        </Text>
       </Card>
     </ScrollView>
   );

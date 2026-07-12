@@ -18,6 +18,7 @@ import {
 } from '@/features/hotels';
 import { RoomCard } from '@/features/hotels/components/RoomCard';
 import { PaymentOption, type PaymentMode } from '@/features/hotels/components/PaymentOption';
+import { CardPaymentForm, usePayWithCard, type CardInput } from '@/features/payments';
 import { useAuthStore } from '@/store/auth.store';
 import { addDays, nightsBetween, parseAvailabilityRange, toISODate } from '@/utils/date';
 import { formatDate, formatMoney } from '@/utils/format';
@@ -87,6 +88,7 @@ export default function BookHotelScreen() {
   const { data: hotel, isLoading } = useHotel(id);
   const { data: rooms = [], isLoading: roomsLoading } = useHotelRooms(id);
   const { mutateAsync, isPending } = useCreateHotelBooking();
+  const { mutateAsync: payWithCard, isPending: isPaying } = usePayWithCard();
 
   // Seed the selection from the params: prefer the multi-room `selection` string,
   // then fall back to a single `roomId`. The user can still adjust it here.
@@ -113,6 +115,8 @@ export default function BookHotelScreen() {
   const [arrivalTime, setArrivalTime] = useState('');
   const [requests, setRequests] = useState('');
   const [payment, setPayment] = useState<PaymentMode>(paymentParam === 'online' ? 'online' : 'property');
+  const [card, setCard] = useState<CardInput | null>(null);
+  const [showCardErrors, setShowCardErrors] = useState(0);
   const [showAmenities, setShowAmenities] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState<string | null>(null);
@@ -235,7 +239,7 @@ export default function BookHotelScreen() {
           <SummaryRow
             icon="card-outline"
             label="Payment"
-            value={payment === 'online' ? 'Pay Online' : 'Pay at Property'}
+            value={payment === 'online' ? 'Card (Stripe) · Paid' : 'Pay at Property'}
           />
           <View className="h-px bg-hairline" />
           <View className="flex-row items-center justify-between">
@@ -252,7 +256,7 @@ export default function BookHotelScreen() {
           <Text className="flex-1 text-sm text-brand-700">
             {payment === 'property'
               ? 'Pay the full amount when you arrive at the property.'
-              : 'The host will share payment details with you shortly.'}
+              : 'Payment received — your card was charged successfully. A receipt has been sent by Stripe.'}
           </Text>
         </View>
 
@@ -288,7 +292,9 @@ export default function BookHotelScreen() {
   const canBook =
     chosen.length > 0 &&
     nights > 0 &&
-    (!needsGuestDetails || (name.trim().length > 1 && /\S+@\S+\.\S+/.test(email)));
+    (!needsGuestDetails || (name.trim().length > 1 && /\S+@\S+\.\S+/.test(email))) &&
+    (payment !== 'online' || card !== null);
+  const busy = isPending || isPaying;
 
   const primaryMax =
     primaryRoom?.inventory && primaryRoom.inventory > 0 ? primaryRoom.inventory : 10;
@@ -309,19 +315,40 @@ export default function BookHotelScreen() {
     ]
       .filter(Boolean)
       .join('\n');
+    const guestEmail = (user?.email ?? email).trim();
     try {
+      // Charge the card first when paying online — only write the booking once
+      // the money has actually moved, so a decline never creates a paid record.
+      let paymentReference: string | undefined;
+      if (payment === 'online') {
+        if (!card) {
+          setShowCardErrors((n) => n + 1);
+          setError('Please enter valid card details to pay online.');
+          return;
+        }
+        const result = await payWithCard({
+          card,
+          amount: total,
+          currency,
+          description: `Hotel booking · ${hotel.title}`,
+          metadata: { hotelId: hotel.id, roomId: primaryRoom.id, guestEmail },
+        });
+        paymentReference = result.paymentIntentId;
+      }
       await mutateAsync({
         hotelId: hotel.id,
         roomId: primaryRoom.id,
         guestName: (user?.name ?? name).trim() || 'Guest',
-        guestEmail: (user?.email ?? email).trim(),
+        guestEmail,
         checkInDate: checkIn,
         checkOutDate: checkOut,
         adults,
         children,
         totalPrice: total,
         currency,
-        paymentMethod: payment === 'online' ? 'Pay Online' : 'Pay at Property',
+        paymentMethod: payment === 'online' ? 'Card (Stripe)' : 'Pay at Property',
+        paymentStatus: payment === 'online' ? 'paid' : 'pending',
+        paymentReference,
         specialRequests: notes || undefined,
       });
       setConfirmed('ok');
@@ -455,28 +482,28 @@ export default function BookHotelScreen() {
             onPress={() => setPayment('property')}
           />
         </View>
-        <View className="rounded-2xl border border-dashed border-hairline bg-surface-sunk/50 p-4">
-          <Text className="text-center text-sm text-muted">
-            {payment === 'property' ? (
-              <>
-                No payment required now. You will pay the full amount of{' '}
-                <Text className="font-semibold text-ink">
-                  {formatMoney({ amount: total, currency })}
-                </Text>{' '}
-                when you arrive at the property.
-              </>
-            ) : (
-              <>
-                Pay{' '}
-                <Text className="font-semibold text-ink">
-                  {formatMoney({ amount: total, currency })}
-                </Text>{' '}
-                now to confirm your booking instantly. The host will share payment
-                details after you submit.
-              </>
-            )}
-          </Text>
-        </View>
+        {payment === 'property' ? (
+          <View className="rounded-2xl border border-dashed border-hairline bg-surface-sunk/50 p-4">
+            <Text className="text-center text-sm text-muted">
+              No payment required now. You will pay the full amount of{' '}
+              <Text className="font-semibold text-ink">
+                {formatMoney({ amount: total, currency })}
+              </Text>{' '}
+              when you arrive at the property.
+            </Text>
+          </View>
+        ) : (
+          <View className="gap-3">
+            <Text className="text-sm text-muted">
+              Pay{' '}
+              <Text className="font-semibold text-ink">
+                {formatMoney({ amount: total, currency })}
+              </Text>{' '}
+              securely by card to confirm your booking instantly.
+            </Text>
+            <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} />
+          </View>
+        )}
       </Card>
 
       {/* ── Card 3 · Review Property ───────────────────────────────── */}
@@ -578,25 +605,31 @@ export default function BookHotelScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Confirm & Pay"
-          accessibilityState={{ disabled: !canBook || isPending, busy: isPending }}
-          disabled={!canBook || isPending}
+          accessibilityState={{ disabled: !canBook || busy, busy }}
+          disabled={!canBook || busy}
           onPress={submit}
           className={[
             'w-full flex-row items-center justify-center gap-2 rounded-2xl bg-brand-500 py-4',
-            !canBook || isPending ? 'opacity-50' : '',
+            !canBook || busy ? 'opacity-50' : '',
           ].join(' ')}
         >
-          {isPending ? (
+          {busy ? (
             <ActivityIndicator color="#ffffff" />
           ) : (
             <>
               <Ionicons name="shield-checkmark-outline" size={18} color="#ffffff" />
-              <Text className="text-center font-body-semibold text-base text-white">Confirm &amp; Pay</Text>
+              <Text className="text-center font-body-semibold text-base text-white">
+                {payment === 'online'
+                  ? `Pay ${formatMoney({ amount: total, currency })}`
+                  : 'Confirm & Book'}
+              </Text>
             </>
           )}
         </Pressable>
         <Text className="text-center text-xs text-muted-foreground">
-          You won&apos;t be charged now — the host confirms your request first.
+          {payment === 'online'
+            ? 'Your card is charged securely via Stripe to confirm this booking.'
+            : "You won't be charged now — the host confirms your request first."}
         </Text>
       </Card>
     </ScrollView>

@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button, Card, DetailSkeleton, Input, Select } from '@/components/ui';
+import { CardPaymentForm, usePayWithCard, type CardInput } from '@/features/payments';
 import { useAuthStore } from '@/store/auth.store';
 import { formatMoney } from '@/utils/format';
 import {
@@ -116,6 +117,7 @@ export default function UmrahBookScreen() {
 
   const { data: packages, isLoading } = useUmrahPackages();
   const { mutateAsync, isPending } = useSubmitUmrahBooking();
+  const { mutateAsync: payWithCard, isPending: isPaying } = usePayWithCard();
 
   const months = useMemo(() => departureMonths(new Date()), []);
 
@@ -131,7 +133,8 @@ export default function UmrahBookScreen() {
   const [pilgrims, setPilgrims] = useState<Pilgrim[]>([newPilgrim('pilgrim-1')]);
 
   const [payment, setPayment] = useState<PaymentTab>('operator');
-  const [cardReady, setCardReady] = useState(false);
+  const [card, setCard] = useState<CardInput | null>(null);
+  const [showCardErrors, setShowCardErrors] = useState(0);
   const [email, setEmail] = useState(user?.email ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [error, setError] = useState<string | null>(null);
@@ -175,7 +178,8 @@ export default function UmrahBookScreen() {
   );
   const validEmail = /\S+@\S+\.\S+/.test(email);
   const contactValid = validEmail && phone.trim().length >= 6;
-  const canCheckout = payment === 'operator' || cardReady;
+  const canCheckout = payment === 'operator' || card !== null;
+  const busy = isPending || isPaying;
 
   const summary = (
     <UmrahBookingSummary
@@ -211,6 +215,25 @@ export default function UmrahBookScreen() {
       return;
     }
     try {
+      // Charge by card first (when chosen) so a decline never records a booking.
+      if (payment === 'card') {
+        if (!card) {
+          setShowCardErrors((n) => n + 1);
+          setError('Please enter valid card details to pay now.');
+          return;
+        }
+        await payWithCard({
+          card,
+          amount: total,
+          currency: 'PKR',
+          description: `Umrah booking · ${packageChoice}`,
+          metadata: {
+            agencyId: operator?.agencyId ?? '',
+            packageName: packageChoice,
+            customerEmail: email.trim(),
+          },
+        });
+      }
       const { bookingId } = await mutateAsync({
         agencyId: operator?.agencyId ?? '',
         agencyName: operator?.agencyName ?? 'Grip On Trip Umrah Desk',
@@ -337,55 +360,16 @@ export default function UmrahBookScreen() {
                 <Text className="font-semibold">{formatMoney({ amount: total, currency: 'PKR' })}</Text>.
               </Text>
             </View>
-          ) : !cardReady ? (
-            <View className="items-center gap-3 rounded-2xl border border-dashed border-hairline bg-surface-sunk/50 p-5">
-              <Text className="text-center text-sm text-muted">
-                Review the details, then initialize the secure card transaction form.
-              </Text>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => setCardReady(true)}
-                className="flex-row items-center gap-2 rounded-2xl border border-brand-500 bg-transparent px-5 py-3"
-              >
-                <Ionicons name="lock-closed-outline" size={16} color="#156473" />
-                <Text className="font-body-semibold text-sm text-brand-700">
-                  Initialize Card Payment Form
-                </Text>
-              </Pressable>
-            </View>
           ) : (
             <View className="gap-3">
-              <View className="gap-2.5 rounded-2xl border border-hairline bg-surface-sunk/40 p-4">
-                <View className="flex-row items-center gap-2">
-                  <Ionicons name="card-outline" size={18} color="#156473" />
-                  <Text className="text-sm font-body-semibold text-ink">Card Details</Text>
-                </View>
-                <TextInput
-                  placeholder="Card number"
-                  placeholderTextColor="#9aa7ac"
-                  keyboardType="number-pad"
-                  className="rounded-xl border border-hairline bg-surface px-3.5 py-3 text-base text-ink"
-                />
-                <View className="flex-row gap-3">
-                  <TextInput
-                    placeholder="MM / YY"
-                    placeholderTextColor="#9aa7ac"
-                    className="flex-1 rounded-xl border border-hairline bg-surface px-3.5 py-3 text-base text-ink"
-                  />
-                  <TextInput
-                    placeholder="CVC"
-                    placeholderTextColor="#9aa7ac"
-                    keyboardType="number-pad"
-                    className="w-24 rounded-xl border border-hairline bg-surface px-3.5 py-3 text-base text-ink"
-                  />
-                </View>
-              </View>
-              <View className="flex-row items-start gap-2.5 rounded-2xl bg-brand-50 px-4 py-3">
-                <Ionicons name="shield-checkmark-outline" size={18} color="#156473" />
-                <Text className="flex-1 text-xs text-brand-700">
-                  Your payment information is encrypted and secure. We never store your card details.
-                </Text>
-              </View>
+              <Text className="text-sm text-muted">
+                Pay{' '}
+                <Text className="font-semibold text-ink">
+                  {formatMoney({ amount: total, currency: 'PKR' })}
+                </Text>{' '}
+                securely by card to confirm your Umrah booking now.
+              </Text>
+              <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} />
             </View>
           )}
         </Card>
@@ -397,15 +381,17 @@ export default function UmrahBookScreen() {
         ) : null}
 
         <PrimaryCTA
-          label={payment === 'card' ? 'Pay Now' : 'Request to Book'}
-          sublabel={`${formatMoney({ amount: total, currency: 'PKR' })} · ${pilgrims.length} ${pilgrims.length === 1 ? 'pilgrim' : 'pilgrims'}`}
+          label={payment === 'card' ? `Pay ${formatMoney({ amount: total, currency: 'PKR' })}` : 'Request to Book'}
+          sublabel={`${pilgrims.length} ${pilgrims.length === 1 ? 'pilgrim' : 'pilgrims'}`}
           icon={payment === 'card' ? 'card' : 'shield-checkmark'}
-          loading={isPending}
+          loading={busy}
           disabled={!canCheckout || !contactValid}
           onPress={submit}
         />
         <Text className="-mt-1 text-center text-xs text-muted-foreground">
-          You won’t be charged until the operator confirms availability.
+          {payment === 'card'
+            ? 'Your card is charged securely via Stripe to confirm this booking.'
+            : 'You won’t be charged until the operator confirms availability.'}
         </Text>
       </ScrollView>
     );
