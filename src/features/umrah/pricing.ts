@@ -33,14 +33,17 @@ export const NIGHT_OPTIONS: SelectOption<number>[] = [3, 4, 5, 6, 7, 8, 9, 10, 1
   label: `${n} Night${n === 1 ? '' : 's'}`,
 }));
 
+// Short labels ("7 Nights") — the customizer's field labels already say which
+// city, and the full "… in Makkah/Madinah" suffix overflows the two half-width
+// select triggers.
 export const MAKKAH_NIGHT_OPTIONS: SelectOption<number>[] = NIGHT_OPTIONS.map((o) => ({
   value: o.value,
-  label: `${o.value} Night${o.value === 1 ? '' : 's'} in Makkah`,
+  label: `${o.value} Night${o.value === 1 ? '' : 's'}`,
 }));
 
 export const MADINAH_NIGHT_OPTIONS: SelectOption<number>[] = NIGHT_OPTIONS.map((o) => ({
   value: o.value,
-  label: `${o.value} Night${o.value === 1 ? '' : 's'} in Madinah`,
+  label: `${o.value} Night${o.value === 1 ? '' : 's'}`,
 }));
 
 export const HOTEL_TIERS: TierOption[] = [

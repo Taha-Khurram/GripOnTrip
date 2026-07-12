@@ -7,7 +7,7 @@ interface InputProps extends TextInputProps {
 }
 
 export const Input = forwardRef<TextInput, InputProps>(function Input(
-  { label, error, className = '', onFocus, onBlur, ...rest },
+  { label, error, className = '', onFocus, onBlur, style, multiline, ...rest },
   ref,
 ) {
   const [focused, setFocused] = useState(false);
@@ -26,6 +26,11 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
       <TextInput
         ref={ref}
         placeholderTextColor="#9aa7ac"
+        multiline={multiline}
+        // Vertically center the placeholder + text (same fix as the hero search
+        // fields): Android adds extra font padding that otherwise pushes the
+        // text high inside the padded box. Multiline stays top-aligned.
+        textAlignVertical={multiline ? 'top' : 'center'}
         onFocus={(e) => {
           setFocused(true);
           onFocus?.(e);
@@ -34,6 +39,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
           setFocused(false);
           onBlur?.(e);
         }}
+        style={[{ includeFontPadding: false }, style]}
         className={[
           'rounded-2xl border bg-surface px-4 py-3.5 text-base text-ink',
           borderClass,

@@ -179,6 +179,8 @@ export default function ToursScreen() {
                       placeholder="Agency name or city…"
                       placeholderTextColor="#7c8a99"
                       returnKeyType="search"
+                      textAlignVertical="center"
+                      style={{ includeFontPadding: false }}
                       className="flex-1 py-0 text-[16px] font-body-medium text-ink"
                     />
                     {query ? (

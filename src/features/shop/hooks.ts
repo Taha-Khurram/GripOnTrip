@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/query-client';
-import { fetchProduct, fetchProducts } from './api';
+import { createProductOrder, fetchProduct, fetchProducts } from './api';
 import type { ProductSearchParams } from './types';
 
 /** Marketplace product list. */
@@ -19,4 +19,9 @@ export function useProduct(id: string) {
     queryFn: () => fetchProduct(id),
     enabled: Boolean(id),
   });
+}
+
+/** Place a marketplace order (checkout). */
+export function usePlaceOrder() {
+  return useMutation({ mutationFn: createProductOrder });
 }

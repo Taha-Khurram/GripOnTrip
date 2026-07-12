@@ -11,7 +11,6 @@ import {
   View,
 } from 'react-native';
 
-import { NewsletterCTA } from '@/components/NewsletterCTA';
 import { Animated, Button, enterUp, ListSkeleton, OceanHero, PressableScale } from '@/components/ui';
 import { APP_NAME } from '@/constants/config';
 import {
@@ -185,9 +184,11 @@ export default function UmrahScreen() {
                       value={query}
                       onChangeText={setQuery}
                       onSubmitEditing={() => Keyboard.dismiss()}
-                      placeholder="Operator, package or city…"
+                      placeholder="Search operator"
                       placeholderTextColor="#7c8a99"
                       returnKeyType="search"
+                      textAlignVertical="center"
+                      style={{ includeFontPadding: false }}
                       className="flex-1 py-0 text-[16px] font-body-medium text-ink"
                     />
                     {query ? (
@@ -278,11 +279,8 @@ export default function UmrahScreen() {
         </View>
       }
       ListFooterComponent={
-        <View className="gap-12 pt-4">
+        <View className="pt-4">
           <UmrahPerks />
-          <View className="px-5">
-            <NewsletterCTA />
-          </View>
         </View>
       }
     />

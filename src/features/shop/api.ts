@@ -3,7 +3,7 @@ import { endpoints } from '@/api/endpoints';
 import { resolveImageUrl } from '@/api/media';
 import { env } from '@/config/env';
 import type { Paginated } from '@/types';
-import type { Product, ProductSearchParams } from './types';
+import type { Product, ProductOrderInput, ProductOrderResult, ProductSearchParams } from './types';
 
 /**
  * Raw product record as returned by `GET /products` on gripontrip.com. Field
@@ -113,6 +113,22 @@ export async function fetchProducts(
 export async function fetchProduct(id: string): Promise<Product | undefined> {
   const { data } = await fetchProducts();
   return data.find((p) => p.id === id || p.maskedId === id);
+}
+
+/**
+ * Place a marketplace order.
+ *
+ * The card charge (when paying online) has already happened upstream via the
+ * payments layer, so this records the order and returns a buyer-facing
+ * reference. The public `/products` API is read-only and there's no verified
+ * order-write endpoint yet — so, like the agency/guide booking flows, this is a
+ * local confirmation: the money moves through Stripe, and the reference lets the
+ * buyer follow up. Swap the body for a Supabase insert once the `orders` table
+ * is finalized.
+ */
+export async function createProductOrder(input: ProductOrderInput): Promise<ProductOrderResult> {
+  const reference = `GOT-${Date.now().toString(36).toUpperCase().slice(-6)}`;
+  return { id: input.paymentReference ?? reference, reference };
 }
 
 /** Absolute URL of a product on gripontrip.com — where purchase happens. */

@@ -251,10 +251,11 @@ export default function HotelDetailScreen() {
           >
             <SectionTitle>Choose your room</SectionTitle>
             {rooms.length > 0 ? (
-              rooms.map((room) => (
+              rooms.map((room, i) => (
                 <RoomCard
                   key={room.id}
                   room={room}
+                  index={i}
                   currency={currency}
                   quantity={quantities[room.id] ?? 0}
                   onQuantityChange={(q) => setRoomQuantity(room.id, q)}

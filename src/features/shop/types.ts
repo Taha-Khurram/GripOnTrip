@@ -36,3 +36,33 @@ export interface ProductFilters {
   category?: string;
   sort?: 'recommended' | 'price-asc' | 'price-desc' | 'rating-desc';
 }
+
+/** How the buyer chose to pay at checkout. */
+export type OrderPaymentMethod = 'card' | 'cod';
+
+/** Everything needed to place a marketplace order (delivery + payment). */
+export interface ProductOrderInput {
+  productId: string;
+  productTitle: string;
+  quantity: number;
+  /** Unit selling price in the currency's major unit. */
+  unitPrice: number;
+  currency: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  /** Street address the order ships to. */
+  shippingAddress: string;
+  city: string;
+  paymentMethod: OrderPaymentMethod;
+  /** Stripe PaymentIntent id (`pi_…`) when paid by card. */
+  paymentReference?: string;
+  notes?: string;
+}
+
+/** Result of a placed order — a human-facing reference for the confirmation. */
+export interface ProductOrderResult {
+  id: string;
+  /** Short order reference shown to the buyer, e.g. `GOT-8F3A2`. */
+  reference: string;
+}

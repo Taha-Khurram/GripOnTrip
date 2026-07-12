@@ -107,7 +107,7 @@ export default function RootLayout() {
 
               <Stack.Protected guard={isAuthenticated}>
                 <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="hotels/index" options={{ headerShown: true, title: 'Hotels & Stays' }} />
+                <Stack.Screen name="hotels/index" options={{ headerShown: false }} />
                 <Stack.Screen name="hotels/[id]" options={{ headerShown: false }} />
                 <Stack.Screen
                   name="hotels/book"
@@ -127,9 +127,14 @@ export default function RootLayout() {
                   name="tours/book"
                   options={{ headerShown: true, title: 'Book Package', presentation: 'modal' }}
                 />
+                <Stack.Screen name="shop/[id]" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="shop/checkout"
+                  options={{ headerShown: true, title: 'Checkout', presentation: 'modal' }}
+                />
                 <Stack.Screen name="umrah/[id]" options={{ headerShown: true, title: 'Umrah Package' }} />
                 <Stack.Screen name="umrah/book" options={{ headerShown: true, title: 'Book Umrah' }} />
-                <Stack.Screen name="guides/[id]" options={{ headerShown: true, title: 'Guide' }} />
+                <Stack.Screen name="guides/[id]" options={{ headerShown: false }} />
                 <Stack.Screen name="profile" options={{ headerShown: true, title: 'Profile' }} />
                 <Stack.Screen name="profile-settings" options={{ headerShown: true, title: 'Profile settings' }} />
                 <Stack.Screen name="wishlist" options={{ headerShown: true, title: 'My Wishlist' }} />

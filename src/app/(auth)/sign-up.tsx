@@ -5,8 +5,15 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 
-import { Animated, Button, Card, Input, enterUp } from '@/components/ui';
-import { AuthHeader, SocialAuthButtons, signUpWithEmail, signUpSchema, type SignUpInput } from '@/features/auth';
+import { Animated, Input, enterUp } from '@/components/ui';
+import {
+  AuthButton,
+  AuthHeader,
+  SocialAuthButtons,
+  signUpWithEmail,
+  signUpSchema,
+  type SignUpInput,
+} from '@/features/auth';
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -42,10 +49,29 @@ export default function SignUpScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerClassName="pb-10" keyboardShouldPersistTaps="handled">
-        <AuthHeader title="Create your account" subtitle="Join Grip On Trip to book, save, and manage your travels." />
+        <AuthHeader
+          eyebrow="Join Us"
+          eyebrowIcon="sparkles"
+          title="Create Your"
+          highlight="Account"
+          subtitle="Join Grip On Trip to book, save, and manage your travels."
+        />
 
-        <Animated.View entering={enterUp(1)} className="-mt-8 px-5">
-          <Card className="gap-4 p-5">
+        <Animated.View entering={enterUp(1)} className="mx-5 -mt-12">
+          <View className="gap-4 rounded-[28px] border border-hairline bg-surface p-5 shadow-soft">
+            {/* Card header */}
+            <View className="flex-row items-center gap-3">
+              <View className="h-11 w-11 items-center justify-center rounded-2xl bg-teal-50">
+                <Ionicons name="person-add-outline" size={22} color="#00a165" />
+              </View>
+              <View className="flex-1">
+                <Text className="font-display-semibold text-[17px] leading-5 text-ink">
+                  Create account
+                </Text>
+                <Text className="text-[12px] text-muted">It only takes a minute</Text>
+              </View>
+            </View>
+
             {formError ? (
               <View className="flex-row items-center gap-2 rounded-xl bg-red-50 px-4 py-3 dark:bg-red-950">
                 <Ionicons name="alert-circle" size={18} color="#dc2626" />
@@ -121,10 +147,10 @@ export default function SignUpScreen() {
               )}
             />
 
-            <Button label="Create account" loading={isSubmitting} onPress={handleSubmit(onSubmit)} fullWidth />
+            <AuthButton label="Create account" loading={isSubmitting} onPress={handleSubmit(onSubmit)} />
 
             <SocialAuthButtons onError={setFormError} />
-          </Card>
+          </View>
         </Animated.View>
 
         <View className="mt-6 flex-row justify-center gap-1">

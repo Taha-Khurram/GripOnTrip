@@ -19,9 +19,108 @@ function SpecChip({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label
   );
 }
 
-/** Full-width marketplace card — matches the Hotels & Stays listing card. */
-export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
+/** Compact card used inside the horizontal collection rails on the shop screen. */
+function CompactProductCard({ product, index }: { product: Product; index: number }) {
   const image = product.images[0]?.url;
+  return (
+    <Animated.View entering={enterUp(index)}>
+      <Link href={{ pathname: '/shop/[id]', params: { id: product.id } }} asChild>
+        <PressableScale accessibilityRole="button">
+          <Card className="w-[210px] overflow-hidden p-0 shadow-soft">
+            <View>
+              {image ? (
+                <Image
+                  source={{ uri: image }}
+                  style={{ width: '100%', height: 150 }}
+                  contentFit="cover"
+                  transition={200}
+                />
+              ) : (
+                <ImageBand className="h-[150px] items-center justify-center">
+                  <Ionicons name="bag-handle-outline" size={34} color="rgba(255,255,255,0.85)" />
+                </ImageBand>
+              )}
+
+              {product.discountPercent ? (
+                <View className="absolute left-2.5 top-2.5 rounded-full bg-accent-500 px-2.5 py-1 shadow-glow">
+                  <Text className="text-[11px] font-body-semibold text-white">
+                    -{product.discountPercent}%
+                  </Text>
+                </View>
+              ) : null}
+
+              {product.rating != null && product.rating > 0 ? (
+                <View className="absolute right-2.5 top-2.5 flex-row items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 shadow-card">
+                  <Ionicons name="star" size={11} color="#f5a623" />
+                  <Text className="text-[11px] font-bold text-ink">{formatRating(product.rating)}</Text>
+                </View>
+              ) : null}
+
+              {!product.inStock ? (
+                <View className="absolute bottom-0 left-0 right-0 top-0 items-center justify-center bg-brand-900/45">
+                  <Text className="text-[11px] font-body-semibold uppercase tracking-wide text-white">
+                    Sold out
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+
+            <View className="gap-2 p-3.5">
+              <View className="gap-1">
+                {product.brand ? (
+                  <Text
+                    className="text-[11px] font-body-medium uppercase tracking-wide text-muted-foreground"
+                    numberOfLines={1}
+                  >
+                    {product.brand}
+                  </Text>
+                ) : null}
+                <Text
+                  className="min-h-[38px] text-[14px] font-display-semibold leading-[19px] text-ink"
+                  numberOfLines={2}
+                >
+                  {product.title}
+                </Text>
+              </View>
+
+              <View className="flex-row items-baseline gap-1.5">
+                <Text className="text-[16px] font-display-x text-brand-600">
+                  {formatMoney(product.price)}
+                </Text>
+                {product.originalPrice ? (
+                  <Text className="text-[11px] text-muted-foreground line-through">
+                    {formatMoney(product.originalPrice)}
+                  </Text>
+                ) : null}
+              </View>
+
+              <View className="mt-0.5 flex-row items-center gap-1">
+                <Text className="text-[12px] font-body-semibold text-brand-600">View Details</Text>
+                <Ionicons name="chevron-forward" size={13} color="#00a165" />
+              </View>
+            </View>
+          </Card>
+        </PressableScale>
+      </Link>
+    </Animated.View>
+  );
+}
+
+/** Full-width marketplace card — matches the Hotels & Stays listing card. */
+export function ProductCard({
+  product,
+  index = 0,
+  variant = 'full',
+}: {
+  product: Product;
+  index?: number;
+  /** `compact` renders the fixed-width rail card used on the shop collection screen. */
+  variant?: 'full' | 'compact';
+}) {
+  const image = product.images[0]?.url;
+  if (variant === 'compact') {
+    return <CompactProductCard product={product} index={index} />;
+  }
   return (
     <Animated.View entering={enterUp(index)}>
       <Link href={{ pathname: '/shop/[id]', params: { id: product.id } }} asChild>

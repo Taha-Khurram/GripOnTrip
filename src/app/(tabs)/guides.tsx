@@ -1,10 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
+import {
+  FlatList,
+  Keyboard,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
-import { ListHero } from '@/components/layout/ListHero';
-import { Button, ListSkeleton } from '@/components/ui';
-import { GuideCard, useGuides, type Guide, type GuideSort } from '@/features/guides';
+import { Animated, Button, enterUp, ListSkeleton, OceanHero, PressableScale } from '@/components/ui';
+import { APP_NAME } from '@/constants/config';
+import { FeaturedGuideCard, GuidePerks, useGuides, type Guide, type GuideSort } from '@/features/guides';
+
+// App brand mark (same asset the home hero + other tabs use).
+const logo = require('../../../assets/images/icon.png');
 
 const SORTS: { key: GuideSort; label: string }[] = [
   { key: 'recommended', label: 'Recommended' },
@@ -14,13 +26,23 @@ const SORTS: { key: GuideSort; label: string }[] = [
   { key: 'reviews', label: 'Most reviews' },
 ];
 
+/** All-caps, letter-spaced field label used inside the search card (mirrors home/BNB). */
+function FieldLabel({ children }: { children: string }) {
+  return (
+    <Text className="text-[11px] font-body-semibold uppercase tracking-[1.5px] text-muted-foreground">
+      {children}
+    </Text>
+  );
+}
+
 /**
  * Verified Guides listing.
  *
  * Reads from `GET /api/guides?status=active&include_profiles=true` via
- * `useGuides()` — the same API the web guides page uses. Search, city filter and
- * sort mirror the website; React Query refetches on focus and pull-to-refresh so
- * newly-approved guides appear without a reload.
+ * `useGuides()`. The screen mirrors the BNB (rentals) page in the app's visual
+ * language: a navy hero with a floating search card (city + sort filters), a
+ * 2-column guide grid, and a value-prop footer. React Query refetches on focus
+ * and pull-to-refresh so newly-approved guides appear without a reload.
  */
 export default function GuidesScreen() {
   const { data, isLoading, isError, isRefetching, refetch } = useGuides();
@@ -30,7 +52,7 @@ export default function GuidesScreen() {
 
   const allGuides = useMemo(() => data?.data ?? [], [data?.data]);
 
-  // Distinct cities across all guides, for the filter row.
+  // Distinct cities across all guides, for the CITY filter row.
   const cities = useMemo(() => {
     const set = new Set<string>();
     allGuides.forEach((g) => g.city && set.add(g.city));
@@ -75,7 +97,7 @@ export default function GuidesScreen() {
   const renderItem = useCallback(
     ({ item, index }: { item: Guide; index: number }) => (
       <View className="px-5 pb-4">
-        <GuideCard guide={item} index={index} />
+        <FeaturedGuideCard guide={item} index={index} />
       </View>
     ),
     [],
@@ -101,112 +123,233 @@ export default function GuidesScreen() {
     );
   }
 
+  // CITY selector — "All Cities" plus every distinct city, styled like the home
+  // experience pills (active = solid navy, idle = hairline outline).
+  const cityPills: { key: string; label: string; icon: string }[] = [
+    { key: 'all', label: 'All Cities', icon: 'apps-outline' },
+    ...cities.map((c) => ({ key: c, label: c, icon: 'location-outline' })),
+  ];
+
   return (
     <FlatList
+      // Single full-width column (matches the home/shop listing cards). A static
+      // key forces a fresh FlatList instance across the earlier grid layout so RN
+      // never sees numColumns change on a live-mounted list.
+      key="guides-list-1col"
       className="flex-1 bg-background"
       data={guides}
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
       contentContainerClassName="pb-8"
       refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#00a165" />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f5a623" />
       }
       keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
         <>
-          <ListHero
-            variant="ocean"
-            icon="compass-outline"
-            eyebrow="Local experts"
-            title="Verified Guides"
-            subtitle="Local experts for cultural & hiking experiences."
-            query={query}
-            onChangeQuery={setQuery}
-            placeholder="Search guides, cities or languages"
-          />
+          {/* Hero — deep navy, mirroring the BNB page */}
+          <Animated.View entering={enterUp(0)}>
+            <OceanHero className="rounded-b-[36px] px-5 pb-16 pt-6">
+              <View className="flex-row items-center gap-2.5">
+                <Image
+                  source={logo}
+                  style={{ width: 36, height: 36, borderRadius: 18 }}
+                  contentFit="contain"
+                />
+                <Text className="font-display text-base text-white">{APP_NAME}</Text>
+              </View>
 
-          <View className="gap-3 px-5 pb-3 pt-4">
-            {cities.length > 0 ? (
-            <FlatList
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              data={['All', ...cities]}
-              keyExtractor={(c) => c}
-              contentContainerClassName="gap-2"
-              renderItem={({ item }) => {
-                const active = item === 'All' ? city === null : city === item;
-                return (
-                  <Pressable
-                    onPress={() => setCity(item === 'All' ? null : item)}
-                    className={[
-                      'rounded-full border px-3 py-1.5',
-                      active
-                        ? 'border-brand-500 bg-brand-500'
-                        : 'border-hairline bg-white dark:border-neutral-700 dark:bg-neutral-900',
-                    ].join(' ')}
-                  >
-                    <Text
-                      className={[
-                        'text-xs font-semibold',
-                        active ? 'text-white' : 'text-muted',
-                      ].join(' ')}
-                    >
-                      {item}
-                    </Text>
-                  </Pressable>
-                );
-              }}
-            />
-          ) : null}
-
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={SORTS}
-            keyExtractor={(s) => s.key}
-            contentContainerClassName="gap-2"
-            renderItem={({ item }) => {
-              const active = sort === item.key;
-              return (
-                <Pressable
-                  onPress={() => setSort(item.key)}
-                  className={[
-                    'rounded-full border px-3 py-1.5',
-                    active
-                      ? 'border-accent-500 bg-accent-50'
-                      : 'border-hairline bg-white dark:border-neutral-700 dark:bg-neutral-900',
-                  ].join(' ')}
-                >
-                  <Text
-                    className={[
-                      'text-xs font-semibold',
-                      active ? 'text-accent-700' : 'text-muted',
-                    ].join(' ')}
-                  >
-                    {item.label}
+              {/* LOCAL EXPERTS eyebrow badge */}
+              <View className="mt-5 flex-row">
+                <View className="flex-row items-center gap-1.5 rounded-full border border-accent-500/50 bg-accent-500/10 px-3 py-1.5">
+                  <Ionicons name="sparkles" size={12} color="#f5a623" />
+                  <Text className="text-[11px] font-body-semibold uppercase tracking-[1.5px] text-accent-400">
+                    Local Experts
                   </Text>
-                </Pressable>
-              );
-            }}
-          />
+                </View>
+              </View>
 
-            <Text className="text-sm text-muted">
-              {guides.length} verified guide{guides.length === 1 ? '' : 's'} available
+              <Text className="mt-3 font-display-x text-[34px] leading-[40px] text-white">
+                Explore With{'\n'}
+                <Text className="text-accent-500">Verified Guides</Text>
+              </Text>
+              <View className="mt-2 h-1 w-16 rounded-full bg-accent-500" />
+
+              <Text className="mt-3 text-[15px] leading-5 text-white/85">
+                Local experts for authentic cultural journeys and unforgettable hiking adventures.
+              </Text>
+            </OceanHero>
+          </Animated.View>
+
+          {/* Floating search card — overlaps the hero (home "booking card" pattern) */}
+          <Animated.View entering={enterUp(1)} className="mx-5 -mt-12">
+            <View className="gap-4 rounded-[28px] border border-hairline bg-surface p-5 shadow-soft">
+              <View className="flex-row items-center gap-3">
+                <View className="h-11 w-11 items-center justify-center rounded-2xl bg-teal-50">
+                  <Ionicons name="compass" size={22} color="#00a165" />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-display-semibold text-[17px] leading-5 text-ink">
+                    Find your guide
+                  </Text>
+                  <Text className="text-[12px] text-muted">
+                    {allGuides.length} verified guide{allGuides.length === 1 ? '' : 's'}
+                  </Text>
+                </View>
+                <View className="flex-row items-center gap-1 rounded-full bg-accent-50 px-2.5 py-1">
+                  <Ionicons name="shield-checkmark" size={11} color="#b8710c" />
+                  <Text className="text-[11px] font-body-semibold text-accent-700">Verified</Text>
+                </View>
+              </View>
+
+              {/* SEARCH — name / city / language + accent search button */}
+              <View className="gap-2.5">
+                <FieldLabel>Search</FieldLabel>
+                <View className="flex-row items-center gap-3">
+                  <View className="flex-1 flex-row items-center gap-2.5 rounded-2xl border border-hairline bg-surface-sunk px-4 py-3.5">
+                    <Ionicons name="search" size={19} color="#00a165" />
+                    <TextInput
+                      value={query}
+                      onChangeText={setQuery}
+                      onSubmitEditing={() => Keyboard.dismiss()}
+                      placeholder="Search guides"
+                      placeholderTextColor="#7c8a99"
+                      returnKeyType="search"
+                      textAlignVertical="center"
+                      style={{ includeFontPadding: false }}
+                      className="flex-1 py-0 text-[16px] font-body-medium text-ink"
+                    />
+                    {query ? (
+                      <PressableScale onPress={() => setQuery('')} activeScale={0.85} hitSlop={8}>
+                        <Ionicons name="close-circle" size={18} color="#7c8a99" />
+                      </PressableScale>
+                    ) : null}
+                  </View>
+                  <PressableScale
+                    accessibilityRole="button"
+                    accessibilityLabel="Search"
+                    onPress={() => Keyboard.dismiss()}
+                    activeScale={0.92}
+                  >
+                    <View className="h-14 w-14 items-center justify-center rounded-2xl bg-accent-500 shadow-glow">
+                      <Ionicons name="search" size={22} color="#fff" />
+                    </View>
+                  </PressableScale>
+                </View>
+              </View>
+
+              {/* CITY — city pills */}
+              {cities.length > 0 ? (
+                <View className="gap-2.5">
+                  <FieldLabel>City</FieldLabel>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerClassName="gap-2 pr-4"
+                  >
+                    {cityPills.map((c) => {
+                      const active = c.key === 'all' ? city === null : city === c.key;
+                      return (
+                        <PressableScale
+                          key={c.key}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: active }}
+                          activeScale={0.94}
+                          onPress={() => setCity(c.key === 'all' ? null : c.key)}
+                        >
+                          <View
+                            className={[
+                              'flex-row items-center gap-1.5 rounded-full px-4 py-2.5',
+                              active ? 'bg-brand-800' : 'border border-hairline bg-surface-sunk',
+                            ].join(' ')}
+                          >
+                            <Ionicons
+                              name={c.icon as never}
+                              size={15}
+                              color={active ? '#f5a623' : '#00a165'}
+                            />
+                            <Text
+                              className={[
+                                'text-[13px] font-body-semibold',
+                                active ? 'text-white' : 'text-ink',
+                              ].join(' ')}
+                            >
+                              {c.label}
+                            </Text>
+                          </View>
+                        </PressableScale>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              ) : null}
+
+              {/* SORT — ordering pills */}
+              <View className="gap-2.5">
+                <FieldLabel>Sort by</FieldLabel>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerClassName="gap-2 pr-4"
+                >
+                  {SORTS.map((s) => {
+                    const active = sort === s.key;
+                    return (
+                      <PressableScale
+                        key={s.key}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: active }}
+                        activeScale={0.94}
+                        onPress={() => setSort(s.key)}
+                      >
+                        <View
+                          className={[
+                            'rounded-full px-4 py-2.5',
+                            active ? 'border border-accent-500 bg-accent-50' : 'border border-hairline bg-surface-sunk',
+                          ].join(' ')}
+                        >
+                          <Text
+                            className={[
+                              'text-[13px] font-body-semibold',
+                              active ? 'text-accent-700' : 'text-ink',
+                            ].join(' ')}
+                          >
+                            {s.label}
+                          </Text>
+                        </View>
+                      </PressableScale>
+                    );
+                  })}
+                </ScrollView>
+              </View>
+            </View>
+          </Animated.View>
+
+          {/* All Verified Guides — section header */}
+          <Animated.View entering={enterUp(2)} className="gap-1 px-5 pb-4 pt-7">
+            <Text className="font-display-x text-[22px] leading-7 text-ink">All Verified Guides</Text>
+            <Text className="text-[13px] leading-5 text-muted">
+              {guides.length} expert guide{guides.length === 1 ? '' : 's'} matched
             </Text>
-          </View>
+          </Animated.View>
         </>
       }
       ListEmptyComponent={
-        <View className="mt-24 items-center justify-center gap-3 px-8">
+        <View className="mt-8 items-center justify-center gap-3 px-8">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
             <Ionicons name="people-outline" size={28} color="#00a165" />
           </View>
-          <Text className="text-lg font-display text-ink">
-            No guides found
-          </Text>
+          <Text className="text-lg font-display text-ink">No guides found</Text>
           <Text className="text-center text-sm text-muted">
-            Approved guides will appear here. Try clearing filters or pull down to refresh.
+            {query || city
+              ? 'Try a different search or clear the filters.'
+              : 'Approved guides will appear here. Pull down to refresh.'}
           </Text>
+        </View>
+      }
+      ListFooterComponent={
+        <View className="gap-12 pt-4">
+          <GuidePerks />
         </View>
       }
     />

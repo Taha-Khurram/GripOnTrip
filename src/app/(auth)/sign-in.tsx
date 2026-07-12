@@ -3,10 +3,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 
-import { Animated, Card, Input, PressableScale, enterUp } from '@/components/ui';
-import { AuthHeader, signInWithEmail, signInSchema, type SignInInput } from '@/features/auth';
+import { Animated, Input, enterUp } from '@/components/ui';
+import { AuthButton, AuthHeader, signInWithEmail, signInSchema, type SignInInput } from '@/features/auth';
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -36,10 +36,27 @@ export default function SignInScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerClassName="pb-10" keyboardShouldPersistTaps="handled">
-        <AuthHeader title="Welcome back" subtitle="Sign in to book stays, manage trips, and keep your wishlist." />
+        <AuthHeader
+          eyebrow="Member Login"
+          eyebrowIcon="person-circle-outline"
+          title="Welcome"
+          highlight="Back"
+          subtitle="Sign in to book stays, manage trips, and keep your wishlist."
+        />
 
-        <Animated.View entering={enterUp(1)} className="-mt-8 px-5">
-          <Card className="gap-4 p-5">
+        <Animated.View entering={enterUp(1)} className="mx-5 -mt-12">
+          <View className="gap-4 rounded-[28px] border border-hairline bg-surface p-5 shadow-soft">
+            {/* Card header */}
+            <View className="flex-row items-center gap-3">
+              <View className="h-11 w-11 items-center justify-center rounded-2xl bg-teal-50">
+                <Ionicons name="log-in-outline" size={22} color="#00a165" />
+              </View>
+              <View className="flex-1">
+                <Text className="font-display-semibold text-[17px] leading-5 text-ink">Sign in</Text>
+                <Text className="text-[12px] text-muted">Access your trips & wishlist</Text>
+              </View>
+            </View>
+
             {formError ? (
               <View className="flex-row items-center gap-2 rounded-xl bg-red-50 px-4 py-3 dark:bg-red-950">
                 <Ionicons name="alert-circle" size={18} color="#dc2626" />
@@ -87,31 +104,11 @@ export default function SignInScreen() {
               Forgot password?
             </Link>
 
-            {/* Sign-in CTA — chrome lives on an inner View so NativeWind's
-                className→style interop is reliable on the animated pressable
-                (matches the Profile screen's button). */}
-            <PressableScale
-              accessibilityRole="button"
-              disabled={isSubmitting}
-              onPress={handleSubmit(onSubmit)}
-            >
-              <View
-                className={[
-                  'flex-row items-center justify-center rounded-2xl bg-brand-500 py-4 shadow-glow-ocean',
-                  isSubmitting ? 'opacity-70' : '',
-                ].join(' ')}
-              >
-                {isSubmitting ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text className="text-base font-semibold text-white">Sign In</Text>
-                )}
-              </View>
-            </PressableScale>
+            <AuthButton label="Sign In" loading={isSubmitting} onPress={handleSubmit(onSubmit)} />
 
             {/* Social sign-in temporarily disabled.
             <SocialAuthButtons onError={setFormError} /> */}
-          </Card>
+          </View>
         </Animated.View>
 
         <View className="mt-6 flex-row justify-center gap-1">

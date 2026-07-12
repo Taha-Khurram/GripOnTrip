@@ -35,11 +35,17 @@ marketplace, with an AI Trip Planner and in-app assistant.
   form (details, amenities, pricing, images) that writes to Supabase, with a confirmation flow.
 - 🔐 **Real authentication** — email/password **and** Google OAuth via Supabase, with row-level-security
   scoped data (the same backend the website uses).
-- ❤️ **Wishlist** — save any stay, rental, or tour with a tap; persisted per user on-device.
+- ❤️ **Wishlist** — save any stay, rental, tour, guide, or product with a tap; persisted per user on-device.
+- 💳 **Card payments & checkout** — pay by card via **Stripe** (client-side tokenization → a Supabase
+  Edge Function charges with the secret key), wired across the hotel, tour, Umrah booking flows and the
+  Shop's product checkout (with a Cash-on-Delivery option). See [`docs/PAYMENTS.md`](docs/PAYMENTS.md).
+- 🛍️ **The Collection** — a home-style Shop with a navy hero, floating search/sort/filter toolbar and
+  category rails; product detail + a complete on-device checkout.
 - 🤖 **AI Trip Planner & assistant** — the same `GOT AI` experience as the web, in your pocket.
 - 🎨 **"Ocean & Sun" design system** — a cohesive light theme (NativeWind + brand/accent tokens),
-  Outfit/Figtree display type, soft gradient heroes (`OceanHero`/`SunCTA`) shared across every listing
-  screen, and spring-based motion throughout. See [`docs/Design.md`](docs/Design.md).
+  Outfit/Figtree display type, soft gradient heroes (`OceanHero`/`SunCTA`) and full-bleed "featured"
+  listing cards shared across every screen, plus spring-based motion throughout. See
+  [`docs/Design.md`](docs/Design.md).
 - 🧱 **Scalable architecture** — typed, file-based routing and self-contained feature modules that are
   trivial to extend.
 
@@ -48,7 +54,7 @@ marketplace, with an AI Trip Planner and in-app assistant.
 | Area | Screens |
 | --- | --- |
 | **Discover** (bottom tabs) | Home · Tours · Rentals · Umrah · Shop · Guides |
-| **Detail & booking** | Hotel detail + booking · Rental detail · Tour · Umrah · Guide · Product |
+| **Detail & booking** | Hotel detail + booking · Rental detail · Tour · Umrah · Guide · Product + checkout |
 | **Account** | Profile hub · Profile settings · Wishlist · My bookings · My rental bookings |
 | **Hosting** | My properties (your listings + edit/delete) · List a property · Manage rental properties |
 | **Auth** | Sign in · Sign up · Forgot password (Google OAuth + email) |
@@ -90,7 +96,9 @@ The app talks to **two backends that mirror the website**:
   through the Axios client in [`src/api/client.ts`](src/api/client.ts).
 - **Supabase (auth + user data)** — sign-in and per-user data (profile, bookings, owned listings)
   via row-level security, using the same project as the web. Client in
-  [`src/lib/supabase.ts`](src/lib/supabase.ts).
+  [`src/lib/supabase.ts`](src/lib/supabase.ts). It also hosts the **`create-payment` Edge Function**
+  that charges Stripe with the secret key (the `features/payments` module tokenizes the card client-side
+  first, so the raw card never touches our servers).
 
 Data always flows **component → React Query hook → `api.ts` → backend** — components never call Axios or
 Supabase directly. Each vertical is a self-contained **feature module**:
@@ -225,16 +233,18 @@ Both must pass before a change is considered done.
 
 ## 🗺️ Roadmap
 
-**Recently shipped:** a unified **account area** on the "Ocean & Sun" hero (settings, wishlist, and
-bookings sharing one visual language), the **rental-property hosting flow** — list / edit / delete your
-own listings, written to Supabase — and the **AI Trip Planner** (preferences → generated itinerary).
+**Recently shipped:** **Stripe card payments** (tokenize → `create-payment` Edge Function) across the
+hotel, tour and Umrah booking flows plus a complete **Shop checkout** (card / Cash-on-Delivery); **The
+Collection** shop and a home-style, full-bleed "featured-card" redesign of the Hotels, Guides and Shop
+listings (with the Guide/Product details brought to hotel-level depth); and a home-styled **auth** flow.
 
 - [x] Hotel-booking + rental-listing (create / edit / delete) **writes** to Supabase
-- [ ] Review writes and the remaining booking-submission flows to Supabase
+- [x] Card payments via **Stripe** across booking flows + Shop checkout
+- [x] Tours / Umrah / Guides / Shop listing + detail brought to hotel-level depth
+- [ ] Persist Shop orders + remaining booking-submission flows to Supabase (some are local stubs today)
+- [ ] Review writes to Supabase
 - [ ] Native photo upload for listings (currently image URLs)
-- [ ] Payments integration (provider TBD)
 - [ ] Push notifications for booking status changes
-- [ ] Bring Tours / Umrah / Guides / Shop to full hotel-level depth (filters, detail parity)
 - [ ] Server-backed wishlist sync across devices
 - [ ] Screenshot gallery + store listing assets
 
