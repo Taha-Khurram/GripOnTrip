@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 
 import {
   brandLabel,
@@ -57,6 +57,12 @@ export interface CardPaymentFormProps {
    * fields at once, even ones the user hasn't touched yet.
    */
   showAllErrors?: number;
+  /**
+   * When true, the card fields stay hidden behind an "Initialize Card Payment
+   * Form" button until the user taps it. While collapsed, no card is emitted
+   * (so the Pay button stays disabled). Defaults to false (fields shown inline).
+   */
+  collapsible?: boolean;
 }
 
 /**
@@ -68,8 +74,13 @@ export interface CardPaymentFormProps {
  * The raw card number is never stored anywhere but this component's local state;
  * it leaves the app only as a Stripe token (see api.ts).
  */
-export function CardPaymentForm({ onChange, showAllErrors = 0 }: CardPaymentFormProps) {
+export function CardPaymentForm({
+  onChange,
+  showAllErrors = 0,
+  collapsible = false,
+}: CardPaymentFormProps) {
   const now = useMemo(() => new Date(), []);
+  const [open, setOpen] = useState(!collapsible);
   const [values, setValues] = useState<CardFormValues>({
     number: '',
     expiry: '',
@@ -103,6 +114,29 @@ export function CardPaymentForm({ onChange, showAllErrors = 0 }: CardPaymentForm
   const nameErr = reveal('name') ? nameError(values.name) : undefined;
 
   const markTouched = (key: FieldKey) => setTouched((t) => ({ ...t, [key]: true }));
+
+  // Collapsed state: keep the card fields hidden behind a deliberate tap so the
+  // user reviews the price/details first. Nothing is emitted while collapsed.
+  if (collapsible && !open) {
+    return (
+      <View className="items-center gap-3 rounded-2xl border border-dashed border-hairline bg-surface-sunk/50 p-5">
+        <Text className="text-center text-sm text-muted">
+          Review the details, then initialize the secure card payment form.
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Initialize card payment form"
+          onPress={() => setOpen(true)}
+          className="flex-row items-center gap-2 rounded-2xl border border-brand-500 bg-transparent px-5 py-3"
+        >
+          <Ionicons name="lock-closed-outline" size={16} color="#156473" />
+          <Text className="font-body-semibold text-sm text-brand-700">
+            Initialize Card Payment Form
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <View className="gap-3">

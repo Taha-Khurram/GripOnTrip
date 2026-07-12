@@ -501,7 +501,7 @@ export default function BookHotelScreen() {
               </Text>{' '}
               securely by card to confirm your booking instantly.
             </Text>
-            <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} />
+            <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} collapsible />
           </View>
         )}
       </Card>

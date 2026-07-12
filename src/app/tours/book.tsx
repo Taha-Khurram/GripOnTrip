@@ -352,7 +352,7 @@ export default function BookTourPackageScreen() {
               </Text>{' '}
               securely by card to book this package now.
             </Text>
-            <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} />
+            <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} collapsible />
           </View>
         )}
       </Card>

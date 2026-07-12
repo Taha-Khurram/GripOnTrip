@@ -369,7 +369,7 @@ export default function UmrahBookScreen() {
                 </Text>{' '}
                 securely by card to confirm your Umrah booking now.
               </Text>
-              <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} />
+              <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} collapsible />
             </View>
           )}
         </Card>

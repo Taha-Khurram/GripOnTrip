@@ -411,7 +411,7 @@ export default function BookRentalScreen() {
               </Text>{' '}
               securely by card to request this property now.
             </Text>
-            <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} />
+            <CardPaymentForm onChange={setCard} showAllErrors={showCardErrors} collapsible />
           </View>
         )}
       </Card>
