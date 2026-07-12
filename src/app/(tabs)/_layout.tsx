@@ -24,6 +24,8 @@ export default function TabsLayout() {
       screenOptions={{
         tabBarActiveTintColor: ACTIVE_TINT,
         tabBarInactiveTintColor: '#9aa7ac',
+        // Smooth cross-tab transition instead of an instant swap.
+        animation: 'shift',
         headerShown: true,
         headerStyle: { backgroundColor: '#eef2f7' },
         headerShadowVisible: false,

@@ -95,6 +95,12 @@ export default function RootLayout() {
                 headerShadowVisible: false,
                 headerTintColor: '#00a165',
                 headerTitleStyle: { fontFamily: 'Outfit_700Bold', color: '#0a1a2f' },
+                // Smooth, consistent push transition across iOS + Android, with
+                // interactive swipe-back. Screens marked `presentation: 'modal'`
+                // override this with the native slide-up.
+                animation: 'slide_from_right',
+                animationDuration: 260,
+                gestureEnabled: true,
               }}
             >
               {/* Launch-time auth gate: signed out, the only reachable group is
