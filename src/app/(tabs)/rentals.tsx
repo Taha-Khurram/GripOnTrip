@@ -130,6 +130,7 @@ export default function RentalsScreen() {
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f5a623" />
       }
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
       ListHeaderComponent={
         <>
           {/* Hero — deep navy, mirroring the tours page */}

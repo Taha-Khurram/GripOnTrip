@@ -74,6 +74,8 @@ export default function HomeScreen() {
       className="flex-1 bg-background"
       contentContainerClassName="pb-12"
       showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
     >
       {/* Hero — deep navy */}
       <Animated.View entering={enterUp(0)}>

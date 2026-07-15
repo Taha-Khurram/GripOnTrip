@@ -140,6 +140,7 @@ export default function ShopScreen() {
       contentContainerClassName="pb-12"
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
       refreshControl={
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#00a165" />
       }

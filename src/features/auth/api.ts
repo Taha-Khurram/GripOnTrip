@@ -12,20 +12,21 @@ import type { Session } from '@supabase/supabase-js';
 
 import { supabase } from '@/lib/supabase';
 
-/** Turn a raw Supabase auth error message into something user-facing. */
-export function friendlyAuthError(message?: string): string {
-  if (!message) return 'Something went wrong. Please try again.';
-  const m = message.toLowerCase();
-  if (m.includes('invalid login')) return 'Incorrect email or password.';
-  if (m.includes('email not confirmed')) return 'Please confirm your email, then sign in.';
-  if (m.includes('already registered') || m.includes('already been registered'))
-    return 'An account with that email already exists.';
-  if (m.includes('network')) return 'Network error. Check your connection and try again.';
-  return message;
-}
+import { friendlyAuthError, normalizeEmail, parseAuthRedirect } from './utils';
+
+// Re-exported so callers keep a single `@/features/auth` import surface.
+export { friendlyAuthError, normalizeEmail, parseAuthRedirect } from './utils';
+export type { AuthRedirect } from './utils';
+
+// Allows the auth browser tab to auto-dismiss when the OAuth redirect returns.
+// Safe to call at module scope; a no-op on platforms that don't need it.
+WebBrowser.maybeCompleteAuthSession();
 
 export async function signInWithEmail(email: string, password: string): Promise<Session> {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: normalizeEmail(email),
+    password,
+  });
   if (error) throw new Error(friendlyAuthError(error.message));
   if (!data.session) throw new Error('Could not start a session. Please try again.');
   return data.session;
@@ -36,10 +37,11 @@ export async function signUpWithEmail(
   email: string,
   password: string,
 ): Promise<{ session: Session | null }> {
+  const fullName = name.trim();
   const { data, error } = await supabase.auth.signUp({
-    email,
+    email: normalizeEmail(email),
     password,
-    options: { data: { full_name: name, name } },
+    options: { data: { full_name: fullName, name: fullName } },
   });
   if (error) throw new Error(friendlyAuthError(error.message));
   return { session: data.session };
@@ -47,7 +49,9 @@ export async function signUpWithEmail(
 
 export async function sendPasswordReset(email: string): Promise<void> {
   const redirectTo = Linking.createURL('auth-callback');
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+  const { error } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
+    redirectTo,
+  });
   if (error) throw new Error(friendlyAuthError(error.message));
 }
 
@@ -56,12 +60,17 @@ export async function signOut(): Promise<void> {
 }
 
 /**
- * Google OAuth via the system browser. Requires the Google provider to be
- * enabled in Supabase and `app://auth-callback` whitelisted as a redirect URL.
- * On success the code is exchanged for a session and the auth listener fires.
+ * Google OAuth via the system browser (Supabase PKCE flow). Requires the Google
+ * provider to be enabled in Supabase and `app://auth-callback` whitelisted as a
+ * redirect URL. On success the code is exchanged for a session and the auth
+ * listener fires.
+ *
+ * Returns `'cancelled'` (rather than throwing) when the user dismisses the
+ * browser, so the UI can stay silent instead of flashing an error banner.
  */
-export async function signInWithGoogle(): Promise<void> {
+export async function signInWithGoogle(): Promise<'success' | 'cancelled'> {
   const redirectTo = Linking.createURL('auth-callback');
+  const expectedScheme = redirectTo.split(':')[0];
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -70,35 +79,39 @@ export async function signInWithGoogle(): Promise<void> {
   if (error) throw new Error(friendlyAuthError(error.message));
   if (!data?.url) throw new Error('Could not start Google sign-in.');
 
-  const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
-  if (result.type !== 'success' || !result.url) {
-    // User dismissed the browser (or it failed) — surface a soft cancel.
-    throw new Error('Google sign-in was cancelled.');
-  }
+  try {
+    // Android: pre-warm the Custom Tab so the consent screen appears instantly.
+    await WebBrowser.warmUpAsync();
 
-  // PKCE flow returns `?code=...`; older configs return tokens in the fragment.
-  const parsed = Linking.parse(result.url);
-  const code = parsed.queryParams?.code;
-  if (typeof code === 'string' && code) {
-    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-    if (exchangeError) throw new Error(friendlyAuthError(exchangeError.message));
-    return;
-  }
+    const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
 
-  const fragment = result.url.split('#')[1];
-  if (fragment) {
-    const params = new URLSearchParams(fragment);
-    const accessToken = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-    if (accessToken && refreshToken) {
+    // User backed out of the browser — treat as a soft cancel, not an error.
+    if (result.type === 'cancel' || result.type === 'dismiss') return 'cancelled';
+    if (result.type !== 'success' || !result.url) {
+      throw new Error('Google sign-in did not complete. Please try again.');
+    }
+
+    const parsed = parseAuthRedirect(result.url, expectedScheme);
+    if (parsed.kind === 'error') throw new Error(friendlyAuthError(parsed.message));
+
+    if (parsed.kind === 'code') {
+      const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(parsed.code);
+      if (exchangeError) throw new Error(friendlyAuthError(exchangeError.message));
+      return 'success';
+    }
+
+    if (parsed.kind === 'tokens') {
       const { error: setError } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
+        access_token: parsed.accessToken,
+        refresh_token: parsed.refreshToken,
       });
       if (setError) throw new Error(friendlyAuthError(setError.message));
-      return;
+      return 'success';
     }
-  }
 
-  throw new Error('Google sign-in did not complete. Please try again.');
+    throw new Error('Google sign-in did not complete. Please try again.');
+  } finally {
+    // Release the pre-warmed tab regardless of outcome.
+    void WebBrowser.coolDownAsync();
+  }
 }

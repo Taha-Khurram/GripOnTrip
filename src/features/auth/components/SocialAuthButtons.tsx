@@ -10,10 +10,13 @@ export function SocialAuthButtons({ onError }: { onError?: (message: string) => 
 
   const handleGoogle = async () => {
     setLoading(true);
+    // Clear any prior banner so a fresh attempt starts clean.
+    onError?.('');
     try {
       await signInWithGoogle();
       // On success, the auth-state listener updates the store and the root
-      // layout redirects out of the auth stack automatically.
+      // layout redirects out of the auth stack automatically. A `'cancelled'`
+      // result means the user backed out — stay silent, no error banner.
     } catch (e) {
       onError?.(e instanceof Error ? e.message : 'Google sign-in failed.');
     } finally {

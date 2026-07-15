@@ -222,6 +222,7 @@ export default function ProductCheckoutScreen() {
       className="flex-1 bg-background"
       contentContainerClassName="gap-4 p-5 pb-12"
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
     >
       <Stack.Screen options={{ title: 'Checkout' }} />
 

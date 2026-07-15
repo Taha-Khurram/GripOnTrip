@@ -257,6 +257,7 @@ export default function BookRentalScreen() {
       className="flex-1 bg-background"
       contentContainerClassName="gap-4 p-5 pb-12"
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
     >
       <Stack.Screen options={{ title: 'Request to Book' }} />
 

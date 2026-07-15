@@ -113,6 +113,7 @@ export default function UmrahScreen() {
       renderItem={renderItem}
       contentContainerClassName="pb-8"
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
       refreshControl={
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f5a623" />
       }

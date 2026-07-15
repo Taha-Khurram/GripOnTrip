@@ -6,7 +6,14 @@ import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 
 import { Animated, Input, enterUp } from '@/components/ui';
-import { AuthButton, AuthHeader, signInWithEmail, signInSchema, type SignInInput } from '@/features/auth';
+import {
+  AuthButton,
+  AuthHeader,
+  SocialAuthButtons,
+  signInWithEmail,
+  signInSchema,
+  type SignInInput,
+} from '@/features/auth';
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -106,8 +113,7 @@ export default function SignInScreen() {
 
             <AuthButton label="Sign In" loading={isSubmitting} onPress={handleSubmit(onSubmit)} />
 
-            {/* Social sign-in temporarily disabled.
-            <SocialAuthButtons onError={setFormError} /> */}
+            <SocialAuthButtons onError={setFormError} />
           </View>
         </Animated.View>
 

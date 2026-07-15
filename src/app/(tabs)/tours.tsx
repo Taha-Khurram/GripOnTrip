@@ -115,6 +115,7 @@ export default function ToursScreen() {
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#00a165" />
       }
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
       ListHeaderComponent={
         <>
           {/* Hero — deep navy, mirroring the home screen exactly */}

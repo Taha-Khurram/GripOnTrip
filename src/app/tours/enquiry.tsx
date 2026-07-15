@@ -112,6 +112,7 @@ export default function TourEnquiryScreen() {
       className="flex-1 bg-background"
       contentContainerClassName="gap-5 p-5 pb-12"
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
     >
       <Stack.Screen options={{ title: 'Request an Inquiry' }} />
 

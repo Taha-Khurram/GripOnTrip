@@ -317,6 +317,7 @@ export default function HotelsListScreen() {
         renderItem={renderItem}
         contentContainerClassName="pb-8"
         keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#f5a623" />}
         ListHeaderComponent={
