@@ -85,6 +85,7 @@ marketplace, with an AI Trip Planner and in-app assistant.
 | Animation          | Reanimated (spring press + entrance)          |
 | Secure storage     | expo-secure-store / AsyncStorage              |
 | Icons              | `@expo/vector-icons` (Ionicons)               |
+| Testing            | Jest + jest-expo                              |
 | Tooling            | ESLint (expo config) + Prettier               |
 
 ## 🏗️ Architecture
@@ -144,6 +145,8 @@ npm start                 # then press a (Android), i (iOS), or w (web)
 | `npm run lint`      | Lint with ESLint                |
 | `npm run format`    | Format with Prettier            |
 | `npm run typecheck` | Type-check with `tsc --noEmit`  |
+| `npm test`          | Run the Jest test suite         |
+| `npm run test:watch`| Run Jest in watch mode          |
 
 ## 🔑 Environment variables
 
@@ -227,9 +230,11 @@ After a dev build installs, run `npx expo start --dev-client -c` and open it on 
 ```bash
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint (expo config)
+npm test            # jest (jest-expo)
 ```
 
-Both must pass before a change is considered done.
+`typecheck` and `lint` must pass before a change is considered done; run `npm test` when you
+touch anything with unit coverage (e.g. the `auth` schemas/utils).
 
 ## 🗺️ Roadmap
 
